@@ -1,0 +1,71 @@
+<script language="SpeedScript">
+    def var wRequestPost as ch no-undo.
+    def var codigoUsuario as ch no-undo.
+    def var fileJson as ch no-undo.
+    define buffer bf for s-usuarios.
+
+    PROCEDURE output-headers:
+        wRequestPost = REQUEST_METHOD.
+    END PROCEDURE.
+    def var k as i.
+    
+    assign codigoUsuario = replace(trim(get-value('idUsuario')), chr(9), ""). 
+    
+    assign fileJson = chr(123) + '"usuarios":'.
+
+    if wRequestPost = "GET" then do:     
+        find first bf where bf.id-usuario = codigoUsuario no-lock no-error. 
+        if avail bf then do: 
+            find first s-grupos where s-grupos.grupo = bf.grupo no-lock no-error. 
+            if avail s-grupos then do: 
+                assign fileJson =   fileJson +  
+                                    chr(123) +
+                                    '"id":"' + string(bf.id-usuario) + 
+                                    '","nombre":"' + bf.nombre + 
+                                    '","pass":"' + bf.password + 
+                                    '","idgrupo":"' + s-grupos.grupo +
+                                    '","grupo":"' + s-grupos.descripcion +
+                                    '","error":"' + ""  + '"},'.
+               
+            end. 
+            else do: 
+                assign fileJson =   fileJson +  
+                                    chr(123) +    
+                                    '"id":"' + string(bf.id-usuario) + 
+                                    '","nombre":"' + bf.nombre + 
+                                    '","pass":"' + bf.password +
+                                    '","idgrupo":"' + "" + 
+                                    '","grupo":"' + "" + 
+                                    '","error":"' + ""  + '"},'.
+                               
+            end. 
+            assign fileJson = fileJson + 
+                                    '"grupos":['.
+
+                for each s-grupos: 
+                    assign fileJson = fileJson + 
+                                     chr(123) +
+                                    '"idgrupo":"' + string(s-grupos.grupo) + 
+                                    '","grupo":"' + s-grupos.descripcion + '"},'. 
+                end. 
+                assign fileJson = substring(fileJson, 1, length(fileJson) - 1).
+                assign fileJson = fileJson + ']}'.
+            
+            {&out} fileJson.  
+        end. 
+        /* si no lo encuentra */ 
+        else do: 
+            assign fileJson = "[".
+            assign fileJson =   fileJson +  
+                                chr(123) +    
+                                '"id":"' + "" + 
+                                '","nombre":"' + "" + 
+                                '","pass":"' + "" + 
+                                '","idgrupo":"' + "" +
+                                '","grupo":"' + "" +
+                                '","error":"' + ""  + '"}'.
+            {&out} fileJson. 
+        end.             
+    end.
+    return no-apply.
+</script>

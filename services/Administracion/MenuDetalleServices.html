@@ -1,0 +1,54 @@
+<script language="SpeedScript">
+    def var wRequestPost as ch no-undo.
+    def var codigoMenu as ch no-undo.
+    def var renglon as ch no-undo. 
+    def var k as i no-undo.
+    
+    PROCEDURE output-headers:
+        wRequestPost = REQUEST_METHOD.
+    END PROCEDURE.
+    
+    assign codigoMenu = replace(trim(get-value('codigoMenu')), chr(9), "")
+            renglon = replace(trim(get-value('renglon')), chr(9), ""). 
+
+
+    /* si es un expediente nuevo */
+    if int(renglon) = 0 then do: 
+        find last MenuDetalle where MenuDetalle.codigoMenu = int(codigoMenu) use-index puk-renglon no-lock no-error. 
+        if avail MenuDetalle 
+            then assign renglon = string(MenuDetalle.renglon + 1). 
+            else assign renglon = "1". 
+    end. 
+
+    if wRequestPost = "GET" then do:     
+        find first MenuDetalle where MenuDetalle.codigoMenu = int(codigoMenu) 
+                                and MenuDetalle.renglon = int(renglon) no-lock no-error. 
+        if avail MenuDetalle then do: 
+            {&out}  
+            "<detallestore>" +
+                "<detalle ref=" + "'" + string(1)  + "'" + ">" +
+                    "<codigo>" + string(MenuDetalle.codigoMenu) + "</codigo>" +
+                    "<nombre>" + menuDetalle.nombreSubMenu + "</nombre>" +
+                    "<accion>" + menuDetalle.accion + "</accion>" + 
+                    "<renglon>" + string(menuDetalle.renglon) + "</renglon>" + 
+                    "</detalle>" + 
+                    "</detallestore>".  
+
+    end. 
+    /* si no lo encuentra */ 
+    else do: 
+        {&out}  
+            "<detallestore>" +
+                "<detalle ref=" + "'" + string(1)  + "'" + ">" +
+                    "<codigo>" + codigoMenu + "</codigo>" +
+                    "<nombre>" + "" + "</nombre>" +
+                    "<accion>" + "" + "</accion>" + 
+                    "<renglon>" + string(renglon) + "</renglon>" +
+                    "</detalle>" + 
+                    "</detallestore>". 
+
+    end.             
+end.
+
+    return no-apply.
+</script>

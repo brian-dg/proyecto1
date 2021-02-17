@@ -1,0 +1,103 @@
+<script language="SpeedScript">
+    {./variables/GeneralVariables.i}
+    {./components/headComponent.i}
+</script>
+<div class="app-main__inner">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="main-card mb-3 card my-3">
+                <div class="card-body"><h5 class="card-title">Envío de Expedientes</h5>
+                    <form class="">
+                        <div class="position-relative form-row mt-4">
+                            <div class="col-md-3">
+                                <input 
+                                    type="date" 
+                                    id="fechaDesde" 
+                                    class="form-control form-control-sm" 
+                                    autocomplete="off" 
+                                    placeholder="Fecha Desde" 
+                                    autofocus
+                                    required
+                                >
+                                <div id="requiredFechaDesde"></div>
+                            </div>
+                            <div class="col-md-3">
+                                <input 
+                                    type="date" 
+                                    id="fechaHasta" 
+                                    class="form-control form-control-sm"  
+                                    autocomplete="off" 
+                                    placeholder="Fecha Hasta" 
+                                    required
+                                >
+                                <div id="requiredFechaHasta"></div>
+                            </div>
+                            <div class="col-md-3">
+                                <button 
+                                    class="btn btn-primary" 
+                                    type="button" 
+                                    onclick="getEnvioExpedientes()"
+                                >
+                                Buscar
+                                </button>
+                            </div>
+                        </div> 
+                        <div class="position-relative form-row mt-4">
+                            <div class="col-md-12 text-center" id="loading">
+                                <!-- Imagen procesando -->
+                            </div>
+                        </div>
+                        <div class="position-relative form-row mt-2">
+						    <div class="table-responsive">
+							    <table class="table table-striped table-hover table-bordered col-md-12">
+								    <thead>
+									    <tr>
+										    <th class="text-center bg-secondary text-white">Expediente</th>
+											<th class="text-center bg-secondary text-white">Ingreso</th>
+											<th class="text-center bg-secondary text-white">Contribuyente</th>
+                                            <th class="text-center bg-secondary text-white">Motivo</th>
+                                            <th class="text-center bg-secondary text-white">Seleccionar</th>
+										</tr>
+									</thead>
+									<tbody id="table-result">
+                                        <!-- detalle tabla -->
+									</tbody>
+                                </table>
+                                <div id="requiredSeleccionado"></div>
+							</div>
+                        </div>
+                        <div class="position-relative form-row mb-3">
+                            <div class="col-md-5">
+                                <label for="exampleSelect" class="">Sector</label>
+                                <select 
+                                    name="codigoSector" 
+                                    id="codigoSector" 
+                                    class="form-control" 
+                                    data-live-search="true"
+                                    required>
+                                </select>
+                                <div id="requiredSector"></div>
+                            </div>  
+                        </div>
+                        <div class="position-relative form-row ml-1 mb-3" id="btnEnviar">
+                            <!-- boton para enviar datos -->    
+                        </div>
+                    </form>	
+				</div>		
+			</div>
+		</div>	
+	</div>
+</div>
+<script language="SpeedScript">                    
+    {./components/obj-footer.i} 
+</script>
+<script src="/miciudad/constantes/urlBase.js"></script>
+<script src="/miciudad/controller/MesaEntrada/ExpedientesOperaciones.js"></script>
+<script src="/miciudad/controller/MesaEntrada/Sectores.js"></script>
+<script>
+    window.addEventListener("load", function() { 
+        getSectoresSelect();
+    });
+</script>
+</body>
+</html>

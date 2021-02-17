@@ -1,0 +1,44 @@
+<script language="SpeedScript">
+    {./variables/GeneralVariables.i}
+    {./components/GetCookieUser.i}
+     def var correcto as lo no-undo.
+     def var codigoSector as ch no-undo. 
+     def var nombreSector as ch no-undo. 
+     
+    
+     assign codigoSector = replace(trim(get-value('codigoSector')), chr(9), "")
+            nombreSector = replace(trim(get-value('nombreSector')), chr(9), "").
+
+     /* validaciones */ 
+    if int(codigoSector) = 0 or nombreSector = '' then do: 
+        return no-apply. 
+    end. 
+    /* fin validaciones */ 
+
+    do transaction:  
+        find first mge_sector where mge_sector.codigo_sector = int(codigoSector) exclusive-lock no-error. 
+        if not avail mge_sector then do: 
+            create mge_sector. 
+            assign  mge_sector.codigo_sector = int(codigoSector)
+                    mge_sector.nombre_sector = nombreSector
+                    mge_sector.oficina = true 
+                    mge_sector.usAlta = s-usuarios.id-usuario 
+                    mge_sector.fechaAlta = today 
+                    mge_sector.horaAlta = string(time, "hh:mm")
+                    correcto = true.    
+        end.
+        else do: 
+            {&out} "<messagestore>" + 
+                   "<message ref=" + "'" + string(1)  + "'" + ">" +
+                   "<nromessage>" + string(1) + "</nromessage>" +
+                   "<descripcion>" + "El registro ingresado ya existe" + "</descripcion>" +
+                   "</message>" + 
+                   "</messagestore>".
+        end.  
+    end. 
+    release mge_sector.
+    if correcto then {&out} "correcto". 
+                 else {&out} "error".
+
+     return no-apply.
+ </script>

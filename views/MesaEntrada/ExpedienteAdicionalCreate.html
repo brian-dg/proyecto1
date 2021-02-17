@@ -1,0 +1,167 @@
+<script language="SpeedScript">
+    {./variables/GeneralVariables.i}
+    {./components/HeadComponent.i}
+</script>
+<div class="app-main__inner">
+    
+        
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="main-card mb-3 card my-3">
+                        <div class="card-body"><h5 class="card-title">Expediente - Documentación Adicional</h5>
+                    <form class="" id="datos">
+                        <div class="position-relative form-row">
+                            <div class="col-md-3">
+                                <label for="numeroLabel" class="">Número Expediente</label>
+                                <div>
+                                    <input 
+                                        name="numeroExpediente"  
+                                        id="numeroExpediente" 
+                                        placeholder="Número"
+                                        type="number" 
+                                        class="form-control"
+                                        disabled
+                                        required
+                                    >
+                                    <div id="requiredNumeroExpediente"></div>
+                                </div>
+                                
+                            </div>
+                            <div class="col-md-4">
+                                <label for="anioLabel" class="">Año Expediente</label>
+                                <div>
+                                    <input 
+                                        name="añoExpediente" 
+                                        id="añoExpediente" 
+                                        placeholder="Año" 
+                                        type="number" 
+                                        class="form-control" 
+                                        disabled
+                                        required 
+                                    >
+                                    <div id="requiredAñoExpediente"></div>
+
+                                </div>
+                                
+                            </div>
+                            <div class="col-md-1">
+                                <label for="anioLabel" class="">Id</label>
+                                <div>
+                                    <input 
+                                        name="idExpediente" 
+                                        id="idExpediente" 
+                                        placeholder="Id" 
+                                        type="number" 
+                                        class="form-control" 
+                                        disabled
+                                        required 
+                                    >
+                                    <div id="requiredIdExpediente"></div>
+
+                                </div>
+                                
+                            </div>
+                        </div>
+
+                        <div class="position-relative form-row">
+                            <div class="col-md-3">
+                                <label for="codcalleText" class="">Cantidad Hojas</label>
+                                <input 
+                                    name="cantidadHojas" 
+                                    id="cantidadHojas" 
+                                    placeholder="Cantidad" 
+                                    type="number" 
+                                    class="form-control"
+                                    required
+                                >
+                                <div id="requiredCantidadHojas"></div>
+                            </div>
+                        </div>
+
+                        <div class="position-relative form-row">
+                            <div class="col-md-12">
+                                <label for="resumenText" class="">Observaciones</label>
+                                <div>
+                                    <textarea 
+                                        name="observaciones" 
+                                        id="observaciones" 
+                                        placeholder="Observaciones" 
+                                        type="text" 
+                                        class="form-control" 
+                                        required
+                                    >
+                                    </textarea>
+                                    <div id="requiredObservaciones"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="position-relative form-row mt-4 ml-1">
+                            <h5 class="card-title">Datos del Contribuyente</h5>
+                        </div>
+                        <div class="position-relative form-row">
+                            <div class="col-md-2">
+                                <label for="codpaisText" class="">Tipo Documento</label>
+                                <input 
+                                    name="tipoDocumento" 
+                                    id="tipoDocumento" 
+                                    placeholder="" 
+                                    type="number" 
+                                    class="form-control"
+                                    disabled 
+                                >
+                                <div id="requiredTipoDocumento"></div>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="codpaisText" class="">Número Documento</label>
+                                <input 
+                                    name="numeroDocumento" 
+                                    id="numeroDocumento" 
+                                    placeholder="" 
+                                    type="number" 
+                                    class="form-control"
+                                    required 
+                                    onblur="getNameIndividuo()"
+                                    disabled
+                                >
+                                <div id="requiredNumeroDocumento"></div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="nacionText" class="">Contribuyente</label>
+                                <input 
+                                    name="nombreIndividuo" 
+                                    id="nombreIndividuo" 
+                                    placeholder="Apellido y Nombre" 
+                                    type="text" 
+                                    class="form-control"
+                                    disabled
+                                >
+                            </div>
+                        </div>
+
+                        <button class="mt-4 btn btn-primary" id="createAdicional">Grabar</button>
+                        <button class="mt-4 btn btn-danger" type="button" onclick="location.href='./expedientes'" target="_blank">Cancelar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+<script language="SpeedScript">                    
+{./components/obj-footer.i} 
+</script>
+<script src="/miciudad/constantes/urlBase.js"></script>
+<script src="/miciudad/controller/MesaEntrada/ExpedientesAdicional.js"></script>
+<script src="/miciudad/controller/Individuos/Individuos.js"></script>
+<script>
+    window.addEventListener("load", function() { 
+        getExpedienteAdicional(); 
+    
+});
+ 
+</script>
+</body>
+</html>

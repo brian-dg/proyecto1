@@ -1,0 +1,47 @@
+<script language="SpeedScript">
+    def var headerJson as ch no-undo. 
+    def var bodyJson as ch no-undo. 
+    def var footerJson as ch no-undo. 
+    def var enterBody as lo no-undo. 
+    def var k as i no-undo.
+    def var wRequestPost as ch no-undo. 
+    
+    PROCEDURE output-headers:
+        wRequestPost = REQUEST_METHOD.
+    END PROCEDURE.
+
+    assign headerJson = "<localidadesstore>".
+
+        /* Petition for all people */
+        if wRequestPost = "GET" then do: 
+            for each t_codpos where fechaBaja = ? no-lock by t_codpos.nombre:
+                assign enterBody = true
+                        k = k + 1. 
+                assign bodyJson = bodyJson +  
+                                "<localidades ref=" + "'" + string(k)  + "'" + ">" +
+                                "<codpos>" + string(t_codpos.codpos) + "</codpos>" +
+                                "<nombre>" + t_codpos.nombre + "</nombre>" +
+                                "</localidades>".
+            end. 
+            assign footerJson = "</localidadesstore>".
+            if enterBody then {&out} headerJson + bodyJson + footerJson.
+            return no-apply.
+        end. 
+
+        /* Petition search people for word */
+        if wRequestPost = "POST" then do: 
+            for each t_codpos where t_codpos.nombre begins get-value('palabra')
+                                and t_codpos.fechaBaja = ?  no-lock:
+                assign enterBody = true. 
+                assign bodyJson = bodyJson +  
+                                "<localidades ref=" + "'" + string(k)  + "'" + ">" +
+                                "<codpos>" + string(t_codpos.codpos) + "</codpos>" +
+                                "<nombre>" + t_codpos.nombre + "</nombre>" +
+                                "</localidades>".
+            end. 
+            assign footerJson = "</localidadesstore>".
+            if enterBody then {&out} headerJson + bodyJson + footerJson.
+            return no-apply.
+        end. 
+
+</script>

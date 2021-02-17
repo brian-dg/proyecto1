@@ -1,0 +1,81 @@
+<script language="SpeedScript">
+    {./variables/GeneralVariables.i}
+    {./components/GetCookieUser.i}
+    def var v-sector as i no-undo.
+    def var headerJson as ch no-undo. 
+    def var bodyJson as ch no-undo. 
+    def var footerJson as ch no-undo. 
+    def var enterBody as lo no-undo. 
+    def var individuoXml as ch no-undo. 
+    def var k as i no-undo.
+    def var fechaXml as ch no-undo. 
+    def var estadoXml as ch no-undo. 
+    def var numeroExpediente as ch no-undo. 
+    def var anioExpediente as ch no-undo. 
+    def var cantidadTotal as int no-undo. 
+    def var petition as ch no-undo.
+    def var numberPage as ch no-undo.
+    def var salto as i no-undo.
+
+    find first mge_usuaXSector WHERE MGE_USUAXSECTOR.ID-USUARIO = S-USUARIOS.ID-USUARIO NO-LOCK NO-ERROR.
+    IF AVAILABLE MGE_USUAXSECTOR THEN DO:
+        ASSIGN V-SECTOR = MGE_USUAXSECTOR.CODIGO_SECTOR.
+        find first mge_sector where mge_sector.codigo_sector = mge_usuaxSector.codigo_sector no-lock no-error. 
+    end.
+
+    
+    
+    PROCEDURE output-headers:
+        petition = REQUEST_METHOD.
+    END PROCEDURE.
+
+    assign headerJson = "<expedientesstore>".
+
+    assign  numberPage = replace(trim(get-value('page')), chr(9), "")
+            anioExpediente = replace(trim(get-value('anio')), chr(9), "").
+
+    assign salto = (100 * int(numberPage) - 100).
+        /* Petition for all papers */
+    
+        for each mge_seguimiento where mge_seguimiento.codigo_sector_ingreso = v-sector 
+							    and mge_seguimiento.usuario_ingreso = ""
+                                and mge_seguimiento.fecha_ingreso = ?
+                                and mge_seguimiento.anio >= 2020, 
+            first mge_expediente where mge_expediente.numeroExpediente = mge_seguimiento.numeroExpediente 
+                                and mge_expediente.anio = mge_seguimiento.anio
+                                and mge_expediente.fechaBaja = ? no-lock    by mge_expediente.anio  desc
+                                                                            by mge_expediente.numeroExpediente desc:
+            assign enterBody = true
+                    k = k + 1. 
+
+            if k <= salto then next.
+            if k > (100 * int(numberPage)) then leave. 
+                
+            find first individuos where individuos.tipdoc = mge_expediente.tipdoc 
+                                    and individuos.nrodoc = mge_expediente.nrodoc no-lock no-error. 
+            if avail individuos 
+                then assign individuoXml = individuos.nombre. 
+                else assign individuoXml = "". 
+            find first mge_estado where mge_estado.codigo_estado = mge_expediente.codigo_estado no-lock no-error. 
+            if avail mge_estado 
+                then assign estadoXml = mge_estado.nombre_estado. 
+                else assign estadoXml = "".
+            if mge_expediente.fecha_ingreso <> ? 
+                then assign fechaXml = string(mge_expediente.fecha_ingreso). 
+                else assign fechaXml = "".
+
+            assign bodyJson = bodyJson +  
+                            "<expedientes ref=" + "'" + string(k)  + "'" + ">" +
+                            "<numeroexpediente>" + string(mge_expediente.numeroExpediente) + "</numeroexpediente>" +
+                            "<anio>" + string(mge_expediente.anio) + "</anio>" +
+                            "<fecha>" + fechaXml + "</fecha>" +
+                            "<individuo>" + individuoXml + "</individuo>" +
+                            "<motivo>" + mge_expediente.motivo + "</motivo>" +
+                            "<estado>" + estadoXml + "</estado>" + 
+                            "<pagina>" + numberPage + "</pagina>" + 
+                            "</expedientes>".
+        end. 
+        assign footerJson = "</expedientesstore>".
+        if enterBody then {&out} headerJson + bodyJson + footerJson.
+        return no-apply.
+  </script>

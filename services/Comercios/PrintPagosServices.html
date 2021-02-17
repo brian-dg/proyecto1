@@ -1,0 +1,258 @@
+<script language="SpeedScript">
+def var Barcode AS COM-HANDLE.
+def var inscripcion as ch no-undo. 
+def var nombreArchivoPdf as ch no-undo. 
+def var wDeuda as  dec no-undo.
+def var wInteres as dec no-undo.  
+def var wTiempo as i no-undo.
+def var punitorio as dec no-undo. 
+def var wActivo as ch no-undo.
+def var wFecFoprosi as date no-undo.
+def var wPunitorio as dec no-undo. 
+def var wNominal as dec no-undo.
+def var wPublicidad as dec no-undo.
+def var WTOTPUBLICIDAD as dec no-undo.
+def var wcalcfoprosi as dec no-undo.
+def var WFOPROSI as dec no-undo.
+def var WTOTFOPROSI as dec no-undo.
+def var WTOTNOMINAL as dec no-undo.
+def var WPAGOS as dec no-undo.
+def var WRECARGO as dec no-undo.
+def var WACTUALIZADO as dec no-undo.
+def var WTOTAL as dec no-undo.
+def var totalGeneral as dec no-undo.
+def var renglon as i no-undo.
+def var caja as ch no-undo.
+def var wFecPag as ch no-undo. 
+
+assign inscripcion = replace(trim(get-value('inscripcion')), chr(9), "").
+
+/* validaciones */ 
+find first parametros where parametros.idParam = "IntAct" no-lock no-error. 
+if avail parametros then assign wActivo = parametros.valor.
+                    else do: 
+                        {&out} '[' + chr(123) + 
+                        '"inscripcion":"' + get-value('inscripcion') + 
+                        '","file":"' + "" + 
+                        '","error":"' + "No existe un interes activo" + '"' +
+                        '}]'.
+                        return no-apply. 
+                    end. 
+
+find first parametros where parametros.idParam = "FecFop" no-lock no-error. 
+if avail parametros then assign wFecFoprosi = date(parametros.valor).
+                    else do: 
+                        {&out} '[' + chr(123) + 
+                        '"inscripcion":"' + get-value('inscripcion') + 
+                        '","file":"' + "" + 
+                        '","error":"' + "No existe parametro para fecha de inicio FoProSi" + '"' +
+                        '}]'.
+                        return no-apply. 
+                    end. 
+
+                    
+find first parametros where parametros.idParam = "IntMens" no-lock no-error. 
+if avail parametros then assign wPunitorio = dec(parametros.valor).
+                                    
+find first parametros where parametros.idParam = "IntDia" no-lock no-error. 
+if avail parametros then assign wPunitorio = dec(parametros.valor).
+
+if wPunitorio = 0 then do: 
+        {&out} '[' + chr(123) + 
+        '"inscripcion":"' + get-value('inscripcion') + 
+        '","file":"' + "" + 
+        '","error":"' + "No estámn cargados los Punitorios" + '"' +
+        '}]'.
+        return no-apply. 
+end. 
+
+/* fin validacion */ 
+
+ {pdf_inc.i "NOT SUPER"}
+
+
+
+find first Comercio where Comercio.inscripcion = INT(inscripcion) no-lock no-error.
+if avail Comercio then assign NombreArchivopdf = "Pagos" + encode(string(comercio.inscripcion)) + ".pdf".
+RUN pdf_new IN h_PDFinc ("cons",".\Documents\Drei\" + NombreArchivopdf).
+
+
+
+RUN pdf_new_Page IN h_PDFinc("Cons").
+
+RUN pdf_set_font IN h_PDFinc("Cons","Helvetica-Bold",14.0).
+RUN pdf_text_at  IN h_PDFinc("Cons","Municipalidad de Perez ",6).
+RUN pdf_skip 	IN h_PDFinc("Cons").
+RUN pdf_set_font IN h_PDFinc("Cons","Helvetica",12.0).
+RUN pdf_text_at  IN h_PDFinc("Cons","Sarmiento 1198 - Perez",10).
+RUN pdf_skip 	IN h_PDFinc("Cons").
+RUN pdf_skip 	IN h_PDFinc("Cons").
+RUN pdf_set_font IN h_PDFinc("Cons","Helvetica-bold",12.0).
+RUN pdf_text_at  IN h_PDFinc("Cons","Listado Pagos D.R.eI.",70).
+
+RUN pdf_skip 	IN h_PDFinc("Cons").
+RUN pdf_skip 	IN h_PDFinc("Cons").
+    
+RUN pdf_set_font IN h_PDFinc("Cons","Helvetica",10.0).
+RUN pdf_text_at  IN h_PDFinc("Cons","Inscripcion: " + string(Comercio.Inscripcion),10).
+RUN pdf_skip 	IN h_PDFinc("Cons").
+RUN pdf_text_at  IN h_PDFinc("Cons","Razon Social: " + string(Comercio.RazonSocial),10).
+RUN pdf_skip 	IN h_PDFinc("Cons").
+RUN pdf_text_at  IN h_PDFinc("Cons","Domicilio: " + string(comercio.DomComer),10).
+
+RUN pdf_skip 	IN h_PDFinc("Cons").
+RUN pdf_set_font IN h_PDFinc("Cons","Helvetica",8.0).
+RUN pdf_text_at  IN h_PDFinc("Cons","DEUDA ACTUALIZADA AL " + string(today, "99/99/9999"),190).
+
+RUN pdf_skip 	IN h_PDFinc("Cons").
+RUN pdf_set_font IN h_PDFinc("Cons","Helvetica",10.0). 
+RUN pdf_text_at  IN h_PDFinc("Cons",FILL("-",160),10). 
+RUN pdf_skip 	IN h_PDFinc("Cons").
+RUN pdf_text_at  IN h_PDFinc("Cons","Periodo",10).
+RUN pdf_text_at  IN h_PDFinc("Cons","Nominal",32).
+RUN pdf_text_at  IN h_PDFinc("Cons","Pagos",60).
+RUN pdf_text_at  IN h_PDFinc("Cons","Fecha",85).
+RUN pdf_text_at  IN h_PDFinc("Cons","Lugar",100).
+RUN pdf_text_at  IN h_PDFinc("Cons","Saldo Actual",142).
+RUN pdf_text_at  IN h_PDFinc("Cons","Foprosi",170).
+RUN pdf_text_at  IN h_PDFinc("Cons","Nro. Conv.",190).
+RUN pdf_skip 	IN h_PDFinc("Cons").
+	   
+RUN pdf_text_at  IN h_PDFinc("Cons",FILL("-",160),10). 
+RUN pdf_skip 	IN h_PDFinc("Cons").
+RUN pdf_skip 	IN h_PDFinc("Cons").
+RUN pdf_skip 	IN h_PDFinc("Cons").
+
+
+    /* **** deudas **** */
+    for each comercio no-lock where comercio.inscripcion = int(inscripcion) use-index idx-inscripcion, 
+    each liquidacion no-lock where liquidacion.inscripcion = comercio.inscripcion  
+                            and (Liquidacion.pagos > 0 or 
+                                Liquidacion.impRect > 0) use-index idx-ins-ani-per by liquidacion.anio
+                                                                                    by liquidacion.periodo:
+      
+    
+    
+    find first Caja-Codi where Caja-Codi.codigo = Liquidacion.CodCaja NO-LOCK NO-ERROR.
+    if avail Caja-Codi  
+        then assign caja =  Caja-Codi.Nombre. 
+        else assign caja = ''.
+    /* **** CALCULO INTERESES **** */
+    if wActivo = "intMens" then do:   
+        assign wTiempo = (year(today) - year(Liquidacion.FecVto)) * 12 +
+                        (month(today) - month(Liquidacion.FecVto)).
+        if day(today) - day(Liquidacion.fecVto) > 0 then wTiempo = wTiempo + 1. 
+        if today > Liquidacion.fecVto
+            then assign wInteres = (((wTiempo)  / 100) * wPunitorio) + 1.
+            else assign wInteres = 1.  
+    end.   
+    if wActivo = "intDia" then do:   
+        assign wTiempo = today - Liquidacion.fecVto.
+        if today > Liquidacion.fecVto
+            then assign wInteres = (((wTiempo) * wPunitorio  / 100)) + 1.
+            else assign wInteres = 1.  
+    end.
+    assign wNominal = wNominal + Liquidacion.importe.
+	
+    IF wNominal - (Liquidacion.pago + Liquidacion.ImpRect) > 0
+        then assign wDeuda = wNominal - (Liquidacion.pago + Liquidacion.ImpRect).
+        else assign wDeuda = 0.
+    if Liquidacion.importe - (Liquidacion.pago + Liquidacion.ImpRect) > 0
+        then assign wDeuda = Liquidacion.importe - Liquidacion.pago + Liquidacion.ImpRect.
+        else assign wDeuda = 0.
+    if Liquidacion.fecPag <> ? 
+	    then assign wFecPag = string(Liquidacion.fecPag)  .
+	    else do:
+            if Liquidacion.Fecha_Ant <> ? 
+                then assign wFecPag = string(Liquidacion.Fecha_Ant).
+			    else assign wFecPag = "".
+        end.	
+    
+
+     assign wFoprosi = 0.   
+    for each Foprosi where Foprosi.inscripcion = Liquidacion.inscripcion
+                        and Foprosi.periodo = Liquidacion.periodo
+                        and Foprosi.anio = Liquidacion.anio no-lock use-index puk-clave:
+        assign wFoprosi = wFoprosi + Foprosi.pago. 
+    end. 
+
+
+
+
+        ASSIGN WTOTNOMINAL = round(WTOTNOMINAL + Liquidacion.importe, 2)
+                WPAGOS = round(WPAGOS + LIQUIDACION.PAGOS, 2)
+                WRECARGO = round(WRECARGO + (WNOMINAL - LIQUIDACION.PAGOS), 2)
+                WACTUALIZADO = round(WACTUALIZADO + (WDEUDA), 2)
+                WTOTAL = round(WTOTAL + (WDEUDA * WINTERES), 2)
+		WTOTFOPROSI = round(wTOTFOPROSI + Wfoprosi, 2)
+                WTOTPUBLICIDAD = round(WTOTPUBLICIDAD + WPUBLICIDAD, 2).
+                
+         
+         /* Cuento renglones */
+                assign renglon = renglon + 1.
+
+	    RUN pdf_text_at  IN h_PDFinc("Cons",STRING(LIQUIDACION.PERIODO, "99")
+                      + "/" + STRING(LIQUIDACION.ANIO, "9999"),10).
+	   RUN pdf_text_at  IN h_PDFinc("Cons",STRING(Liquidacion.importe, "->>>,>>9.99"),28).
+       RUN pdf_text_at  IN h_PDFinc("Cons",STRING(Liquidacion.pago  + Liquidacion.impRect, "->>>,>>9.99"),55).
+       RUN pdf_text_at  IN h_PDFinc("Cons",STRING(wFecPag, "99/99/9999"),80).
+       RUN pdf_text_at  IN h_PDFinc("Cons",STRING(caja),100).
+       RUN pdf_text_at  IN h_PDFinc("Cons",STRING(WDEUDA * WINTERES, "->>>,>>9.99"),140).
+           RUN pdf_text_at  IN h_PDFinc("Cons",STRING(wFoprosi),170).
+           RUN pdf_text_at  IN h_PDFinc("Cons",STRING(liquidacion.nroconv),190).
+           
+	   RUN pdf_skip 	IN h_PDFinc("Cons").
+          
+        if (renglon) > 49 then do: 
+                 RUN pdf_new_Page IN h_PDFinc("Cons").
+                 RUN pdf_skip 	IN h_PDFinc("Cons").
+RUN pdf_set_font IN h_PDFinc("Cons","Helvetica",10.0). 
+RUN pdf_text_at  IN h_PDFinc("Cons",FILL("-",160),10). 
+RUN pdf_skip 	IN h_PDFinc("Cons").
+RUN pdf_text_at  IN h_PDFinc("Cons","Periodo",10).
+RUN pdf_text_at  IN h_PDFinc("Cons","Nominal",32).
+RUN pdf_text_at  IN h_PDFinc("Cons","Pagos",60).
+RUN pdf_text_at  IN h_PDFinc("Cons","Fecha",85).
+RUN pdf_text_at  IN h_PDFinc("Cons","Lugar",100).
+RUN pdf_text_at  IN h_PDFinc("Cons","Saldo Actual",142).
+RUN pdf_text_at  IN h_PDFinc("Cons","Foprosi",170).
+RUN pdf_text_at  IN h_PDFinc("Cons","Nro. Conv.",190).
+RUN pdf_skip 	IN h_PDFinc("Cons").
+	   
+RUN pdf_text_at  IN h_PDFinc("Cons",FILL("-",160),10). 
+RUN pdf_skip 	IN h_PDFinc("Cons").
+RUN pdf_skip 	IN h_PDFinc("Cons").
+RUN pdf_skip 	IN h_PDFinc("Cons").
+                assign renglon = 0.  	  
+        end.
+   END. 
+       RUN pdf_text_at  IN h_PDFinc("Cons",FILL("-",160),10). 
+	   RUN pdf_skip 	IN h_PDFinc("Cons").
+       RUN pdf_text_at  IN h_PDFinc("Cons",STRING(WTOTNOMINAL, "zzzz,zzz,zz9.99-"),24).
+	   RUN pdf_text_at  IN h_PDFinc("Cons",STRING(WPAGOS, "zzzz,zzz,zz9.99-"),52).
+	   
+           RUN pdf_text_at  IN h_PDFinc("Cons",string(Wtotal, "zzzz,zzz,zz9.99-"),138).
+           RUN pdf_text_at  IN h_PDFinc("Cons",string(WtotFoprosi, "zzzz,zzz,zz9.99-"),160).
+           
+	   RUN pdf_skip 	IN h_PDFinc("Cons").
+	   RUN pdf_text_at  IN h_PDFinc("Cons",FILL("-",160),10). 
+
+	
+        assign totalGeneral = wPagos + WtotFoprosi.
+        RUN pdf_skip 	IN h_PDFinc("Cons").
+        RUN pdf_skip 	IN h_PDFinc("Cons").
+        RUN pdf_set_font IN h_PDFinc("Cons","Helvetica",10.0).
+        RUN pdf_text_at  IN h_PDFinc("Cons","Pago Total: $ " + string(totalGeneral, "zzzz,zzz,zz9.99-"),10).
+
+	
+	   
+
+
+RUN pdf_Close IN h_PDFinc("Cons"). 
+
+{&out} '[' + chr(123) + 
+        '"inscripcion":"' + get-value('inscripcion') + 
+        '","file":"' + NombreArchivopdf + 
+        '","error":"' + "" + '"' +
+        '}]'.
+</script>

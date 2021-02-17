@@ -1,0 +1,35 @@
+<script language="SpeedScript">
+    def var wRequestPost as ch no-undo. 
+    def var k as i no-undo. 
+    def var cantidadTotal as i no-undo. 
+
+    PROCEDURE output-headers:
+        wRequestPost = REQUEST_METHOD.
+    END PROCEDURE.
+
+    for each t_tipdoc.
+        assign cantidadTotal = cantidadTotal + 1. 
+    end. 
+
+        /* Petition for all people */
+        if wRequestPost = "GET" then do: 
+            for each t_tipdoc  no-lock by t_tipdoc.dsc-tipdoc:
+                assign  k = k + 1. 
+
+                if k = 1 then {&out}  "[".
+
+                    {&out}
+                    chr(123) +    
+                    '"tipdoc":"' + string(t_tipdoc.tipdoc) + 
+                    '","descripcion":"' + replace(t_tipdoc.dsc-tipdoc, '"', "") + 
+                    '","cantidadtotal":"' + string(cantidadTotal) . 
+                    
+                if k <  cantidadTotal 
+                    then {&out} '","error":"' + ""  + '"},'.
+                    else {&out} '","error":"' + ""  + '"}'. 
+            end. 
+            {&out} "]".
+            return no-apply.
+        end. 
+ 
+</script>

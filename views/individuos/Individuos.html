@@ -1,0 +1,113 @@
+<script language="SpeedScript">
+    {./variables/GeneralVariables.i}
+    {./components/headComponent.i}
+</script>
+<div class="app-main__inner">
+	<div class="container">
+    	<div class="container-fluid" id="tab-content-0" role="tabpanel">
+        	<div class="row">
+            	<div class="col-md-12">
+                	<div class="main-card mb-3 card my-3">
+                    	<div class="card-body"><h5 class="card-title">Listado de Individuos</h5>
+                        	<form class="">
+								<div class="position-relative form-row mt-4">
+                                	<div class="col-md-6">
+										<label for="exampleSelect" class="">Búsqueda por Apellido y Nombre</label>
+										<input 
+											type="text" 
+											id="palabra" 
+											class="form-control 
+											form-control-sm" 
+											onkeyup="getIndividuosSearch(event)" 
+											autocomplete="off" 
+											placeholder="Busqueda" 
+											autofocus
+										>
+									</div>
+								</div> 
+								<div class="position-relative form-row mt-4">
+                                	<div class="col-md-3">
+										<input 
+											type="text" 
+											id="tipoDocumento" 
+											class="form-control 
+											form-control-sm" 
+											autocomplete="off" 
+											placeholder="Tipo Documento" 
+										>
+                                	</div>
+                                	<div class="col-md-3">
+										<input 
+											type="number" 
+											id="numeroDocumento" 
+											class="form-control form-control-sm" 
+											autocomplete="off" 
+											placeholder="Número Documento" 
+										>
+                                </div>
+								<div class="col-md-3">
+									<button 
+										class="btn btn-primary" 
+										type="button" 
+										onclick="getIndividuosDocumento()"
+									>
+									Buscar
+									</button>
+								</div>
+							</div>
+							<div class="position-relative form-row mt-4">
+                                <div class="col-md-12 text-center" id="loading">
+									<!-- Imagen procesando-->
+                                </div>
+                            </div>
+							<div class="position-relative form-row">
+                                <div class="col-md-12  text-right">
+									<a href="./IndividuoCreate">
+										<button 
+											class="mt-1 btn btn-primary" 
+											type="button"
+										>
+										Nuevo Individuo
+										</button>
+									</a>
+								</div>
+							</div>
+							<div class="position-relative form-row mt-2">
+								<div class="table-responsive">
+									<table class="table table-striped table-hover table-bordered col-md-12">
+										<thead>
+											<tr>
+												<th class="text-center bg-secondary text-white">Tipo Doc.</th>
+												<th class="text-center bg-secondary text-white">Número</th>
+												<th class="text-center bg-secondary text-white">Nombre</th>
+                                                <th class="text-center bg-secondary text-white">Domicilio</th>
+                                                <th class="text-center bg-secondary text-white">Localidad</th>
+												<th class="text-center bg-secondary text-white">Editar</th>
+												<th class="text-center bg-secondary text-white">Eliminar</th>
+											</tr>
+										</thead>
+										<tbody id="table-result">
+											<!-- datos de la tabla -->
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</form>	
+					</div>		
+				</div>
+			</div>	
+		</div>
+	</div>
+</div>
+<script language="SpeedScript">                    
+	{./components/obj-footer.i} 
+</script>
+<script src="/miciudad/constantes/urlBase.js"></script>
+<script src="/miciudad/controller/Individuos/Individuos.js"></script>
+<script>
+	window.addEventListener("load", function() { 
+    	getIndividuos();
+    });
+</script>
+</body>
+</html>

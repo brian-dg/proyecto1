@@ -1,0 +1,56 @@
+<script language="SpeedScript">
+    def var wRequestPost as ch no-undo. 
+    def var fileJson as ch no-undo. 
+
+    /* Validacion */
+    if trim(get-value('userName')) = ''  or trim(get-value('password')) = '' then do: 
+        assign fileJson = chr(123) + '"id":"' + "" + 
+                                    '","password":"' + "" + 
+                                    '","nombre":"' + "" + 
+                                    '","error":"' + "Debe ingresar un nombre de usuario y una contraseña"  + '"}'.
+        {&out} fileJson.
+        return no-apply.
+    end. 
+    
+
+   
+    PROCEDURE output-headers: 
+        IF REQUEST_METHOD="POST" THEN DO:  
+            FIND S-USUARIOS WHERE S-USUARIOS.ID-USUARIO  = trim(get-value('userName'))
+                              AND (S-USUARIOS.Password = trim(get-value('password')) or 
+                                 s-usuarios.password = encode(trim(get-value('password')))) NO-LOCK NO-ERROR.
+            IF AVAILABLE S-USUARIOS THEN DO: 
+                DEF VAR C-Cookie AS CH. 
+                C-Cookie = trim(S-USUARIOS.ID-USUARIO) + "," + 
+                            encode(S-USUARIOS.Password) + "," + 
+                            S-USUARIOS.Nombre.
+                SET-COOKIE("perez",C-Cookie , ?, ?, "/", ?, ?).
+                SET-USER-FIELD("Usuario", S-USUARIOS.ID-Usuario).
+                SET-USER-FIELD("Password", S-USUARIOS.Password).
+                SET-USER-FIELD("NombreUsuario", S-USUARIOS.nombre).
+                SET-USER-FIELD("Valido", "TRUE"). 
+            END.
+            ELSE SET-USER-FIELD("Valido", "FALSE").   
+        END. 
+    END PROCEDURE. 
+
+   
+
+    if get-value('valido') = 'true' then do: 
+        assign fileJson = chr(123) + '"id":"' + get-value('Usuario') + 
+                        '","password":"' + get-value('Password') + 
+                        '","nombre":"' + get-value('NombreUsuario') + 
+                        '","error":"' + ""  + '"}'.
+
+    end. 
+    if get-value('valido') = 'false' then do: 
+        assign fileJson = chr(123) + '"id":"' + "" + 
+                        '","password":"' + "" + 
+                        '","nombre":"' + "" + 
+                        '","error":"' + "Nombre de Usuario o Contraseña incorrecta"  + '"}'.
+
+    end. 
+    {&out} fileJson.
+    return no-apply.
+ 
+</script>

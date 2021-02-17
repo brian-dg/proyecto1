@@ -1,0 +1,107 @@
+<script language="SpeedScript">
+    def var headerJson as ch no-undo. 
+    def var bodyJson as ch no-undo. 
+    def var footerJson as ch no-undo. 
+    def var enterBody as lo no-undo. 
+    def var nroCalleXml as ch no-undo. 
+    def var tipDocXml as ch no-undo. 
+    def var localidadXml as ch no-undo.
+    def var fecNacXml as ch no-undo. 
+    def var pisoXml as ch no-undo. 
+    def var civilXml as ch no-undo.
+    def var nacionXml as ch no-undo.
+    def var calleXml as ch no-undo.
+    
+    
+    assign headerJson = "<individuosstore>".
+
+    find first individuos where individuos.tipdoc = int(get-value('tipdoc')) 
+                            and individuos.nrodoc = dec(get-value('nrodoc')) no-lock no-error. 
+    if avail individuos then do: 
+        if individuos.numero <> 0 
+            then assign nroCalleXml = string(individuos.numero). 
+            else assign nroCalleXml = "".
+        if individuos.fec-nac <> ? 
+            then assign fecNacXml = string(individuos.fec-nac). 
+            else assign fecNacXml = "".
+        if individuos.piso <> 0 
+            then assign pisoXml = string(individuos.piso). 
+            else assign pisoXml = "".
+        
+        find first t_codpos where t_codpos.codpos = individuos.codpos no-lock no-error. 
+        if avail t_codpos then assign localidadXml = t_codpos.nombre.
+
+        find first t_civil where t_civil.est-civil = individuos.est-civil no-lock no-error. 
+        if avail t_civil 
+            then assign civilXml = t_civil.dsc-ec. 
+            else assign civilXml = "".
+        find first t_pais where t_pais.codpais = individuos.codpais no-lock no-error. 
+        if avail t_pais 
+            then assign nacionXml = t_pais.nombre. 
+            else assign nacionXml = "".
+        find first t_calle where t_calle.codcalle = individuos.codcalle no-lock no-error. 
+        if avail t_calle
+            then assign calleXml = t_calle.nombre. 
+            else assign calleXml = "".
+        
+
+        {&out}  "<individuosstore>" +
+                    "<individuos ref=" + "'" + string(1)  + "'" + ">" +
+                        "<tipdoc>" + string(individuos.tipdoc) + "</tipdoc>" +
+                        "<tipdocdesc>" + tipDocXml + "</tipdocdesc>" +
+                        "<nrodoc>" + string(individuos.nrodoc) + "</nrodoc>" +
+                        "<cuit>" + string(individuos.cuit) + "</cuit>" + 
+                        "<nombre>" + trim(individuos.nombre) + "</nombre>" +
+                        "<fecnac>" + fecNacXml + "</fecnac>" + 
+                        "<codcalle>" + string(individuos.codcalle) + "</codcalle>" + 
+                        "<callexml>" + calleXml + "</callexml>" + 
+                        "<domicilio>" + string(individuos.domicilio) + "</domicilio>" +
+                        "<numero>" + nroCalleXml + "</numero>" + 
+                        "<piso>" + pisoXml + "</piso>" + 
+                        "<dpto>" + individuos.dpto + "</dpto>" + 
+                        "<codpos>" + string(individuos.codpos) + "</codpos>" + 
+                        "<localidad>" + localidadXml + "</localidad>" + 
+                        "<codpais>" + string(individuos.codpais) + "</codpais>" + 
+                        "<nacion>" + nacionXml + "</nacion>" + 
+                        "<mail>" + string(individuos.mail) + "</mail>" + 
+                        "<telefono>" + string(individuos.telefono) + "</telefono>" + 
+                        "<celular>" + string(individuos.celular) + "</celular>" + 
+                        "<estcivil>" + string(individuos.est-civil) + "</estcivil>" + 
+                        "<estadocivil>" + civilXml + "</estadocivil>" + 
+
+                    "</individuos>"
+                "</individuosstore>".
+
+    end. 
+    /* si no lo encuentra */ 
+    else do: 
+    {&out}  "<individuosstore>" +
+                    "<individuos ref=" + "'" + string(1)  + "'" + ">" +
+                        "<tipdoc>" + "0" + "</tipdoc>" +
+                        "<tipdocdesc>" + "" + "</tipdocdesc>" +
+                        "<nrodoc>" + "0" + "</nrodoc>" +
+                        "<cuit>" + "" + "</cuit>" + 
+                        "<nombre>" + "" + "</nombre>" +
+                        "<fecnac>" + "" + "</fecnac>" + 
+                        "<codcalle>" + "0" + "</codcalle>" + 
+                        "<callexml>" + "" + "</callexml>" + 
+                        "<domicilio>" + "" + "</domicilio>" +
+                        "<numero>" + "0" + "</numero>" + 
+                        "<piso>" + "0" + "</piso>" + 
+                        "<dpto>" + "" + "</dpto>" + 
+                        "<codpos>" + "0" + "</codpos>" + 
+                        "<localidad>" + "" + "</localidad>" + 
+                        "<codpais>" + "0" + "</codpais>" + 
+                        "<nacion>" + "0" + "</nacion>" + 
+                        "<mail>" + "" + "</mail>" + 
+                        "<telefono>" + "" + "</telefono>" + 
+                        "<celular>" + "" + "</celular>" + 
+                        "<estcivil>" + "0" + "</estcivil>" + 
+                        "<estadocivil>" + "" + "</estadocivil>" + 
+
+                    "</individuos>"
+                "</individuosstore>".             
+
+    end. 
+    return no-apply.
+</script>

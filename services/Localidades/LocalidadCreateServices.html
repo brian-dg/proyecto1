@@ -1,0 +1,43 @@
+<script language="SpeedScript">
+    {./variables/GeneralVariables.i}
+    {./components/GetCookieUser.i}
+     def var correcto as lo no-undo.
+     def var codigoPostal as ch no-undo. 
+     def var localidad as ch no-undo. 
+     
+    
+     assign codigoPostal = replace(trim(get-value('codigoPostal')), chr(9), "")
+            localidad = replace(trim(get-value('localidad')), chr(9), "").
+
+     /* validaciones */ 
+    if int(codigoPostal) = 0 or localidad = '' then do: 
+        return no-apply. 
+    end. 
+    /* fin validaciones */ 
+
+    do transaction:  
+        find first t_codpos where t_codpos.codpos = int(codigoPostal) exclusive-lock no-error. 
+        if not avail t_codpos then do: 
+            create t_codpos. 
+            assign  t_codpos.codpos = int(codigoPostal)
+                    t_codpos.nombre = localidad 
+                    t_codpos.usAlta = s-usuarios.id-usuario 
+                    t_codpos.fechaAlta = today 
+                    t_codpos.horaAlta = string(time, "hh:mm")
+                    correcto = true.    
+        end.
+        else do: 
+            {&out} "<messagestore>" + 
+                   "<message ref=" + "'" + string(1)  + "'" + ">" +
+                   "<nromessage>" + string(1) + "</nromessage>" +
+                   "<descripcion>" + "El registro ingresado ya existe" + "</descripcion>" +
+                   "</message>" + 
+                   "</messagestore>".
+        end.  
+    end. 
+    release t_codpos.
+    if correcto then {&out} "correcto". 
+                 else {&out} "error".
+
+     return no-apply.
+ </script>

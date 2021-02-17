@@ -1,0 +1,27 @@
+<script language="SpeedScript">
+    {./variables/GeneralVariables.i}
+    {./components/GetCookieUser.i}
+     def var correcto as lo no-undo.
+     def var estadoCivil as ch no-undo. 
+     
+     assign estadoCivil = replace(trim(get-value('estcivil')), chr(9), "").
+
+     
+     
+    do transaction:  
+        find first t_civil where t_civil.est-civil = int(estadoCivil) exclusive-lock no-error. 
+        if avail t_civil then do: 
+            assign t_civil.usbaja = s-usuarios.Id-Usuario
+                    t_civil.fechaBaja = today
+                    t_civil.horaBaja = string(time, "HH:MM")
+                    correcto = true. 
+             
+          
+        end. 
+    end. 
+    release t_civil.
+    if correcto then {&out} "correcto". 
+                 else {&out} "error".
+
+     return no-apply.
+ </script>

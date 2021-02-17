@@ -1,0 +1,27 @@
+<script language="SpeedScript">
+     def var correcto as lo no-undo.
+     def var codigoPais as ch no-undo. 
+     def var nombrePais as ch no-undo. 
+     
+     assign codigoPais = replace(trim(get-value('codigoPais')), chr(9), "")
+            nombrePais = replace(trim(get-value('nombrePais')), chr(9), "").
+
+    /* validaciones */ 
+    if codigoPais = "" or int(codigoPais) = 0 or nombrePais = '' then do: 
+        return no-apply. 
+    end. 
+    /* fin validaciones */ 
+    
+    do transaction:  
+        find first t_pais where t_pais.codpais = int(codigoPais) exclusive-lock no-error. 
+        if avail t_pais then do: 
+            assign t_pais.nombre = nombrePais 
+                    correcto = true.    
+        end. 
+    end. 
+    release t_pais.
+    if correcto then {&out} "correcto". 
+                 else {&out} "error".
+
+     return no-apply.
+ </script>

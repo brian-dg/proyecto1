@@ -1,0 +1,42 @@
+<script language="SpeedScript">
+    {./variables/GeneralVariables.i}
+    {./components/GetCookieUser.i}
+     def var correcto as lo no-undo.
+     def var codigoPais as ch no-undo. 
+     def var nombrePais as ch no-undo. 
+     
+     assign codigoPais = replace(trim(get-value('codigoPais')), chr(9), "")
+            nombrePais = replace(trim(get-value('nombrePais')), chr(9), "").
+
+    /* validaciones */ 
+    if int(codigoPais) = 0 or codigoPais = '' or nombrePais = '' then do: 
+        return no-apply. 
+    end. 
+    /* fin validaciones */ 
+       
+    do transaction:  
+        find first t_pais where t_pais.codpais = int(codigoPais) exclusive-lock no-error. 
+        if not avail t_pais then do:  
+            create t_pais. 
+            assign t_pais.codpais = int(codigoPais)
+                    t_pais.nombre = nombrePais 
+                    t_pais.usAlta = s-usuarios.id-usuario
+                    t_pais.fechaAlta = today 
+                    t_pais.horaAlta = string(time, "HH:MM")
+                    correcto = true.    
+        end. 
+        else do: 
+            {&out} "<messagestore>" + 
+                   "<message ref=" + "'" + string(1)  + "'" + ">" +
+                   "<nromessage>" + string(1) + "</nromessage>" +
+                   "<descripcion>" + "El registro ingresado ya existe" + "</descripcion>" +
+                   "</message>" + 
+                   "</messagestore>".
+        end. 
+    end. 
+    release t_pais.
+    if correcto then {&out} "correcto". 
+                 else {&out} "error".
+
+     return no-apply.
+ </script>

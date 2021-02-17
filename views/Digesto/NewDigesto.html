@@ -1,0 +1,105 @@
+<script language="SpeedScript">
+        {./variables/GeneralVariables.i}
+        {./components/HeadComponent.i}
+</script>
+<div class="container">
+    <div class="container-fluid" id="tab-content-0" role="tabpanel">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="main-card mb-3 card my-3">
+                    <div class="card-body"><h5 class="card-title">Alta de Normativa</h5>
+                        <form class="" id="datos">
+                            <div class="position-relative form-row">
+                                <div class="col-md-5">
+                                    <label for="exampleSelect" class="">Código</label>
+                                    <select name="codigoNormativa" id="codigoNormativa" class="form-control" required>
+                                        <option></option>
+                                    </select>
+                                </div>  
+                                <div class="col-md-3">
+                                    <label for="numeroLabel" class="">Número</label>
+                                    <input name="numeroNormativa" id="numeroNormativa" placeholder="" maxlength="5" class="form-control" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="anioLabel" class="">Año</label>
+                                    <input name="anioNormativa" id="anioNormativa" placeholder="0000" type="number" class="form-control" required>
+                                </div>
+                            </div>
+
+                            <div class="position-relative form-row">
+                                <div class="col-md-12">
+                                    <label for="resumenText" class="">Resumen</label>
+                                    <textarea name="resumen" id="resumen" class="form-control" required></textarea>
+                                </div>
+                            </div>
+                            <small class="form-text text-muted">Ingrese un resumen de la presente normativa.</small>
+
+                            <div class="position-relative form-row">
+                                <div class="col-md-3">
+                                    <label for="emisionText" class="">Fecha emisión</label>
+                                    <input name="fechaEmision" id="fechaEmision" placeholder="dd/mm/aaaa" type="date" class="form-control" required>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <label for="recepcionText" class="">Fecha recepción</label>
+                                    <input name="fechaRecepcion" id="fechaRecepcion" placeholder="dd/mm/aaaa" type="date" class="form-control">
+                                </div>
+
+                                <div class="col-md-3">
+                                    <label for="modificaText" class="">Modifica a...</label>
+                                    <input name="modifica" id="modifica" placeholder="XXX/00000/0000" type="text" class="form-control">
+                                </div>
+
+                                <div class="col-md-3">
+                                    <label for="modificadaText" class="">Modificada por...</label>
+                                    <input name="modificada" id="modificada" placeholder="XXX/00000/0000" type="text" class="form-control">
+                                </div>
+                            </div>
+
+                            <div class="position-relative form-row">
+                                <div class="col-md-6">
+                                    <label for="origenSelect" class="">Organo emisor</label>
+                                    <select name="origenNormativa" id="origenNormativa" class="form-control" required>
+                                        <option></option>
+                                    </select>
+                                </div> 
+                            </div>
+                            <div class="position-relative form-row m-3">
+                                <div class="col-md-4">
+                                    <label class="form-check-label">
+                                        <input type="checkbox" class="form-check-input" id="vigente">
+                                            Vigente
+                                    </label>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-check-label">
+                                        <input type="checkbox" class="form-check-input" id="publico">
+                                            Público
+                                    </label>
+                                </div>
+                            </div>
+
+                            <button class="mt-1 btn btn-primary" type="submit">Grabar</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 
+
+
+<script language="SpeedScript">                    
+    {./components/obj-footer.i} 
+</script>
+<script src="/miciudad/controller/Digesto/CodigosNormativasController.js"></script>
+<script src="/miciudad/controller/Digesto/OrigenDisposicionesController.js"></script>
+<script src="/miciudad/controller/Digesto/DisposicionesController.js"></script>
+<script>
+    window.addEventListener("load", function() { 
+        getCodigos(); getOrigenDisposiciones();
+});
+ 
+</script>
+</body>
+</html>

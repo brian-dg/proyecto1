@@ -1,0 +1,93 @@
+<script language="SpeedScript">
+    def var headerJson as ch no-undo. 
+    def var bodyJson as ch no-undo. 
+    def var footerJson as ch no-undo. 
+    def var enterBody as lo no-undo. 
+    def var nroCalleXml as ch no-undo. 
+    def var tipDocXml as ch no-undo. 
+    def var loclaidadXml as ch no-undo.
+    def var k as i no-undo.
+    def var wRequestPost as ch no-undo. 
+    
+    PROCEDURE output-headers:
+        wRequestPost = REQUEST_METHOD.
+    END PROCEDURE.
+
+    assign headerJson = "<individuosstore>".
+
+        /* Petition for all people */
+        if wRequestPost = "GET" then do: 
+            for each individuos where individuos.fechaBaja = ? no-lock by individuos.nombre:
+                assign enterBody = true
+                        k = k + 1. 
+                if k > 50 then leave.
+
+                if individuos.numero <> 0 
+                    then assign nroCalleXml = string(individuos.numero). 
+                    else assign nroCalleXml = "".
+
+                find first t_tipdoc where t_tipdoc.tipdoc = individuos.tipdoc no-lock no-error. 
+                if avail t_tipdoc 
+                    then assign tipDocXml = t_tipdoc.dsc-tipdoc. 
+                    else assign tipDocXml = "". 
+
+                find first t_codpos where t_codpos.codpos = individuos.codpos no-lock no-error. 
+                if avail t_codpos 
+                    then assign loclaidadXml = t_codpos.nombre.
+                    else assign loclaidadXml = "".
+
+                assign bodyJson = bodyJson +  
+                                "<individuos ref=" + "'" + string(k)  + "'" + ">" +
+                                "<tipdoc>" + string(individuos.tipdoc) + "</tipdoc>" +
+                                "<tipdocdesc>" + tipDocXml + "</tipdocdesc>" +
+                                "<nrodoc>" + string(individuos.nrodoc) + "</nrodoc>" +
+                                "<nombre>" + individuos.nombre + "</nombre>" +
+                                "<domicilio>" + string(individuos.domicilio) + "</domicilio>" +
+                                "<numero>" + nroCalleXml + "</numero>" + 
+                                "<localidad>" + loclaidadXml + "</localidad>" + 
+                                "</individuos>".
+            end. 
+            assign footerJson = "</individuosstore>".
+            if enterBody then {&out} headerJson + bodyJson + footerJson.
+            return no-apply.
+        end. 
+
+        /* Petition search people for word */
+        if wRequestPost = "POST" then do: 
+            for each individuos where individuos.nombre begins get-value('palabra')
+                                and individuos.fechaBaja = ?  no-lock:
+                assign enterBody = true
+                        k = k + 1.  
+                /* solo devuelvo los primeros 100 */
+                if k > 100 then leave.
+                if individuos.numero <> 0 
+                    then assign nroCalleXml = string(individuos.numero). 
+                    else assign nroCalleXml = "".
+
+                find first t_tipdoc where t_tipdoc.tipdoc = individuos.tipdoc no-lock no-error. 
+                if avail t_tipdoc 
+                    then assign tipDocXml = t_tipdoc.dsc-tipdoc. 
+                    else assign tipDocXml = "". 
+
+                find first t_codpos where t_codpos.codpos = individuos.codpos no-lock no-error. 
+                if avail t_codpos 
+                    then assign loclaidadXml = t_codpos.nombre.
+                    else assign loclaidadXml = "". 
+
+                assign bodyJson = bodyJson +  
+                                "<individuos ref=" + "'" + string(k)  + "'" + ">" +
+                                "<tipdoc>" + string(individuos.tipdoc) + "</tipdoc>" +
+                                "<tipdocdesc>" + tipDocXml + "</tipdocdesc>" +
+                                "<nrodoc>" + string(individuos.nrodoc) + "</nrodoc>" +
+                                "<nombre>" + individuos.nombre + "</nombre>" +
+                                "<domicilio>" + string(individuos.domicilio) + "</domicilio>" +
+                                "<numero>" + nroCalleXml + "</numero>" + 
+                                "<localidad>" + loclaidadXml + "</localidad>" + 
+                                "</individuos>".
+            end. 
+            assign footerJson = "</individuosstore>".
+            if enterBody then {&out} headerJson + bodyJson + footerJson.
+            return no-apply.
+        end. 
+
+</script>

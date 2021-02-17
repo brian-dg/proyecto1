@@ -1,0 +1,27 @@
+<script language="SpeedScript">
+     def var correcto as lo no-undo.
+     def var codigoCivil as ch no-undo. 
+     def var nombreCivil as ch no-undo. 
+     
+     assign codigoCivil = replace(trim(get-value('codigoCivil')), chr(9), "")
+            nombreCivil = replace(trim(get-value('nombreCivil')), chr(9), "").
+
+    /* validaciones */ 
+    if int(codigoCivil) = 0 or nombreCivil = '' then do: 
+        return no-apply. 
+    end. 
+    /* fin validaciones */ 
+    
+    do transaction:  
+        find first t_civil where t_civil.est-civil = int(codigoCivil) exclusive-lock no-error. 
+        if avail t_civil then do: 
+            assign t_civil.dsc-ec = nombreCivil 
+                    correcto = true.    
+        end. 
+    end. 
+    release t_civil.
+    if correcto then {&out} "correcto". 
+                 else {&out} "error".
+
+     return no-apply.
+ </script>

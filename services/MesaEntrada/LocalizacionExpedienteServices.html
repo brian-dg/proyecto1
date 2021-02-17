@@ -1,0 +1,87 @@
+<script language="SpeedScript">
+   def var individuoXml as ch no-undo. 
+   def var fechaXml as ch no-undo. 
+   def var numeroExpediente as ch no-undo. 
+   def var anioExpediente as ch no-undo. 
+   def var headerJson as ch no-undo. 
+    def var bodyJson as ch no-undo. 
+    def var footerJson as ch no-undo. 
+    def var enterBody as lo no-undo. 
+    def var usuarioEnvio as ch no-undo. 
+    def var usuarioIngreso as ch no-undo. 
+    def var sectorIngreso as ch no-undo. 
+    def var sectorEnvio as ch no-undo.
+    def var fechaIngreso as ch no-undo. 
+    def var fechaEnvio as ch no-undo.
+    def var k as i no-undo.
+
+    define buffer bf-usuarios for s-usuarios. 
+   
+   assign numeroExpediente = replace(trim(get-value('numeroexpediente')), chr(9), "")
+          anioExpediente = replace(trim(get-value('anio')), chr(9), "").
+
+  
+        /* busqueda de movimientos del expediente */
+    assign headerJson = "<seguimientostore>".
+    for each mge_seguimiento where mge_seguimiento.numeroExpediente = int(numeroExpediente) 
+                                    and mge_seguimiento.anio = int(anioExpediente) no-lock,
+            first mge_expediente no-lock  where mge_expediente.numeroExpediente = mge_seguimiento.numeroExpediente 
+                                            and  mge_expediente.anio = mge_seguimiento.anio 
+                                            and mge_expediente.fechaBaja = ?    by mge_seguimiento.fecha_ingreso
+                                                                                by mge_seguimiento.hora_ingreso.
+            assign k = k + 1
+                enterBody = true.
+            
+            if mge_expediente.fecha_ingreso <> ? 
+                then assign fechaXml = string(mge_expediente.fecha_ingreso). 
+                else assign fechaXml = "". 
+            find first individuos where individuos.tipdoc = mge_expediente.tipdoc 
+                                    and individuos.nrodoc = mge_expediente.nrodoc no-lock no-error. 
+            if avail individuos 
+                then assign individuoXml = individuos.nombre. 
+                else assign individuoXml = "". 
+            find first mge_sector where mge_sector.codigo_sector = mge_seguimiento.codigo_sector_envio no-lock no-error.
+			if avail mge_sector 
+				then assign sectorEnvio = mge_sector.nombre_sector.
+				else assign sectorEnvio = "".
+			find first mge_sector where mge_sector.codigo_sector = mge_seguimiento.codigo_sector_ingreso no-lock no-error.
+			if avail mge_sector 
+				then assign sectorIngreso = mge_sector.nombre_sector.
+				else assign sectorIngreso = "".
+			find first bf-usuarios where bf-usuarios.id-usuario  = mge_seguimiento.usuario_envio no-lock no-error.
+			if avail bf-usuarios 
+				then assign usuarioEnvio = bf-usuarios.nombre.
+				else assign usuarioEnvio = "".
+			find first bf-usuarios where bf-usuarios.id-usuario  = mge_seguimiento.usuario_ingreso no-lock no-error.
+			if avail bf-usuarios 
+				then assign usuarioIngreso = bf-usuarios.nombre.
+				else assign usuarioIngreso = "FALTA RECEPCION".
+			if mge_seguimiento.fecha_envio <> ?
+				then assign fechaEnvio = string(mge_seguimiento.fecha_envio).
+				else assign fechaEnvio = "".
+			if mge_seguimiento.fecha_ingreso <> ?
+			    then assign fechaIngreso = string(mge_seguimiento.fecha_ingreso).
+                else assign fechaIngreso = "". 
+                
+            assign bodyJson = bodyJson +  
+                            "<seguimiento ref=" + "'" + string(k)  + "'" + ">" +
+                            "<individuo>" + individuoXml + "</individuo>" +
+                            "<motivo>" + mge_expediente.motivo + "</motivo>" +
+                            "<fecha>" + fechaXml + "</fecha>" + 
+                            "<hora>" + mge_expediente.hora_ingreso + "</hora>" + 
+                            "<usuario>" + mge_expediente.usuario + "</usuario>" +
+                            "<sectorenvio>" + sectorEnvio + "</sectorenvio>" +
+                            "<fechaenvio>" + fechaEnvio + "</fechaenvio>" +
+                            "<horaenvio>" + mge_seguimiento.hora_envio + "</horaenvio>" +
+                            "<usuarioenvio>" + usuarioEnvio + "</usuarioenvio>" +
+                            "<sectoringreso>" + sectorIngreso + "</sectoringreso>" +
+                            "<fechaingreso>" + fechaIngreso + "</fechaingreso>" +
+                            "<horaingreso>" + mge_seguimiento.hora_ingreso + "</horaingreso>" +
+                            "<usuarioingreso>" + usuarioIngreso + "</usuarioingreso>" +
+                            "</seguimiento>". 
+        
+        end. 
+        assign footerJson = "</seguimientostore>".
+        if enterBody then {&out} headerJson + bodyJson + footerJson.
+        return no-apply.
+</script>

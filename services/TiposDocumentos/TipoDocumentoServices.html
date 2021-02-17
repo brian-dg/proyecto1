@@ -1,0 +1,38 @@
+<script language="SpeedScript">
+    def var headerJson as ch no-undo. 
+    def var bodyJson as ch no-undo. 
+    def var footerJson as ch no-undo. 
+    def var enterBody as lo no-undo. 
+    def var k as i no-undo.
+    def var wRequestPost as ch no-undo. 
+    
+    PROCEDURE output-headers:
+        wRequestPost = REQUEST_METHOD.
+    END PROCEDURE.
+
+    assign headerJson = "<documentostore>".
+   
+        /* Petition for one people */
+        if wRequestPost = "GET" then do: 
+            find first t_tipdoc where t_tipdoc.tipdoc = int(get-value('tipdoc')) no-lock no-error.
+            if avail t_tipdoc then do: 
+                assign bodyJson = bodyJson +  
+                                "<documento ref=" + "'" + string(k)  + "'" + ">" +
+                                "<tipdoc>" + string(t_tipdoc.tipdoc) + "</tipdoc>" +
+                                "<descripcion>" + string(t_tipdoc.dsc-tipdoc) + "</descripcion>" +
+                                "</documento>".
+               
+            end. 
+            else do: 
+            assign bodyJson = bodyJson +  
+                                "<documento ref=" + "'" + string(k)  + "'" + ">" +
+                                "<tipdoc>" + "0" + "</tipdoc>" +
+                                "<descripcion>" + "" + "</descripcion>" +
+                                "</documento>".                      
+            end.
+            assign footerJson = "</documentostore>".
+            {&out} headerJson + bodyJson + footerJson.
+        end. 
+
+
+</scrpt>

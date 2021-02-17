@@ -1,0 +1,121 @@
+<script language="SpeedScript">
+    {./variables/GeneralVariables.i}
+    {./components/HeadComponent.i}
+</script>
+<div class="app-main__inner">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="main-card mb-3 card my-3">
+                <div class="card-body"><h5 class="card-title">Emisión de Recibos</h5>
+                    <form class="" id="datos">
+                        <div id="informe">
+                            
+                        </div>
+                        <div class="position-relative form-row">
+                            <div class="col-md-3">
+                                <label for="numeroLabel" class="">Documento</label>
+                                <div>
+                                    <input 
+                                        name="numeroDocumento"  
+                                        id="numeroDocumento" 
+                                        placeholder="Documento"
+                                        type="number" 
+                                        class="form-control"
+                                        disabled
+                                        required
+                                    >
+                                    <div id="requiredNumeroDocumento"></div>
+                                </div>
+                                
+                            </div>
+                            <div class="col-md-9">
+                                <label for="anioLabel" class="">Contribuyente</label>
+                                <div>
+                                    <input 
+                                        name="nombreIndividuo" 
+                                        id="nombreIndividuo" 
+                                        placeholder="Apellido y Nombre" 
+                                        type="text" 
+                                        class="form-control" 
+                                        disabled
+                                        required 
+                                    >
+                                    <div id="requiredNombreIndividuo"></div>
+
+                                </div>
+                            </div>
+                            
+                        </div>
+
+                        <div class="position-relative form-row">
+                            <div class="col-md-4">
+                                <label for="exampleSelect" class="">Comprobante</label>
+                                <select 
+                                    name="codigoComprobante" 
+                                    id="codigoComprobante" 
+                                    class="form-control" 
+                                    data-live-search="true"
+                                    required>
+                                </select>
+                                <div id="requiredCodigoComprobante"></div>
+                            </div> 
+
+                            <div class="col-md-4">
+                                <label for="anioLabel" class="">Importe</label>
+                                <div>
+                                    <input 
+                                        name="importe" 
+                                        id="importe" 
+                                        placeholder="Importe" 
+                                        type="text" 
+                                        onkeypress="return numeroDecimal(event)"
+                                        class="form-control" 
+                                        required 
+                                    >
+                                    <div id="requiredImporte"></div>
+
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="anioLabel" class="">Adicional</label>
+                                <div>
+                                    <input 
+                                        name="datoAdicional" 
+                                        id="datoAdicional" 
+                                        placeholder="Dato Adicional" 
+                                        type="text" 
+                                        class="form-control" 
+                                        disabled
+                                        required 
+                                    >
+                                    <div id="requiredDatoAdicional"></div>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        
+                        <button class="mt-4 btn btn-primary" id="create">Grabar</button>
+                        <button class="mt-4 btn btn-danger" type="button" onclick="location.href='./expedientes'" target="_blank">Cancelar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script language="SpeedScript">                    
+{./components/obj-footer.i} 
+</script>
+<script src="/miciudad/constantes/urlBase.js"></script>
+<script src="/miciudad/assets/scripts/validaciones.js"></script>
+<script src="/miciudad/controller/Recibos/Recibos.js"></script>
+<script src="/miciudad/controller/Comprobantes/Comprobantes.js"></script>
+<script>
+    window.addEventListener("load", function() { 
+        getRecibo(); getComprobantesPorSector();
+    
+});
+ 
+</script>
+</body>
+</html>

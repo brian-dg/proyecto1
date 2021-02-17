@@ -1,0 +1,41 @@
+<script language="SpeedScript">
+
+    {./variables/GeneralVariables.i}
+    {./components/GetCookieUser.i}
+
+    def var fileJson as ch no-undo. 
+    def var wMethod as ch no-undo. 
+    def var v-sector as i no-undo.
+    def var nombreSector as ch no-undo.
+    
+    PROCEDURE output-headers:
+        wMethod = REQUEST_METHOD.
+    END PROCEDURE.
+
+    if wMethod = "GET" then do: 
+        FIND FIRST MGE_USUAXSECTOR WHERE MGE_USUAXSECTOR.ID-USUARIO = S-USUARIOS.ID-USUARIO NO-LOCK NO-ERROR.
+        IF AVAILABLE MGE_USUAXSECTOR THEN DO:
+            ASSIGN V-SECTOR = MGE_USUAXSECTOR.CODIGO_SECTOR.
+            find first mge_sector where mge_sector.codigo_sector = mge_usuaxSector.codigo_sector no-lock no-error. 
+            if avail mge_sector then do: 
+                assign fileJson = chr(123) + '"nombre":"' + s-usuarios.nombre + 
+                                             '","sector":"' + mge_sector.nombre_sector + 
+                                             '","error":"' + ""  + '"}'.
+            end. 
+            else do: 
+            assign fileJson = chr(123) + '"nombre":"' + s-usuarios.nombre + 
+                                             '","sector":"' + mge_sector.nombre_sector + 
+                                             '","error":"' + "El usuario NO tiene asignado un sector"  + '"}'.
+            end. 
+        end.
+        else do: 
+            assign fileJson = chr(123) + '"nombre":"' + s-usuarios.nombre + 
+                                        '","sector":"' + mge_sector.nombre_sector + 
+                                        '","error":"' + "El usuario NO tiene asignado un sector"  + '"}'.
+        end.
+    end. 
+    {&out} fileJson.
+    return no-apply.
+
+
+</scrpt>

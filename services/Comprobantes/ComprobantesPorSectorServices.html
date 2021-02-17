@@ -1,0 +1,34 @@
+<script language="SpeedScript">
+    {./variables/GeneralVariables.i}
+    {./components/GetCookieUser.i}
+
+    def var headerJson as ch no-undo. 
+    def var bodyJson as ch no-undo. 
+    def var footerJson as ch no-undo. 
+    def var enterBody as lo no-undo. 
+    def var k as i no-undo.
+    def var v-sector as i no-undo.
+    
+    find first mge_usuaXSector where mge_usuaXSector.id-usuario = s-usuarios.id-usuario no-lock no-error.
+    if avail mge_usuaXSector 
+        then assign v-sector = mge_usuaXSector.codigo_sector.
+    
+    assign headerJson = "<comprobantestore>".
+
+    for each mge_ComprobXSector no-lock where mge_ComprobXSector.codigo_sector = v-sector,
+	    first t_codOpe where t_codOpe.Codope =  mge_ComprobXSector.codOpe no-lock by t_codOpe.nombre. 
+            
+        assign k = k + 1
+            enterBody = true.
+        if k > 100 then leave. /* muestro los primeros 100, si hay realizar pagination */
+
+        assign bodyJson = bodyJson +  
+                            "<comprobante ref=" + "'" + string(k)  + "'" + ">" +
+                            "<codigo>" + string(t_codOpe.codOpe) + "</codigo>" +
+                            "<nombre>" + trim(t_codOpe.nombre) + "</nombre>" +
+                            "</comprobante>".
+    end. 
+    assign footerJson = "</comprobantestore>".
+    if enterBody then {&out} headerJson + bodyJson + footerJson.
+    return no-apply.
+</script>

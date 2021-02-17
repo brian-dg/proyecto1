@@ -1,0 +1,26 @@
+<script language="SpeedScript">
+    {./variables/GeneralVariables.i}
+    {./components/GetCookieUser.i}
+     def var correcto as lo no-undo.
+     def var codigoSector as ch no-undo. 
+     
+     assign codigoSector = replace(trim(get-value('codigoSector')), chr(9), "").
+     
+    do transaction:  
+        find first mge_sector where mge_sector.codigo_sector = int(codigoSector) exclusive-lock no-error. 
+        if avail mge_sector then do: 
+            assign mge_sector.usbaja = s-usuarios.Id-Usuario
+                    mge_sector.fechaBaja = today
+                    mge_sector.horaBaja = string(time, "HH:MM")
+                    correcto = true.  
+          
+        end. 
+    end. 
+    release mge_sector.
+    
+
+     if correcto then {&out} "correcto". 
+                 else {&out} "error".
+
+     return no-apply.
+ </script>

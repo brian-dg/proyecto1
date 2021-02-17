@@ -1,0 +1,39 @@
+<script language="SpeedScript">
+    def var headerJson as ch no-undo. 
+    def var bodyJson as ch no-undo. 
+    def var footerJson as ch no-undo. 
+    def var enterBody as lo no-undo. 
+    def var k as i no-undo.
+    def var wRequestPost as ch no-undo. 
+    def var xmlFecha as ch no-undo.
+    
+    PROCEDURE output-headers:
+        wRequestPost = REQUEST_METHOD.
+    END PROCEDURE.
+
+    assign headerJson = "<civilstore>".
+
+        /* Petition for all people */
+        if wRequestPost = "GET" then do: 
+            for each t_civil where t_civil.fechaBaja = ? no-lock by t_civil.dsc-ec:
+                assign enterBody = true
+                        k = k + 1. 
+
+                if t_civil.fechaAlta <> ? 
+                    then assign xmlFecha = string(t_civil.fechaAlta). 
+                    else assign xmlFecha = "".
+                assign bodyJson = bodyJson +  
+                                "<civil ref=" + "'" + string(k)  + "'" + ">" +
+                                "<estcivil>" + string(t_civil.est-civil) + "</estcivil>" +
+                                "<nombre>" + t_civil.dsc-ec + "</nombre>" +
+                                "<usalta>" + string(t_civil.usAlta) + "</usalta>" +
+                                "<fechaalta>" + xmlFecha + "</fechaalta>" +
+                                "<horaalta>" + string(t_civil.horaAlta) + "</horaalta>" +
+                                "</civil>".
+            end. 
+            assign footerJson = "</civilstore>".
+            if enterBody then {&out} headerJson + bodyJson + footerJson.
+            return no-apply.
+        end. 
+ 
+</script>

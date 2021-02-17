@@ -1,0 +1,60 @@
+<script language="SpeedScript">
+    {./variables/GeneralVariables.i}
+    {./components/GetCookieUser.i}
+     def var correcto as lo no-undo.
+     def var codigoMenu as ch no-undo. 
+     def var nombreMenu as ch no-undo. 
+     def var accion as ch no-undo. 
+     def var renglon as ch no-undo.
+     
+     assign codigoMenu = replace(trim(get-value('codigoMenu')), chr(9), "")
+            nombreMenu = replace(trim(get-value('nombreMenu')), chr(9), "")
+            accion = replace(trim(get-value('accion')), chr(9), "")
+            renglon = replace(trim(get-value('renglon')), chr(9), "").
+
+    /* validaciones */ 
+    if int(codigoMenu) = 0 or 
+        codigoMenu = '' or 
+        nombreMenu = '' or 
+        accion = '' or 
+        int(renglon) = 0 or 
+        renglon = '' then do: 
+        {&out} "<messagestore>" + 
+                   "<message ref=" + "'" + string(1)  + "'" + ">" +
+                   "<nromessage>" + string(1) + "</nromessage>" +
+                   "<descripcion>" + "Se ha producido un error. Comuníquese con el Dto. Sistemas" + "</descripcion>" +
+                   "</message>" + 
+                   "</messagestore>".
+        return no-apply. 
+    end. 
+    /* fin validaciones */ 
+       
+    do transaction:  
+        find first menuDetalle where menuDetalle.codigoMenu = int(codigoMenu)
+                                and menuDetalle.renglon = int(renglon) exclusive-lock no-error. 
+        if not avail menuDetalle then do:  
+            create menuDetalle. 
+            assign menuDetalle.codigoMenu = int(codigoMenu)
+                   menuDetalle.nombreSubMenu = nombreMenu
+                   menuDetalle.renglon = int(renglon)
+                   menuDetalle.accion = accion  
+                    menuDetalle.usAlta = s-usuarios.id-usuario
+                    menuDetalle.fechaAlta = today 
+                    menuDetalle.horaAlta = string(time, "HH:MM")
+                    correcto = true.    
+        end. 
+        else do: 
+            {&out} "<messagestore>" + 
+                   "<message ref=" + "'" + string(1)  + "'" + ">" +
+                   "<nromessage>" + string(1) + "</nromessage>" +
+                   "<descripcion>" + "El registro ingresado ya existe" + "</descripcion>" +
+                   "</message>" + 
+                   "</messagestore>".
+        end. 
+    end. 
+    release menuDetalle.
+    if correcto then {&out} "correcto". 
+                 else {&out} "error".
+
+     return no-apply.
+ </script>

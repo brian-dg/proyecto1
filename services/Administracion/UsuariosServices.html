@@ -1,0 +1,76 @@
+<script language="SpeedScript">
+    def var fileJson as ch no-undo. 
+    def var wRequestPost as ch no-undo. 
+    def var grupoXml as ch no-undo. 
+    def var ultimo like s-usuarios.id-usuario.
+    def var enterBody as log initial false.
+    
+    PROCEDURE output-headers:
+        wRequestPost = REQUEST_METHOD.
+    END PROCEDURE.
+
+    
+
+    
+
+        /* Petition for all people */
+        if wRequestPost = "GET" then do: 
+            assign fileJson = "[".
+            for each s-usuarios no-lock use-index idx-usuario:
+            assign enterBody = true.
+                find first s-grupos where s-grupos.grupo = s-usuarios.grupo no-lock no-error. 
+                if avail s-grupos then do: 
+                    assign fileJson =   fileJson +  
+                                        chr(123) +    
+                                        '"id":"' + string(s-usuarios.id-usuario) + 
+                                        '","nombre":"' + s-usuarios.nombre + 
+                                        '","grupo":"' + s-grupos.descripcion +
+                                        '","error":"' + ""  + '"},'.
+                end. 
+                else do: 
+                    assign fileJson =   fileJson +  
+                                        chr(123) +    
+                                        '"id":"' + string(s-usuarios.id-usuario) + 
+                                        '","nombre":"' + s-usuarios.nombre + 
+                                        '","grupo":"' + "" + 
+                                        '","error":"' + ""  + '"},'.
+                end. 
+            end. 
+            assign fileJson = substring(fileJson, 1, length(fileJson) - 1). /* le saco la ultima coma al json */
+            assign fileJson = fileJson + "]".
+            if enterBody then {&out} fileJson.
+            return no-apply.
+        end. 
+
+        
+        if wRequestPost = "POST" then do: 
+            assign fileJson = "[".
+            for each s-usuarios where s-usuarios.nombre begins get-value('palabra')  no-lock use-index idx-usuario:  
+                assign enterBody = true.
+                find first s-grupos where s-grupos.grupo = s-usuarios.grupo no-lock no-error. 
+                if avail s-grupos then do: 
+                    assign fileJson =   fileJson +  
+                                        chr(123) +    
+                                        '"id":"' + string(s-usuarios.id-usuario) + 
+                                        '","nombre":"' + s-usuarios.nombre + 
+                                        '","grupo":"' + s-grupos.descripcion +  
+                                        '","error":"' + ""  + '"},'.
+                
+                end. 
+                else do: 
+                    assign fileJson =   fileJson +  
+                                        chr(123) +    
+                                        '"id":"' + string(s-usuarios.id-usuario) + 
+                                        '","nombre":"' + s-usuarios.nombre + 
+                                        '","grupo":"' + "" +  
+                                        '","error":"' + ""  + '"},'.
+                end. 
+            end. 
+            assign fileJson = substring(fileJson, 1, length(fileJson) - 1). /* le saco la ultima coma al json */
+            assign fileJson = fileJson + "]".
+            if enterBody then {&out} fileJson.
+                         else {&out} chr(123) + '}'.
+            return no-apply.
+        end.  
+
+</script>

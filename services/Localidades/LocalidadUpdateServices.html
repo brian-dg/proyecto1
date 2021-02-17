@@ -1,0 +1,23 @@
+<script language="SpeedScript">
+     def var correcto as lo no-undo.
+     def var codigoPostal as ch no-undo. 
+     def var localidad as ch no-undo. 
+     
+    
+     assign codigoPostal = replace(trim(get-value('codigoPostal')), chr(9), "")
+            localidad = replace(trim(get-value('localidad')), chr(9), "").
+
+            
+    do transaction:  
+        find first t_codpos where t_codpos.codpos = int(codigoPostal) exclusive-lock no-error. 
+        if avail t_codpos then do: 
+            assign  t_codpos.nombre = localidad 
+                    correcto = true.    
+        end. 
+    end. 
+    release t_codpos.
+    if correcto then {&out} "correcto". 
+                 else {&out} "error".
+
+     return no-apply.
+ </script>

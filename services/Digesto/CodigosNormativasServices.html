@@ -1,0 +1,20 @@
+<script language="SpeedScript">
+    def var headerXml as ch no-undo. 
+    def var bodyXml as ch no-undo. 
+    def var footerXml as ch no-undo. 
+    def var enterBody as lo no-undo. 
+    def var k as i no-undo.
+
+    assign headerXml = "<normativastore>".
+
+    for each dgt-tipo_documento where fechaBaja = ? by descripcion:
+        assign enterBody = true
+                k = k + 1. 
+        assign bodyXml = bodyXml +  "<normativa ref=" + "'" + string(k)  + "'" + ">" +
+                                    "<codigo>" + string(codigo) + "</codigo>" +
+                                    "<descripcion>" + descripcion + "</descripcion>" +
+                                    "</normativa>".
+    end. 
+    assign footerXml = "</normativastore>".
+   if enterBody then {&out} headerXml + bodyXml + footerXml.
+</script>

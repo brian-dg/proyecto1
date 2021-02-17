@@ -1,0 +1,38 @@
+<script language="SpeedScript">
+    def var headerXml as ch no-undo. 
+    def var bodyXml as ch no-undo. 
+    def var footerXml as ch no-undo. 
+    def var enterBody as lo no-undo. 
+    def var k as i no-undo.
+
+     assign headerXml = "<digestostore>".
+    
+        for each dgt-documentos where dgt-documentos.observaciones contains get-value("search")  no-lock. 
+            assign enterBody = true
+                    k = k + 1. 
+            assign bodyXml = bodyXml +  "<digesto ref=" + "'" + string(k)  + "'" + ">" +
+                                        "<codigoencode>" + encode(string(codigo_documento)) + "</codigoencode>" +
+                                        "<numeroencode>" + encode(string(numero_documento)) + "</numeroencode>" +
+                                        "<anioencode>" + encode(string(anio)) + "</anioencode>" +
+                                        "<codigo>" + string(codigo_documento) + "</codigo>" +
+                                        "<origen>" + string(codigo_origen) + "</origen>" +
+                                        "<numero>" + string(numero_documento) + "</numero>" +
+                                        "<anio>" + string(anio) + "</anio>" +
+                                        "<emision>" + string(fecha_emision) + "</emision>" +
+                                        "<recepcion>" + string(fecha_recepcion) + "</recepcion>" +
+                                        "<archivo>" + string(archivo) + "</archivo>" +
+                                        "<modifica>" + string(modifica_a) + "</modifica>" +
+                                        "<modificada>" + string(modificada_por) + "</modificada>" +
+                                        "<vigente>" + string(vigente) + "</vigente>" +
+                                        "<publico>" + string(publico) + "</publico>" +
+                                        "<observaciones>" + observaciones + "</observaciones>" +
+                                        "</digesto>".
+
+        end. 
+        assign footerXml = "</digestostore>".
+      
+  
+    if enterBody then {&out} headerXml + bodyXml + footerXml.
+            
+    
+</script>

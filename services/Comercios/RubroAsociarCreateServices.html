@@ -1,0 +1,59 @@
+<script language="SpeedScript">
+     def var correcto as lo no-undo.
+     def var numeroRubro as ch no-undo. 
+     def var numeroInscripcion as ch no-undo. 
+      
+     assign numeroRubro = replace(trim(get-value('numeroRubro')), chr(9), "")
+            numeroInscripcion = replace(trim(get-value('numeroInscripcion')), chr(9), "").
+
+
+
+    
+            
+    /* validaciones */ 
+    find first RubxComercio where rubxComercio.idRubro = int(numeroRubro) 
+                            and RubxComercio.inscripcion = int(numeroInscripcion) no-lock no-error. 
+    if avail RubxComercio then do: 
+            {&out} 
+            chr(123) + 
+            '"error":"' + "El rubro ingresado ya esta asociado al comercio"  + '"}'.
+            return no-apply.
+
+    end. 
+    if numeroRubro = "" or int(numeroRubro) = 0 then do: 
+        {&out} 
+        chr(123) + 
+        '"error":"' + "Número de rubro obligatorio"  + '"}'.
+        return no-apply. 
+    end. 
+
+    if numeroInscripcion = "" or int(numeroInscripcion) = 0 then do: 
+        {&out} 
+        chr(123) + 
+        '"error":"' + "Número de Inscricpion obligatorio"  + '"}'.
+        return no-apply. 
+    end. 
+   
+   
+    /* fin validaciones */ 
+    
+    do transaction:  
+        find first RubxComercio where RubxComercio.idRubro = int(numeroRubro)
+                                and RubxComercio.inscripcion = int(numeroInscripcion) exclusive-lock no-error. 
+        if not avail RubxComercio then do:  
+           create RubxComercio. 
+            assign RubxComercio.idRubro = int(numeroRubro)
+                   RubxComercio.inscripcion = int(numeroInscripcion)
+                   RubxComercio.fecAlta = today
+                   correcto = true.     
+        end. 
+    end. 
+    release RubxComercio.
+    if correcto then {&out} 
+                    chr(123) + 
+                    '"error":"' + ""  + '"}'.
+    else {&out} 
+        chr(123) + 
+        '"error":"' + "Se ha producido un error. Conulte con el administrador del sistema"  + '"}'.
+    return no-apply.
+ </script>

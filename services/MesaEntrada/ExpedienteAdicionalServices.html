@@ -1,0 +1,82 @@
+<script language="SpeedScript">
+     {./variables/GeneralVariables.i}
+    {./components/GetCookieUser.i}
+    /* busco sector del individuo */
+    def var v-sector as i no-undo.
+    FIND FIRST MGE_USUAXSECTOR WHERE MGE_USUAXSECTOR.ID-USUARIO = S-USUARIOS.ID-USUARIO NO-LOCK NO-ERROR.
+    IF AVAILABLE MGE_USUAXSECTOR THEN DO:
+        ASSIGN V-SECTOR = MGE_USUAXSECTOR.CODIGO_SECTOR.
+        find first mge_sector where mge_sector.codigo_sector = mge_usuaxSector.codigo_sector no-lock no-error. 
+    end.
+
+    def var individuoXml as ch no-undo. 
+    def var fechaXml as ch no-undo. 
+    def var estadoXml as ch no-undo. 
+    def var numeroExpediente as ch no-undo. 
+    def var anioExpediente as ch no-undo. 
+    def var idExpediente as ch no-undo. 
+    def var nombreXml as ch no-undo.
+
+    assign numeroExpediente = replace(trim(get-value('numeroexpediente')), chr(9), "")
+           anioExpediente = replace(trim(get-value('anio')), chr(9), "")
+           idExpediente = replace(trim(get-value('idExpediente')), chr(9), "").
+
+
+
+    
+    /* si es un expediente nuevo */
+    if int(idExpediente) = 0 then do: 
+        find last mge_adicional where mge_adicional.anio = int(anioExpediente) 
+                                 and mge_adicional.numeroExpediente = int(numeroExpediente) no-lock no-error. 
+        if avail mge_adicional 
+            then assign idExpediente = string(mge_adicional.renglon + 1). 
+            else assign idExpediente = "1". 
+    end. 
+
+
+
+        find first mge_expediente where mge_expediente.anio = int(anioExpediente) 
+                                    and mge_expediente.numeroExpediente = int(numeroExpediente) no-lock no-error. 
+        if avail mge_expediente then do: 
+            find first individuos where individuos.tipdoc = mge_expediente.tipdoc 
+                                    and individuos.nrodoc = mge_expediente.nrodoc no-lock no-error. 
+            if avail individuos 
+                then assign nombreXml = individuos.nombre. 
+                else assign nombreXml = "".
+            find first mge_adicional where mge_adicional.numeroExpediente = mge_expediente.numeroExpediente 
+                                        and mge_adicional.anio = mge_expediente.anio 
+                                        and mge_adicional.renglon = int(idExpediente) exclusive-lock no-error. 
+            if not avail mge_adicional then do: 
+                {&out}  "<expedientestore>" +
+                        "<expediente ref=" + "'" + "1"  + "'" + ">" +
+                        "<numeroexpediente>" + numeroExpediente + "</numeroexpediente>" +
+                        "<anio>" + anioExpediente + "</anio>" +
+                        "<individuo>" + nombreXml + "</individuo>" +
+                        "<canthojas>" + "" + "</canthojas>" + 
+                        "<tipdoc>" + string(mge_expediente.tipdoc) + "</tipdoc>" + 
+                        "<nrodoc>" + string(mge_expediente.nrodoc) + "</nrodoc>" + 
+                        "<observacion>" + "" + "</observacion>" + 
+                        "<id>" + string(idExpediente) + "</id>" + 
+                        "</expediente>" + 
+                        "</expedientestore>".
+            end. 
+            else do: 
+                {&out}  "<expedientestore>" +
+                        "<expediente ref=" + "'" + "1"  + "'" + ">" +
+                        "<numeroexpediente>" + string(mge_adicional.numeroExpediente) + "</numeroexpediente>" +
+                        "<anio>" + string(mge_adicional.anio) + "</anio>" +
+                        "<individuo>" + nombreXml + "</individuo>" +
+                        "<canthojas>" + string(mge_adicional.cantidad_hojas) + "</canthojas>" + 
+                        "<tipdoc>" + string(mge_expediente.tipdoc) + "</tipdoc>" + 
+                        "<nrodoc>" + string(mge_expediente.nrodoc) + "</nrodoc>" + 
+                        "<observacion>" + mge_adicional.observacion + "</observacion>" + 
+                        "<id>" + string(idExpediente) + "</id>" + 
+                        "</expediente>" + 
+                        "</expedientestore>".
+
+            end. 
+        end. 
+
+    
+    return no-apply.
+</script>

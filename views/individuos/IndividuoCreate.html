@@ -1,0 +1,290 @@
+<script language="SpeedScript">
+    {./variables/GeneralVariables.i}
+    {./components/HeadComponent.i}
+</script>
+<div class="app-main__inner">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="main-card mb-3 card my-3">
+                <div class="card-body"><h5 class="card-title">Individuo - Nuevo</h5>
+                    <form class="">
+                        <div id="informe">
+                            
+                        </div>
+                        <div class="position-relative form-row">
+                            <div class="col-md-3">
+                                <label for="numeroLabel" class="">Tipo Documento</label>
+                                <div id="tipdoc">
+                                    <input 
+                                        name="tipoDocumento"  
+                                        id="tipoDocumento" 
+                                        placeholder="" 
+                                        type="number" 
+                                        class="form-control"
+                                        autofocus
+                                        required
+                                    >
+                                    <div id="requiredTipoDocumento"></div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="anioLabel" class="">Número Documento</label>
+                                <div id="nrodoc">
+                                    <input 
+                                        name="numeroDocumento" 
+                                        id="numeroDocumento" 
+                                        placeholder="Documento" 
+                                        type="number" 
+                                        class="form-control" 
+                                        required
+                                    >
+                                    <div id="requiredNumeroDocumento"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="position-relative form-row">
+                            <div class="col-md-12">
+                                <label for="resumenText" class="">Apellido y Nombre</label>
+                                <div id="nombre">
+                                    <input 
+                                        name="nombreIndividuo" 
+                                        id="nombreIndividuo" 
+                                        placeholder="Apellido y Nombre" 
+                                        type="text" 
+                                        class="form-control" 
+                                        required
+                                    >
+                                    <div id="requiredNombreIndividuo"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="position-relative form-row">
+                            <div class="col-md-4">
+                                <label for="codcalleText" class="">C&oacutedigo Calle</label>
+                                <input 
+                                    name="codigoCalle" 
+                                    id="codigoCalle" 
+                                    placeholder="Cod. Calle" 
+                                    type="number" 
+                                    class="form-control"
+                                    onchange="getCodigoCalle()"
+                                >
+                            </div>
+
+                            <div class="col-md-8">
+                                <label for="calleText" class="">Nombre Calle</label>
+                                <input 
+                                    name="nombreCalle" 
+                                    id="nombreCalle" 
+                                    placeholder="Calle" 
+                                    type="text" 
+                                    class="form-control"
+                                    disabled
+                                >
+                            </div>
+                        </div>
+
+                        <div class="position-relative form-row">
+                            <div class="col-md-6">
+                                <label for="calleText" class="">Domicilio Calle</label>
+                                <input 
+                                    name="calle" 
+                                    id="calle" 
+                                    placeholder="Calle" 
+                                    type="text" 
+                                    class="form-control"
+                                    required
+                                >
+                                <div id="requiredCalle"></div>
+                            </div>
+
+                            <div class="col-md-2">
+                                <label for="numeroText" class="">N&uacutemero</label>
+                                <input 
+                                    name="numeroCalle" 
+                                    id="numeroCalle" 
+                                    placeholder="99999" 
+                                    type="number" 
+                                    class="form-control"
+                                    required
+                                >
+                                <div id="requiredNumeroCalle"></div>
+                            </div>
+
+                            <div class="col-md-2">
+                                <label for="pisoText" class="">Piso</label>
+                                <input 
+                                    name="pisoCalle" 
+                                    id="pisoCalle" 
+                                    placeholder="Piso" 
+                                    type="number" 
+                                    class="form-control"
+                                >
+                            </div>
+
+                            <div class="col-md-2">
+                                <label for="dptoText" class="">Dpto.</label>
+                                <input 
+                                    name="departamento" 
+                                    id="departamento" 
+                                    placeholder="Dpto." 
+                                    type="text" 
+                                    class="form-control"
+                                >
+                            </div>
+                        </div>
+
+                        <div class="position-relative form-row">
+                            <div class="col-md-4">
+                                <label for="codposText" class="">C&oacutedigo Postal</label>
+                                <input 
+                                    name="codigoPostal" 
+                                    id="codigoPostal" 
+                                    placeholder="C.P." 
+                                    type="text" 
+                                    class="form-control"
+                                    onchange="getLocalidad()"
+                                >
+                                <div id="requiredCodigoPostal"></div>
+                            </div>
+
+                            <div class="col-md-8">
+                                <label for="localidadText" class="">Localidad</label>
+                                <input 
+                                    name="localidad" 
+                                    id="localidad" 
+                                    placeholder="Localidad" 
+                                    type="text" 
+                                    class="form-control"
+                                    disabled
+                                >
+                            </div>
+                        </div>
+
+                        <div class="position-relative form-row">
+                            <div class="col-md-4">
+                                <label for="codpaisText" class="">C&oacutedigo Naci&oacuten</label>
+                                <input 
+                                    name="codigoPais" 
+                                    id="codigoPais" 
+                                    placeholder="" 
+                                    type="number" 
+                                    class="form-control"
+                                    onchange="getPais()"
+                                >
+                            </div>
+                            
+                           
+
+                            <div class="col-md-8">
+                                <label for="nacionText" class="">Nacionalidad</label>
+                                <input 
+                                    name="nombrePais" 
+                                    id="nombrePais" 
+                                    placeholder="Nacionalidad" 
+                                    type="text" 
+                                    class="form-control"
+                                    disabled
+                                >
+                            </div>
+                        </div>
+
+
+                        <div class="position-relative form-row">
+                            <div class="col-md-4">
+                                <label for="emisionText" class="">Fecha Nacimiento</label>
+                                <input 
+                                    name="fechaNacimiento" 
+                                    id="fechaNacimiento" 
+                                    placeholder="dd/mm/aaaa" 
+                                    type="text" 
+                                    class="form-control">
+                            </div>
+
+                            <div class="col-md-3">
+                                <label for="codcivilText" class="">Estado Civil</label>
+                                <input 
+                                    name="codigoCivil" 
+                                    id="codigoCivil" 
+                                    placeholder="Codigo" 
+                                    type="number" 
+                                    class="form-control"
+                                    onchange="getEstadoCivil()"
+                                   
+                                >
+                            </div>
+
+                            <div class="col-md-5">
+                                <label for="nomcivilText" class="">Estado Civil Descripci&oacuten</label>
+                                <input 
+                                    name="nombreCivil" 
+                                    id="nombreCivil" 
+                                    placeholder="Estado Civil" 
+                                    type="text" 
+                                    class="form-control"
+                                    disabled
+                                >
+                            </div>
+
+                        </div>
+
+                        <div class="position-relative form-row">
+                            <div class="col-md-6">
+                                <label for="mailText" class="">Mail</label>
+                                <input 
+                                    name="email" 
+                                    id="email" 
+                                    placeholder="mail@mail.com" 
+                                    type="text" 
+                                    class="form-control"
+                                >
+                            </div>
+
+                            <div class="col-md-3">
+                                <label for="celularText" class="">Celular</label>
+                                <input 
+                                    name="celu" 
+                                    id="celu" 
+                                    placeholder="Celular" 
+                                    type="text" 
+                                    class="form-control"
+                                >
+                            </div>
+
+                            <div class="col-md-3">
+                                <label for="fijoText" class="">Tel&eacutefono</label>
+                                <input 
+                                    name="fijo" 
+                                    id="fijo" 
+                                    placeholder="Fijo" 
+                                    type="text" 
+                                    class="form-control"
+                                >
+                            </div>
+
+                        </div>
+
+                        
+                        <button class="mt-1 btn btn-primary" id="create">Grabar</button>
+                        <button class="mt-1 btn btn-danger" type="button" onclick="location.href='./individuos'" target="_blank">Cancelar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script language="SpeedScript">                    
+{./components/obj-footer.i} 
+</script>
+<script src="/miciudad/constantes/urlBase.js"></script>
+<script src="/miciudad/controller/Individuos/Individuos.js"></script>
+<script src="/miciudad/controller/MasterTable/Paises.js"></script>
+<script src="/miciudad/controller/MasterTable/Localidades.js"></script>
+<script src="/miciudad/controller/MasterTable/EstadosCivil.js"></script>
+<script src="/miciudad/controller/MasterTable/CodigoCalles.js"></script>
+
+</body>
+</html>

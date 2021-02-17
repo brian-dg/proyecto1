@@ -1,0 +1,33 @@
+<script language="SpeedScript">
+    def var headerJson as ch no-undo. 
+    def var bodyJson as ch no-undo. 
+    def var footerJson as ch no-undo. 
+    def var enterBody as lo no-undo. 
+    def var k as i no-undo.
+    def var wRequestPost as ch no-undo. 
+    def var grupoXml as ch no-undo. 
+    
+    PROCEDURE output-headers:
+        wRequestPost = REQUEST_METHOD.
+    END PROCEDURE.
+
+    assign headerJson = "<menustore>".
+
+        /* Petition for all people */
+        if wRequestPost = "GET" then do: 
+            for each Menu no-lock by menu.codigoMenu :
+                assign enterBody = true
+                        k = k + 1. 
+                assign bodyJson = bodyJson +  
+                                "<menu ref=" + "'" + string(k)  + "'" + ">" +
+                                "<codigo>" + string(menu.codigoMenu) + "</codigo>" +
+                                "<nombre>" + menu.nombre + "</nombre>" +
+                                "<titulo>" + menu.titulo + "</titulo>" +
+                                "</menu>".
+                               
+            end. 
+            assign footerJson = "</menustore>".
+            if enterBody then {&out} headerJson + bodyJson + footerJson.
+            return no-apply.
+        end. 
+</script>

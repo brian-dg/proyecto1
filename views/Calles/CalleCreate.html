@@ -1,0 +1,68 @@
+<script language="SpeedScript">
+    {./variables/GeneralVariables.i}
+    {./components/HeadComponent.i}
+</script>
+<div class="app-main__inner">
+    
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="main-card mb-3 card my-3">
+                        <div class="card-body"><h5 class="card-title">Calle - Nuevo</h5>
+                            <form class="">
+                                <div id="informe">
+                                </div>
+                                <div class="position-relative form-row">
+                                    <div class="col-md-4">
+                                        <label for="numeroLabel" class="">Calle</label>
+                                    <div>
+                                    <input 
+                                        name="codigoCalle"  
+                                        id="codigoCalle" 
+                                        placeholder="" 
+                                        type="text" 
+                                        class="form-control"
+                                        autofocus
+                                        required
+                                    >
+                                    <div id="requiredCodigoCalle"></div>
+                                </div>
+                                
+                            </div>
+                            <div class="col-md-8">
+                                <label for="anioLabel" class="">Nombre Calle</label>
+                                <div>
+                                    <input 
+                                        name="nombreCalle" 
+                                        id="nombreCalle" 
+                                        placeholder="Nombre de la calle" 
+                                        type="text" 
+                                        class="form-control" 
+                                        required
+                                    >
+                                    <div id="requiredNombreCalle">
+                                        
+                                    </div>
+
+                                </div>
+                                
+                            </div>
+                        </div>
+                        <button class="mt-3 btn btn-primary" id="create">Grabar</button>
+                        <button class="mt-3 btn btn-danger" type="button" onclick="location.href='./calles'" target="_blank">Cancelar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script language="SpeedScript">                    
+{./components/obj-footer.i} 
+</script>
+<script src="/miciudad/constantes/urlBase.js"></script>
+<script src="/miciudad/controller/MasterTable/CodigoCalles.js"></script>
+ 
+</script>
+</body>
+</html>

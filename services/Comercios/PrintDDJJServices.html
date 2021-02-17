@@ -1,0 +1,290 @@
+<script language="SpeedScript">
+DEFINE VARIABLE Barcode    AS COM-HANDLE.
+DEFINE VARIABLE wBarra     AS CHARACTER.
+DEFINE VARIABLE CodeBar    AS CHARACTER.
+DEFINE VARIABLE sumador      AS DECIMAL.
+DEFINE VARIABLE secuencia    AS INTEGER FORMAT "9" INITIAL "3".
+DEFINE VARIABLE parte        AS INTEGER FORMAT "9".
+DEFINE VARIABLE digito       AS INTEGER FORMAT "9".
+DEFINE VARIABLE v-posicion   AS INTEGER.
+DEFINE VARIABLE v-barcode    AS CHARACTER.
+DEFINE VARIABLE WTOTAL       AS DECIMAL.
+DEFINE VARIABLE WPAGO        AS DECIMAL.
+DEFINE VARIABLE WVENCIMIENTO AS DATE.
+def var wfecha as ch no-undo.
+def var wfecvto as ch no-undo. 
+DEF VAR WDIA2             AS INT.
+DEF VAR WMES2             AS INT.
+DEF VAR WANIO2            AS INT.
+DEF VAR WCantidad AS INT.
+DEF VAR K AS INT.
+def var winteres as dec no-undo.
+def var wtiempo as i no-undo.
+def var wpunitorio as dec init 0.066 no-undo.
+def var p-total as dec no-undo.
+def var wpublicidad as dec no-undo.
+def var wFOPROSI as dec no-undo.
+def var nombreArchivoPDF as ch no-undo.
+def var inscripcion as ch no-undo. 
+def var anio as ch no-undo. 
+def var periodo as ch no-undo. 
+
+assign inscripcion = replace(trim(get-value('inscripcion')), chr(9), "")
+    anio = replace(trim(get-value('anio')), chr(9), "")
+    periodo = replace(trim(get-value('periodo')), chr(9), "").
+
+ {pdf_inc.i "NOT SUPER"}
+
+ FIND FIRST liquidacion WHERE liquidacion.inscripcion = INT(inscripcion)
+                         AND liquidacion.anio        = INT(anio)
+                         AND liquidacion.periodo     = INT(periodo)  NO-LOCK NO-ERROR.
+IF AVAILABLE liquidacion THEN DO:
+   FIND FIRST COMERCIO WHERE COMERCIO.INSCRIPCION = LIQUIDACION.INSCRIPCION NO-LOCK NO-ERROR.
+   NombreArchivopdf = "DJ" + "-" + string(Comercio.Inscripcion) + "-" + STRING(Liquidacion.Anio, '9999') + STRING(Liquidacion.Periodo, "99") + ".pdf".
+
+
+   RUN pdf_new IN h_PDFinc ("cons",".\Documents\Drei\" + NombreArchivopdf).
+
+RUN pdf_new_Page IN h_PDFinc("Cons").
+   RUN pdf_set_font IN h_PDFinc("Cons","Helvetica-Bold",14.0).
+
+   RUN pdf_text_at  IN h_PDFinc("Cons","Municipalidad de Perez ",5).
+   RUN pdf_skip 	IN h_PDFinc("Cons").
+   RUN pdf_set_font IN h_PDFinc("Cons","Helvetica",12.0).
+   RUN pdf_text_at  IN h_PDFinc("Cons","Sarmiento 1198 ",15).
+   RUN pdf_skip 	IN h_PDFinc("Cons").
+   RUN pdf_text_at  IN h_PDFinc("Cons","Perez",20).
+   RUN pdf_skip 	IN h_PDFinc("Cons").
+   RUN pdf_skip 	IN h_PDFinc("Cons").
+
+   RUN pdf_set_font IN h_PDFinc("Cons","Helvetica-bold",20.0).
+   RUN pdf_text_at  IN h_PDFinc("Cons","Derecho Registro e Inspeccion",30).
+
+   RUN pdf_set_font IN h_PDFinc("Cons","Helvetica-bold",10.0).
+
+   RUN pdf_stroke_color IN h_PDFinc("cons", .0,.0,.0).
+   RUN pdf_stroke_fill  IN h_PDFinc("cons", 1.0,1.0,1.0).
+  
+   RUN pdf_rect    IN h_PDFinc("Cons", 20,630,70,36,0.5).
+   RUN pdf_rect    IN h_PDFinc("Cons", 90,630,140,36,0.5).
+   RUN pdf_rect    IN h_PDFinc("Cons", 230,630,140,36,0.5).
+   RUN pdf_rect    IN h_PDFinc("Cons", 370,630,140,36,0.5).
+   RUN pdf_rect    IN h_PDFinc("Cons", 510,630,70,36,0.5).
+
+   RUN pdf_rect    IN h_PDFinc("Cons", 20,594,70,36,0.5).
+   RUN pdf_rect    IN h_PDFinc("Cons", 90,594,320,36,0.5). 
+   RUN pdf_rect    IN h_PDFinc("Cons", 410,594,170,36,0.5). 
+
+   RUN pdf_skip 	IN h_PDFinc("Cons").
+   RUN pdf_skip 	IN h_PDFinc("Cons").
+   RUN pdf_skip 	IN h_PDFinc("Cons").
+   RUN pdf_skip 	IN h_PDFinc("Cons").
+
+
+   RUN pdf_text_at  IN h_PDFinc("Cons","Inscripcion",7).
+   RUN pdf_text_at  IN h_PDFinc("Cons","Comercio/Empresa",40).
+   RUN pdf_text_at  IN h_PDFinc("Cons","Titular",100).
+   RUN pdf_text_at  IN h_PDFinc("Cons","C.U.I.T.",150).
+   RUN pdf_text_at  IN h_PDFinc("Cons","Periodo",185).
+
+   RUN pdf_set_font IN h_PDFinc("Cons","Helvetica",10.0).
+
+   RUN pdf_skip 	IN h_PDFinc("Cons").
+   RUN pdf_skip 	IN h_PDFinc("Cons").
+
+   RUN pdf_text_at  IN h_PDFinc("Cons", string(Liquidacion.Inscripcion, "9999999"),9).
+   RUN pdf_text_at  IN h_PDFinc("Cons", string(COMERCIO.RAZONSOCIAL),31).
+   RUN pdf_text_at  IN h_PDFinc("Cons", string(COMERCIO.cuit, "99-99999999-9"),145).
+   RUN pdf_text_at  IN h_PDFinc("Cons", string(Liquidacion.Anio, "9999") + " " + string(Liquidacion.Periodo, "99"),185).
+
+   RUN pdf_skip 	IN h_PDFinc("Cons").
+   RUN pdf_skip 	IN h_PDFinc("Cons").  
+
+   RUN pdf_set_font IN h_PDFinc("Cons","Helvetica-bold",10.0).
+
+   RUN pdf_text_at  IN h_PDFinc("Cons", "Recibo",9).
+   RUN pdf_text_at  IN h_PDFinc("Cons", "Domicilio",50).
+   RUN pdf_text_at  IN h_PDFinc("Cons", "Localidad",115).
+   RUN pdf_text_at  IN h_PDFinc("Cons", "Fecha Inscripcion",165).
+
+   RUN pdf_skip 	IN h_PDFinc("Cons").  
+
+   RUN pdf_set_font IN h_PDFinc("Cons","Helvetica",10.0).
+
+   RUN pdf_text_at  IN h_PDFinc("Cons", string(Liquidacion.NroLiquidacion),9).
+   RUN pdf_text_at  IN h_PDFinc("Cons", string(Comercio.DomEntrega),31).
+
+   assign wfecha = string(day(comercio.fechainsc), "99") + "/" + string(month(comercio.fechainsc), "99") + "/" + string(year(comercio.fechainsc), "9999").
+   RUN pdf_text_at  IN h_PDFinc("Cons", wfecha,175). 
+
+   RUN pdf_skip 	IN h_PDFinc("Cons").  
+   RUN pdf_skip 	IN h_PDFinc("Cons").  
+   RUN pdf_skip 	IN h_PDFinc("Cons").  
+
+
+   RUN pdf_text_at  IN h_PDFinc("Cons", "El que suscribe " + FILL(".",140) + " en su caracter de",8).
+   RUN pdf_skip 	IN h_PDFinc("Cons").   
+   RUN pdf_skip 	IN h_PDFinc("Cons").   
+   RUN pdf_text_at  IN h_PDFinc("Cons", FILL(".",110)  + " declara bajo juramento que los datos consignados en",8).
+   RUN pdf_skip 	IN h_PDFinc("Cons").   
+   RUN pdf_skip 	IN h_PDFinc("Cons").   
+   RUN pdf_text_at  IN h_PDFinc("Cons", "la presente son correctos y han sido cumplimentados a su leal saber y entender.-",8).
+
+   RUN pdf_skip 	IN h_PDFinc("Cons").   
+   RUN pdf_skip 	IN h_PDFinc("Cons").   
+   RUN pdf_skip 	IN h_PDFinc("Cons").   
+   RUN pdf_skip 	IN h_PDFinc("Cons").   
+
+   RUN pdf_text_at  IN h_PDFinc("Cons", "FIRMA",153).
+
+   RUN pdf_skip 	IN h_PDFinc("Cons").   
+   RUN pdf_skip 	IN h_PDFinc("Cons").   
+ 
+   RUN pdf_text_at  IN h_PDFinc("Cons", "Aclaracion",110).
+   RUN pdf_text_at  IN h_PDFinc("Cons", FILL("_",30), 135).
+
+   RUN pdf_skip 	IN h_PDFinc("Cons").   
+   RUN pdf_skip 	IN h_PDFinc("Cons").   
+
+   RUN pdf_stroke_color IN h_PDFinc("cons", .0,.0,.0).
+   RUN pdf_stroke_fill  IN h_PDFinc("cons", 1.0,1.0,1.0).
+
+   RUN pdf_rect    IN h_PDFinc("Cons", 20,400,560,36,0.5).
+
+   RUN pdf_skip 	IN h_PDFinc("Cons").   
+   RUN pdf_skip 	IN h_PDFinc("Cons").   
+   RUN pdf_skip 	IN h_PDFinc("Cons").   
+
+   RUN pdf_set_font IN h_PDFinc("Cons","Helvetica-bold",10.0).
+
+  RUN pdf_text_at  IN h_PDFinc("Cons", "Concepto/Rubro",7).
+  RUN pdf_text_at  IN h_PDFinc("Cons", "Alicuota",85).
+  RUN pdf_text_at  IN h_PDFinc("Cons", "Monto Imponible",115).
+  RUN pdf_text_at  IN h_PDFinc("Cons", "Importe",175).
+
+  RUN pdf_skip 	IN h_PDFinc("Cons").   
+  RUN pdf_skip 	IN h_PDFinc("Cons").   
+  RUN pdf_skip 	IN h_PDFinc("Cons").   
+  
+  RUN pdf_stroke_color IN h_PDFinc("cons", .0,.0,.0).
+  RUN pdf_stroke_fill  IN h_PDFinc("cons", 1.0,1.0,1.0).
+
+  RUN pdf_rect    IN h_PDFinc("Cons", 20,308,210,102,0.5).
+  RUN pdf_rect    IN h_PDFinc("Cons", 230,308,70,102,0.5).
+  RUN pdf_rect    IN h_PDFinc("Cons", 300,308,150,102,0.5).
+  RUN pdf_rect    IN h_PDFinc("Cons", 450,308,130,102,0.5).
+
+  RUN pdf_rect    IN h_PDFinc("Cons", 20,248,280,52,0.5).
+
+  RUN pdf_rect    IN h_PDFinc("Cons", 300,248,150,52,0.5).
+  RUN pdf_rect    IN h_PDFinc("Cons", 450,248,130,52,0.5).
+  RUN pdf_rect    IN h_PDFinc("Cons", 300,248,280,32,0.5).
+
+  RUN pdf_set_font IN h_PDFinc("Cons","Helvetica",10.0).
+
+ 	
+  ASSIGN K         = 0
+         wcantidad = 0.
+  FOR EACH detaliqui  OF liquidacion no-lock.
+      FIND rubro OF detaliqui NO-LOCK.
+  
+      RUN pdf_text_at  IN h_PDFinc("Cons", string(detaliqui.IdRubro, "999999") + " - " + substring(Rubros.Rubro,1,29),7).
+      RUN pdf_text_at  IN h_PDFinc("Cons", string(Rubros.Alicuota, ">,>>>,>>9.99") + " /00",80).
+      RUN pdf_text_at  IN h_PDFinc("Cons", "$ " + string(detaliqui.monto-imponible, ">,>>>,>>>,>>9.99"),120).
+      RUN pdf_text_at  IN h_PDFinc("Cons", "$ " + string(detaliqui.importe-jurado, ">,>>>,>>>,>>9.99"),175).
+      RUN pdf_skip 	IN h_PDFinc("Cons").    
+      ASSIGN WTOTAL = WTOTAL + detaliqui.importe-jurado
+	         WCANTIDAD = WCANTIDAD + 1.
+  END.
+  REPEAT K = 1 TO (5 - WCANTIDAD).
+         RUN pdf_skip 	IN h_PDFinc("Cons"). 
+	
+  END.
+	   
+  for each Foprosi where Foprosi.inscripcion = Liquidacion.inscripcion
+                        and Foprosi.periodo = Liquidacion.periodo
+                        and Foprosi.anio = Liquidacion.anio no-lock use-index puk-clave:
+        assign wFoprosi = wFoprosi + Foprosi.pago. 
+    end. 
+
+    
+  RUN pdf_set_font IN h_PDFinc("Cons","Helvetica",10.0).
+   IF WTOTAL < Liquidacion.Importe THEN DO:
+     RUN pdf_text_at  IN h_PDFinc("Cons","Dif. Minimo",7). 
+     RUN pdf_text_at  IN h_PDFinc("Cons", "$ " + string(round(liquidacion.importe - wtotal, 2), ">,>>>,>>>,>>9.99"),175).
+     RUN pdf_skip 	IN h_PDFinc("Cons").
+	 RUN pdf_text_at  IN h_PDFinc("Cons","Recargo",7).
+     RUN pdf_text_at  IN h_PDFinc("Cons", "$ " + string(p-total , ">,>>>,>>>,>>9.99"),175).
+     RUN pdf_skip 	IN h_PDFinc("Cons").
+     RUN pdf_text_at  IN h_PDFinc("Cons","Publicidad " + string(comercio.reparto) + " %",7).
+
+     if comercio.reparto > 0 
+      then assign wpublicidad = round((liquidacion.importe - wtotal) * comercio.reparto / 100, 2).
+
+	 RUN pdf_text_at  IN h_PDFinc("Cons", "$ " + string(WPUBLICIDAD, ">,>>>,>>>,>>9.99"),175). 
+     RUN pdf_skip 	IN h_PDFinc("Cons"). 
+   RUN pdf_text_at  IN h_PDFinc("Cons","Fo.Pro.Si 3% (s/Ord. 3094/2017)",7).
+   RUN pdf_text_at  IN h_PDFinc("Cons", "$ " + string(wFOPROSI, ">,>>>,>>>,>>9.99"),175).
+   
+  END.
+  ELSE DO:
+      RUN pdf_skip 	IN h_PDFinc("Cons").
+	 RUN pdf_text_at  IN h_PDFinc("Cons","Recargo",7).
+     RUN pdf_text_at  IN h_PDFinc("Cons", "$ " + string(p-total , ">,>>>,>>>,>>9.99"),175).
+	 RUN pdf_skip 	IN h_PDFinc("Cons").
+	 RUN pdf_text_at  IN h_PDFinc("Cons","Publicidad " + string(comercio.reparto) + " %",7). 
+
+    if comercio.reparto > 0 
+      then assign wpublicidad = round(wtotal * comercio.reparto / 100, 2).
+
+     RUN pdf_text_at  IN h_PDFinc("Cons", "$ " + string(WPUBLICIDAD, ">,>>>,>>>,>>9.99"),175).
+     RUN pdf_skip 	IN h_PDFinc("Cons"). 
+     RUN pdf_text_at  IN h_PDFinc("Cons","Fo.Pro.Si 3% (s/Ord. 3094/2017)",7).
+     RUN pdf_text_at  IN h_PDFinc("Cons", "$ " + string(wFOPROSI, ">,>>>,>>>,>>9.99"),175).
+    
+  END.
+ 
+
+
+  RUN pdf_set_font IN h_PDFinc("Cons","Helvetica-bold",10.0).
+  RUN pdf_skip 	IN h_PDFinc("Cons").   
+  RUN pdf_skip 	IN h_PDFinc("Cons").   
+  RUN pdf_skip 	IN h_PDFinc("Cons").   
+ RUN pdf_text_at  IN h_PDFinc("Cons", "Cantidad de empleados:...." + string(Comercio.Personal),7).
+  RUN pdf_text_at  IN h_PDFinc("Cons", "TOTAL",120). 
+  
+  RUN pdf_text_at  IN h_PDFinc("Cons", "$ " + string(round(wTOTAL  +  wFOPROSI + WPUBLICIDAD, 2 ), ">,>>>,>>>,>>9.99"),175). 
+  
+  RUN pdf_skip 	IN h_PDFinc("Cons"). 
+  RUN pdf_text_at  IN h_PDFinc("Cons", "Observaciones:",7).
+  RUN pdf_skip 	IN h_PDFinc("Cons").   
+
+  IF NOT GRANCONTRIB
+     THEN RUN pdf_text_at  IN h_PDFinc("Cons", "PAGO MINIMO s/Ord. 3100/17:....................." + "$ " + string(Liquidacion.Importe, ">,>>>,>>9.99"),7).
+     ELSE RUN pdf_text_at  IN h_PDFinc("Cons", " ",7).
+
+     assign wfecvto = string(Liquidacion.FecVto, "99/99/9999").
+
+  
+  RUN pdf_skip 	IN h_PDFinc("Cons").
+  RUN pdf_skip 	IN h_PDFinc("Cons").
+  RUN pdf_skip 	IN h_PDFinc("Cons").
+  RUN pdf_skip 	IN h_PDFinc("Cons").
+  RUN pdf_text_at  IN h_PDFinc("Cons", "VENCIMIENTO: " + wfecvto,7).
+  RUN pdf_skip 	IN h_PDFinc("Cons").
+  RUN pdf_skip 	IN h_PDFinc("Cons").
+  RUN pdf_text_at  IN h_PDFinc("Cons", "FECHA PRESENTACION:" + string(liquidacion.fecpres, "99/99/9999"),7).
+  RUN pdf_skip 	IN h_PDFinc("Cons").
+  RUN pdf_skip 	IN h_PDFinc("Cons").
+  RUN pdf_text_at  IN h_PDFinc("Cons", "FECHA PAGO: " + string(liquidacion.fecpag, "99/99/9999"),7).
+
+ 				
+end.
+RUN pdf_Close IN h_PDFinc("Cons"). 
+
+{&out} '[' + chr(123) + 
+        '"nombreRubro":"' + '' + 
+        '","file":"' + NombreArchivopdf + 
+        '","error":"' + "" + '"' +
+        '}]'.
+</script>

@@ -1,0 +1,49 @@
+<script language="SpeedScript">
+   
+    def var fileJson as ch no-undo.
+    def var enterBody as lo no-undo. 
+    def var codigo as i no-undo.
+    def var k as i no-undo.
+    def var l as i no-undo.
+   
+    
+    assign fileJson = chr(123) + '"menu":['. 
+
+        /* Petition for all people */
+       
+            for each menu no-lock  break by menu.codigoMenu:
+                assign enterBody = true
+                        k = k + 1
+                        codigo = menu.codigoMenu. 
+
+                assign fileJson =   fileJson +  
+                                    chr(123) +
+                                    '"titulo":"' + menu.titulo + 
+                                    '","nombremenu":"' + menu.nombreMenu + 
+                                    '","codigoMenu":"' + string(menu.codigoMenu) + 
+                                    '","error":"' + ""  + '",'.
+
+                for each menuDetalle no-lock where menuDetalle.codigoMenu = menu.codigoMenu  break by menuDetalle.codigoMenu. 
+                    assign l = l + 1. 
+                    if l = 1 then do: 
+                        assign fileJson = fileJson + 
+                                        '"detalle":['.
+                    end. 
+                
+                    assign fileJson = fileJson + 
+                                    chr(123) +
+                                    '"codigosubmenu":"' + string(menuDetalle.codigoMenu) + 
+                                    '","nombresubmenu":"' + string(menuDetalle.nombreSubMenu) + 
+                                    '","accion":"' + string(menuDetalle.accion) + '"},'. 
+                   IF LAST-OF(menuDetalle.codigoMenu) then assign fileJson = substring(fileJson, 1, length(fileJson) - 1). 
+                        assign fileJson = fileJson + ']},'.
+                end. 
+            end. 
+            assign fileJson = substring(fileJson, 1, length(fileJson) - 1). 
+            assign fileJson = fileJson + "}]}". 
+            {&out} fileJson.
+            return no-apply.
+      
+
+
+</script>

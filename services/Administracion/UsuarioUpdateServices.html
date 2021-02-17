@@ -1,0 +1,44 @@
+<script language="SpeedScript">
+     def var correcto as lo no-undo.
+     def var codigoUsuario as ch no-undo. 
+     def var nombreUsuario as ch no-undo. 
+     def var password as ch no-undo. 
+     def var codigoGrupo as ch no-undo.
+     def var fileJson as ch no-undo. 
+     define buffer bf for s-usuarios.
+     
+     assign codigoUsuario = replace(trim(get-value('codigoUsuario')), chr(9), "")
+            nombreUsuario = replace(trim(get-value('nombreUsuario')), chr(9), "")
+            password = replace(trim(get-value('password')), chr(9), "")
+            codigoGrupo = replace(trim(get-value('codigoGrupo')), chr(9), "").
+            
+    /* validaciones */ 
+    if codigoUsuario = ""  or nombreUsuario = '' or  password = '' or codigoGrupo = '' then do: 
+        assign fileJson = chr(123) + 
+                            '"error":"' + "Todos los campos son obligatorios"  + '"}'.
+        {&out} fileJson.
+        return no-apply. 
+    end. 
+    /* fin validaciones */ 
+    
+    do transaction:  
+        find first bf where bf.id-usuario = codigoUsuario exclusive-lock no-error. 
+        if avail bf then do:  
+            assign bf.nombre = nombreUsuario 
+                   bf.password = password 
+                   bf.grupo = codigoGrupo
+                    correcto = true.    
+        end. 
+    end. 
+    release bf.
+    if correcto then do: 
+        assign fileJson = chr(123) + 
+                        '"error":"' + ""  + '"}'.
+    end. 
+    else do: 
+        assign fileJson = chr(123) + 
+                        '"error":"' + "Se ha producido un error. Conulte con el administrador del sistema"  + '"}'.
+    end. 
+    {&out} fileJson.
+    return no-apply.
+ </script>

@@ -1,0 +1,22 @@
+<script language="SpeedScript">
+    def var headerXml as ch no-undo. 
+    def var bodyXml as ch no-undo. 
+    def var footerXml as ch no-undo. 
+    def var enterBody as lo no-undo. 
+    def var k as i no-undo.
+
+    assign headerXml = "<sectorstore>".
+
+    for each mge_sector where mge_sector.codigo_sector <> 0 
+                          and oficina = true 
+                          and fechaBaja = ?  by mge_sector.nombre_sector:
+        assign enterBody = true
+                k = k + 1. 
+        assign bodyXml = bodyXml +  "<sector ref=" + "'" + string(k)  + "'" + ">" +
+                                    "<codigo>" + string(mge_sector.codigo_sector) + "</codigo>" +
+                                    "<descripcion>" + mge_sector.nombre_sector + "</descripcion>" +
+                                    "</sector>".
+    end. 
+    assign footerXml = "</sectorstore>".
+   if enterBody then {&out} headerXml + bodyXml + footerXml.
+</script>

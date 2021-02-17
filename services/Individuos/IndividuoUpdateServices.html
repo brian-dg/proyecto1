@@ -1,0 +1,60 @@
+<script language="SpeedScript">
+     def var correcto as lo no-undo.
+     def var tipoDocumento as ch no-undo. 
+     def var numeroDocumento as ch no-undo. 
+     def var nombreIndividuo as ch no-undo. 
+     def var codigoCalle as ch no-undo. 
+     def var calle as ch no-undo. 
+     def var numeroCalle as ch no-undo. 
+     def var pisoCalle as ch no-undo. 
+     def var departamento as ch no-undo. 
+     def var codigoPostal as ch no-undo. 
+     def var codigoPais as ch no-undo. 
+     def var fechaNacimiento as ch no-undo. 
+     def var codigoCivil as ch no-undo. 
+     def var email as ch no-undo. 
+     def var celu as ch no-undo. 
+     def var fijo as ch no-undo. 
+
+
+     assign tipoDocumento = replace(trim(get-value('tipoDocumento')), chr(9), "")
+            numeroDocumento = replace(trim(get-value('numeroDocumento')), chr(9), "")
+            nombreIndividuo = replace(trim(get-value('nombreIndividuo')), chr(9), "")
+            codigoCalle = replace(trim(get-value('codigoCalle')), chr(9), "")
+            calle = replace(trim(get-value('calle')), chr(9), "")
+            numeroCalle = replace(trim(get-value('numeroCalle')), chr(9), "")
+            pisoCalle = replace(trim(get-value('pisoCalle')), chr(9), "")
+            departamento = replace(trim(get-value('departamento')), chr(9), "")
+            codigoPostal = replace(trim(get-value('codigoPostal')), chr(9), "")
+            codigoPais = replace(trim(get-value('codigoPais')), chr(9), "")
+            fechaNacimiento = replace(trim(get-value('fechaNacimiento')), chr(9), "")
+            codigoCivil = replace(trim(get-value('codigoCivil')), chr(9), "")
+            email = replace(trim(get-value('email')), chr(9), "")
+            celu = replace(trim(get-value('celu')), chr(9), "")
+            fijo = replace(trim(get-value('fijo')), chr(9), "").
+     
+    do transaction:  
+        find first individuos where individuos.tipdoc = int(tipoDocumento) 
+                                 and individuos.nrodoc = dec(numeroDocumento) exclusive-lock no-error. 
+        if avail individuos then do: 
+            assign individuos.nombre = nombreIndividuo 
+                individuos.codcalle = codigoCalle
+                individuos.domicilio = calle 
+                individuos.numero = int(numeroCalle) 
+                individuos.piso = int(pisoCalle)
+                individuos.dpto = departamento 
+                individuos.codpos = int(codigoPostal) 
+                individuos.codpais = int(codigoPais) 
+                individuos.fec-nac = date(fechaNacimiento) 
+                individuos.est-civil = int(codigoCivil) 
+                individuos.mail = email 
+                individuos.telefono = fijo 
+                individuos.celular = celu
+                correcto = true.    
+        end.    
+    end. 
+    release individuos.
+    if correcto then {&out} "correcto". 
+                else {&out} "error".
+    return no-apply.
+ </script>

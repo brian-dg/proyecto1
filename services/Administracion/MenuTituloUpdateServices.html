@@ -1,0 +1,33 @@
+<script language="SpeedScript">
+     def var correcto as lo no-undo.
+     def var codigoMenu as ch no-undo. 
+     def var nombreMenu as ch no-undo. 
+     def var titulo as ch no-undo. 
+     
+     assign codigoMenu = replace(trim(get-value('codigoMenu')), chr(9), "")
+            nombreMenu = replace(trim(get-value('nombreMenu')), chr(9), "")
+            titulo = replace(trim(get-value('titulo')), chr(9), "").
+
+    /* validaciones */ 
+    if codigoMenu = "" or 
+        int(codigoMenu) = 0 or 
+        nombreMenu = '' or 
+        titulo = '' then do: 
+            return no-apply. 
+    end. 
+    /* fin validaciones */ 
+    
+    do transaction:  
+        find first Menu where menu.codigoMenu = int(codigoMenu) exclusive-lock no-error. 
+        if avail menu then do: 
+            assign menu.nombreMenu = nombreMenu 
+                    menu.titulo = titulo 
+                    correcto = true.    
+        end. 
+    end. 
+    release menu.
+    if correcto then {&out} "correcto". 
+                 else {&out} "error".
+
+     return no-apply.
+ </script>

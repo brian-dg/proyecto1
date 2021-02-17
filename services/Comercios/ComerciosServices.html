@@ -1,0 +1,198 @@
+<script language="SpeedScript">
+    def var fileJson as ch no-undo. 
+    def var wRequestPost as ch no-undo. 
+    def var inscripcionJson as ch no-undo. 
+    def var k as i no-undo.
+    def var fechaBaja as ch no-undo. 
+    def var fechaAlta as ch no-undo. 
+    def var enterBody as log initial false.
+    def var l as i.
+    def var cantidadTotal as i no-undo. 
+    def var activos as ch no-undo. 
+    def var palabra as ch no-undo.
+    def var rubroJson as ch no-undo.
+    def var numeroInscripcion as ch no-undo. 
+
+
+    PROCEDURE output-headers:
+        wRequestPost = REQUEST_METHOD.
+    END PROCEDURE.
+
+    assign activos = replace(trim(get-value('activos')), chr(9), "")
+            palabra = replace(trim(get-value('palabra')), chr(9), "")
+            numeroInscripcion = replace(trim(get-value('numeroInscripcion')), chr(9), "").
+
+    /* cuenta la cantidad total de comercios activos */
+    for each comercio where comercio.fecBaja = ? no-lock. 
+        assign cantidadTotal = cantidadTotal + 1. 
+    end. 
+        
+    /* devuelve los primeros 25 comercios activos */
+    if wRequestPost = "GET" then do: 
+        for each comercio where comercio.fecBaja = ? no-lock use-index idx-inscripcion by comercio.fechaInsc desc: 
+            assign k = k + 1.  
+            if k > 25 then leave.
+            if k = 1 then {&out}  "[".
+            if comercio.fechaInsc <> ? then assign fechaAlta = string(comercio.fechaInsc, "99/99/9999").
+                                        else assign fechaAlta = "". 
+            if comercio.fecBaja <> ? then assign fechaBaja = string(comercio.fecBaja, "99/99/9999"). 
+                                    else assign fechaBaja = "".
+            if comercio.inscripcion <> 0 then assign inscripcionJson = string(comercio.inscripcion). 
+                                        else assign inscripcionJson = "". 
+            {&out}
+            chr(123) +    
+            '"inscripcion":"' + inscripcionJson + 
+            '","razonSocial":"' + replace(comercio.razonSocial, '"', "") + 
+            '","inicio":"' + fechaAlta + 
+            '","cantidadtotal":"' + string(cantidadTotal) + 
+            '","baja":"' + fechaBaja + 
+            '","error":"' + ""  + '",'.
+            /* rubros asociados */
+            assign l = 0.
+            for each rubxComercio where rubxComercio.inscripcion = comercio.inscripcion 
+                                    and rubxComercio.idRubro <> 0 no-lock break by rubxComercio.inscripcion . 
+                find first rubros where rubros.idRubro = rubxComercio.idRubro no-lock no-error. 
+                if avail rubros
+                    then assign rubroJson = rubros.rubro. 
+                    else assign rubroJson = "".
+                assign l = l + 1. 
+                if l = 1 then do: 
+                    {&out} 
+                    '"rubros":['.
+                end. 
+                {&out}
+                chr(123) +
+                '"idRubro":"' + string(rubxComercio.idRubro) .
+                IF LAST-OF(rubxComercio.inscripcion) 
+                    then {&out} '","rubro":"' + rubroJson '"}'.  
+                    else {&out} '","rubro":"' + rubroJson '"},'.
+            end.
+            /* no tien rubro asociado */
+            if l = 0 then do: 
+                {&out} 
+                '"rubros":[' + 
+                chr(123) +
+                '"idRubro":"' + "" +
+                '","rubro":"' + "" '"}'.  
+            end. 
+
+            if k <  25 /* cantidadTotal */
+                then {&out} ']},'. 
+                else {&out} ']}'. 
+        end. 
+        {&out} "]".
+        return no-apply.
+    end. 
+
+    /* METODO POST */    
+    if wRequestPost = "POST" then do:  
+        /* devuelve un unico registro consultado */
+        if numeroInscripcion <> '' then do:  
+            assign fileJson = "".
+            find first comercio where comercio.inscripcion = int(numeroInscripcion) no-lock no-error. 
+            if avail comercio then do:
+                if comercio.fechaInsc <> ? then assign fechaAlta = string(comercio.fechaInsc, "99/99/9999").
+                                            else assign fechaAlta = "". 
+                if comercio.fecBaja <> ? then assign fechaBaja = string(comercio.fecBaja, "99/99/9999"). 
+                                        else assign fechaBaja = "".
+                if comercio.inscripcion <> 0 then assign inscripcionJson = string(comercio.inscripcion). 
+                                            else assign inscripcionJson = "". 
+                {&out}  
+                "[" + 
+                chr(123) +    
+                '"inscripcion":"' + inscripcionJson + 
+                '","razonSocial":"' + replace(comercio.razonSocial, '"', '') + 
+                '","inicio":"' + fechaAlta + 
+                '","baja":"' + fechaBaja + 
+                '","error":"' + ""  + '",'.
+                /* rubros asociados */
+                assign l = 0.
+                for each rubxComercio where rubxComercio.inscripcion = comercio.inscripcion
+                                        and rubxComercio.idRubro <> 0 no-lock break by rubxComercio.inscripcion. 
+                    find first rubros where rubros.idRubro = rubxComercio.idRubro no-lock no-error. 
+                    if avail rubros 
+                        then assign rubroJson = rubros.rubro. 
+                        else assign rubroJson = "".
+                    assign l = l + 1. 
+                    if l = 1 then   {&out} 
+                                    '"rubros":['.
+                    {&out}
+                    chr(123) +
+                    '"idRubro":"' + string(rubxComercio.idRubro) .
+                    IF LAST-OF(rubxComercio.inscripcion) 
+                        then {&out} '","rubro":"' + rubroJson '"}'.  
+                        else {&out} '","rubro":"' + rubroJson '"},'. 
+                end.
+                /* no tien rubro asociado */
+                if l = 0 then do: 
+                        {&out} 
+                        '"rubros":[' + 
+                        chr(123) +
+                        '"idRubro":"' + "" +
+                        '","rubro":"' + "" '"}'.  
+                end. 
+                {&out} 
+                ']}]'. 
+            end. 
+        end.
+
+        if palabra <> '' then do: 
+            assign fileJson = "[". 
+            for each comercio where comercio.razonSocial begins palabra
+                                and if(activos = 'true') then(Comercio.fecBaja = ?) else(true) no-lock use-index idx-razonsoc by comercio.razonSocial: 
+                assign k = k + 1 . 
+                if k > 50 then leave.
+                if comercio.fechaInsc <> ? then assign fechaAlta = string(comercio.fechaInsc, "99/99/9999").
+                                            else assign fechaAlta = "". 
+                if comercio.fecBaja <> ? then assign fechaBaja = string(comercio.fecBaja, "99/99/9999"). 
+                                        else assign fechaBaja = "".
+                if comercio.inscripcion <> 0 then assign inscripcionJson = string(comercio.inscripcion). 
+                                            else assign inscripcionJson = "". 
+                assign enterBody = true. 
+                assign fileJson =   fileJson +  
+                                    chr(123) +    
+                                    '"inscripcion":"' + inscripcionJson + 
+                                    '","razonSocial":"' + replace(comercio.razonSocial, '"', '') + 
+                                    '","inicio":"' + fechaAlta + 
+                                    '","baja":"' + fechaBaja + 
+                                    '","error":"' + ""  + '",'.
+                /* rubros asociados */
+                assign l = 0.
+                for each rubxComercio where rubxComercio.inscripcion = comercio.inscripcion 
+                                        and rubxComercio.idRubro <> 0 no-lock break by rubxComercio.inscripcion. 
+                    find first rubros where rubros.idRubro = rubxComercio.idRubro no-lock no-error. 
+                    if avail rubros 
+                        then assign rubroJson = rubros.rubro. 
+                        else assign rubroJson = ''.
+                    
+                    assign l = l + 1. 
+                    if l = 1 then do: 
+                        assign fileJson = fileJson + 
+                                        '"rubros":['.
+                    end. 
+                    assign fileJson =   fileJson + 
+                                        chr(123) +
+                                        '"idRubro":"' + string(rubros.idRubro) + 
+                                        '","rubro":"' + rubroJson + 
+                                        '","alicuota":"' + string(rubros.alicuota) +
+                                        '","montoMinimo":"' + string(rubros.montoMinimo) + '"},'.
+                    IF LAST-OF(rubxComercio.inscripcion) then assign fileJson = substring(fileJson, 1, length(fileJson) - 1). 
+                end.
+                /* no tien rubro asociado */
+                if l = 0 then do: 
+                    assign fileJson = fileJson +    
+                                        '"rubros":[' + 
+                                        chr(123) +
+                                        '"idRubro":"' + "" +
+                                        '","rubro":"' +  '"}' .  
+                end.         
+                assign fileJson = fileJson + ']},'. 
+            end. 
+        end.
+        assign fileJson = substring(fileJson, 1, length(fileJson) - 1). /* le saco la ultima coma al json */
+        assign fileJson = fileJson + "]".
+        if enterBody then {&out} fileJson.
+        return no-apply.
+    end.  
+
+</script>

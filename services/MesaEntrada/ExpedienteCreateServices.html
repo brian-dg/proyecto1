@@ -1,0 +1,76 @@
+<script language="SpeedScript">
+    {./variables/GeneralVariables.i}
+    {./components/GetCookieUser.i}
+     def var correcto as lo no-undo.
+     def var numeroExpediente as ch no-undo. 
+     def var anioExpediente as ch no-undo. 
+     def var motivo as ch no-undo. 
+     def var codigoSector as ch no-undo. 
+     def var codigoEstado as ch no-undo. 
+     def var tipoDocumento as ch no-undo. 
+     def var numeroDocumento as ch no-undo. 
+     def var cantidadHojas as ch no-undo. 
+     def var observaciones as ch no-undo.
+     def var interno as ch no-undo. 
+     
+     
+     assign numeroExpediente = replace(trim(get-value('numeroExpediente')), chr(9), "")
+            anioExpediente = replace(trim(get-value('anioExpediente')), chr(9), "")
+            motivo = replace(trim(get-value('motivo')), chr(9), "")
+            codigoSector = replace(trim(get-value('codigoSector')), chr(9), "")
+            codigoEstado = replace(trim(get-value('codigoEstado')), chr(9), "")
+            tipoDocumento = replace(trim(get-value('tipoDocumento')), chr(9), "")
+            numeroDocumento = replace(trim(get-value('numeroDocumento')), chr(9), "")
+            cantidadHojas = replace(trim(get-value('cantidadHojas')), chr(9), "")
+            observaciones = replace(trim(get-value('observaciones')), chr(9), "")
+            interno = replace(trim(get-value('interno')), chr(9), "").
+            
+    /* validaciones */ 
+    if int(numeroExpediente) = 0 or 
+      int(anioExpediente) = 0 or 
+      int(codigoSector) = 0 or 
+      int(codigoEstado) = 0 or 
+      int(cantidadHojas) = 0 or 
+      int(tipoDocumento) = 0 or 
+      dec(numeroDocumento) = 0 or 
+        motivo = '' then do: 
+        return no-apply. 
+    end. 
+    /* fin validaciones */ 
+    
+       
+    do transaction:  
+        find first mge_expediente where mge_expediente.numeroExpediente = int(numeroExpediente)
+                                    and mge_expediente.anio = int(anioExpediente) exclusive-lock no-error. 
+        if not avail mge_expediente then do:  
+            create mge_expediente. 
+            assign mge_expediente.numeroExpediente = int(numeroExpediente)
+                    mge_expediente.anio = int(anioExpediente)
+                    mge_expediente.motivo = motivo 
+                    mge_expediente.codigo_sector = int(codigoSector)
+                    mge_expediente.codigo_estado = int(codigoEstado)
+                    mge_expediente.cantidad_hojas = int(cantidadHojas)
+                    mge_expediente.tipDoc = int(tipoDocumento)
+                    mge_expediente.nrodoc = dec(numeroDocumento)
+                    mge_expediente.observacion = observaciones
+                    mge_expediente.interno = if(interno = 'true') then(true) else(false) 
+                    mge_expediente.usuario = s-usuarios.id-usuario
+                    mge_expediente.fecha_ingreso = today 
+                    mge_expediente.hora_ingreso = string(time, "HH:MM")
+                    correcto = true.    
+        end. 
+        else do: 
+            {&out} "<messagestore>" + 
+                   "<message ref=" + "'" + string(1)  + "'" + ">" +
+                   "<nromessage>" + string(1) + "</nromessage>" +
+                   "<descripcion>" + "El registro ingresado ya existe" + "</descripcion>" +
+                   "</message>" + 
+                   "</messagestore>".
+        end. 
+    end. 
+    release mge_expediente.
+    if correcto then {&out} "correcto". 
+                 else {&out} "error".
+
+     return no-apply.
+ </script>

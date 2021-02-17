@@ -1,0 +1,51 @@
+<script language="SpeedScript">
+    def var headerJson as ch no-undo. 
+    def var bodyJson as ch no-undo. 
+    def var footerJson as ch no-undo. 
+    def var enterBody as lo no-undo. 
+    def var wRequestPost as ch no-undo. 
+    def var fechaXml as ch no-undo. 
+    def var k as i no-undo.
+    def var numeroExpediente as ch no-undo. 
+    def var anioExpediente as ch no-undo. 
+    
+    PROCEDURE output-headers:
+        wRequestPost = REQUEST_METHOD.
+    END PROCEDURE.
+
+     
+    assign numeroExpediente = replace(trim(get-value('numeroExpediente')), chr(9), "")
+            anioExpediente = replace(trim(get-value('anio')), chr(9), "").
+        
+    assign headerJson = "<expedientesstore>".
+
+    /* Petition for all papers */
+    if wRequestPost = "GET" then do: 
+        for each mge_adicional where mge_adicional.numeroExpediente = int(numeroExpediente) 
+                                and mge_adicional.anio = int(anioExpediente) 
+                                and mge_adicional.fechaBaja = ? no-lock  by mge_adicional.renglon :
+            assign enterBody = true
+                    k = k + 1.
+            
+            if mge_adicional.fecha_ingreso <> ? 
+                then assign fechaXml = string(mge_adicional.fecha_ingreso). 
+                else assign fechaXml = "".
+
+            assign bodyJson = bodyJson +  
+                            "<expedientes ref=" + "'" + string(k)  + "'" + ">" +
+                            "<numeroexpediente>" + string(mge_adicional.numeroExpediente) + "</numeroexpediente>" +
+                            "<anio>" + string(mge_adicional.anio) + "</anio>" +
+                            "<fecha>" + fechaXml + "</fecha>" +
+                            "<canthojas>" + string(mge_adicional.cantidad_hojas) + "</canthojas>" +
+                            "<observacion>" + mge_adicional.observacion + "</observacion>" + 
+                            "<id>" + string(mge_adicional.renglon) + "</id>" +
+                            "</expedientes>".
+        end. 
+        assign footerJson = "</expedientesstore>".
+        if enterBody then {&out} headerJson + bodyJson + footerJson.
+        return no-apply.
+    end. 
+
+    
+
+</script> 

@@ -1,0 +1,29 @@
+<script language="SpeedScript">
+    {./variables/GeneralVariables.i}
+    {./components/GetCookieUser.i}
+     def var correcto as lo no-undo.
+     def var numeroExpediente as ch no-undo. 
+     def var anioExpediente as ch no-undo. 
+     
+     assign numeroExpediente = replace(trim(get-value('numeroExpediente')), chr(9), "")
+            anioExpediente = replace(trim(get-value('anio')), chr(9), "").
+     
+    do transaction:  
+        find first mge_expediente where mge_expediente.numeroExpediente = int(numeroExpediente) 
+                                   and mge_expediente.anio = int(anioExpediente) exclusive-lock no-error. 
+        if avail mge_expediente then do: 
+            assign mge_expediente.usbaja = s-usuarios.Id-Usuario
+                   mge_expediente.fechaBaja = today
+                   mge_expediente.horaBaja = string(time, "HH:MM")
+                    correcto = true. 
+          
+        end. 
+    end. 
+    release mge_expediente.
+    
+
+     if correcto then {&out} "correcto". 
+                 else {&out} "error".
+
+     return no-apply.
+ </script>

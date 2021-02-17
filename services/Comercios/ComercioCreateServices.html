@@ -1,0 +1,151 @@
+<script language="SpeedScript">
+     def var correcto as lo no-undo.
+     def var inscripcion as ch no-undo. 
+     def var razonSocial as ch no-undo. 
+     def var numeroDocumento as ch no-undo. 
+     def var tipoDocumento as ch no-undo.
+     def var cuit as ch no-undo. 
+     def var domicilioComercio as ch no-undo. 
+     def var cabin9 as ch no-undo. 
+     def var mail as ch no-undo. 
+     def var fechaInscripcion as ch no-undo. 
+     def var fechaInicio as ch no-undo. 
+     def var fechaCese as ch no-undo. 
+     def var activo as ch no-undo. 
+     def var granContribuyente as ch no-undo. 
+     def var adhiere as ch no-undo. 
+     def var cantidadEmpleados as ch no-undo. 
+     def var superficie as ch no-undo. 
+     def var ingresoAnual as ch no-undo. 
+     def var categoriaMonotributo as ch no-undo. 
+     def var domicilioEntrega as ch no-undo. 
+     def var codigoPostal as ch no-undo. 
+     def var publicidad as ch no-undo. 
+     def var observaciones as ch no-undo. 
+     
+     assign inscripcion = replace(trim(get-value('inscripcion')), chr(9), "")
+            razonSocial = replace(trim(get-value('razonSocial')), chr(9), "")
+            numeroDocumento = replace(trim(get-value('numeroDocumento')), chr(9), "")
+            tipoDocumento = replace(trim(get-value('tipoDocumento')), chr(9), "")
+            cuit = replace(trim(get-value('cuit')), chr(9), "")
+            domicilioComercio = replace(trim(get-value('domicilioComercio')), chr(9), "")
+            cabin9 = replace(trim(get-value('cabin9')), chr(9), "")
+            mail = replace(trim(get-value('mail')), chr(9), "")
+            fechaInscripcion = replace(trim(get-value('fechaInscripcion')), chr(9), "")
+            fechaInicio = replace(trim(get-value('fechaInicio')), chr(9), "")
+            fechaCese = replace(trim(get-value('fechaCese')), chr(9), "")
+            activo = replace(trim(get-value('activo')), chr(9), "")
+            granContribuyente = replace(trim(get-value('granContribuyente')), chr(9), "")
+            adhiere = replace(trim(get-value('adhiere')), chr(9), "")
+            cantidadEmpleados = replace(trim(get-value('cantidadEmpleados')), chr(9), "")
+            superficie = replace(trim(get-value('superficie')), chr(9), "")
+            ingresoAnual = replace(trim(get-value('ingresoAnual')), chr(9), "")
+            categoriaMonotributo = replace(trim(get-value('categoriaMonotributo')), chr(9), "")
+            domicilioEntrega = replace(trim(get-value('domicilioEntrega')), chr(9), "")
+            codigoPostal = replace(trim(get-value('codigoPostal')), chr(9), "")
+            publicidad = replace(trim(get-value('publicidad')), chr(9), "")
+            observaciones = replace(trim(get-value('observaciones')), chr(9), "").
+
+
+            
+    /* validaciones */ 
+    find first Comercio where Comercio.inscripcion = int(inscripcion) no-lock no-error. 
+    if avail Comercio then do: 
+            {&out} 
+            chr(123) + 
+            '"error":"' + "El número de inscripcion comercial ingresado ya existe"  + '"}'.
+            return no-apply.
+
+    end. 
+    if inscripcion = "" or int(inscripcion) = 0 then do: 
+        {&out} 
+        chr(123) + 
+        '"error":"' + "Inscripción Comercial obligatorio"  + '"}'.
+        return no-apply. 
+    end. 
+    if razonSocial = "" then do: 
+        {&out} 
+        chr(123) + 
+        '"error":"' + "Razón Social obligatorio"  + '"}'.
+        return no-apply. 
+    end. 
+    if tipoDocumento = "" then do: 
+        {&out} 
+        chr(123) + 
+        '"error":"' + "Tipo de Documento obligatorio"  + '"}'.
+        return no-apply. 
+    end. 
+    if numeroDocumento = "" or int(numeroDocumento) = 0 then do: 
+        {&out} 
+        chr(123) + 
+        '"error":"' + "Número de Documento obligatorio"  + '"}'.
+        return no-apply. 
+    end.  
+    if domicilioComercio = "" then do: 
+        {&out} 
+        chr(123) + 
+        '"error":"' + "Domicilio del comercio obligatorio"  + '"}'.
+        return no-apply. 
+    end.
+    if fechaInscripcion = "" then do: 
+        {&out} 
+        chr(123) + 
+        '"error":"' + "Fecha de Inscripción obligatorio"  + '"}'.
+        return no-apply. 
+    end.
+    if cantidadEmpleados = "" or int(cantidadEmpleados) = 0 then do: 
+        {&out} 
+        chr(123) + 
+        '"error":"' + "Cantidad de empleados obligatorio"  + '"}'.
+        return no-apply. 
+    end.
+    
+    if adhiere = "true" then do: 
+        if cantidadEmpleados = ''  or superficie = '' or ingresoAnual = '' or categoriaMonotributo = '' then do: 
+            {&out} 
+            chr(123) + 
+            '"error":"' + "Para adherirse al Regimen Simplificado, todos los datos de la sección REGIMEN SIMPLIFICADO son obligatorios"  + '"}'.
+            return no-apply. 
+        end. 
+    end. 
+    
+    /* fin validaciones */ 
+    
+    do transaction:  
+        find first Comercio where Comercio.inscripcion = int(inscripcion) exclusive-lock no-error. 
+        if not avail Comercio then do:  
+            create Comercio. 
+            assign Comercio.inscripcion = int(inscripcion)
+                   Comercio.razonSocial = razonSocial 
+                   Comercio.nrodoc = dec(numeroDocumento)
+                   Comercio.tipodoc = int(tipoDocumento)
+                   Comercio.Cuit = cuit 
+                   Comercio.fechaInsc = date(fechaInscripcion)
+                   Comercio.domComer = domicilioComercio
+                   Comercio.domEntrega = domicilioEntrega
+                   Comercio.codPosEnt = int(codigoPostal)
+                   Comercio.Reparto = int(publicidad)
+                   Comercio.FecInicAct = date(fechaInicio)
+                   Comercio.fecBaja = date(fechaCese)
+                   Comercio.personal = int(cantidadEmpleados)
+                   Comercio.activo = if(activo = 'true') then(true) else(false)
+                   Comercio.es_cabin = if(cabin9 = 'true') then(true) else(false)
+                   Comercio.observaciones = observaciones
+                   Comercio.mail = mail 
+                   Comercio.adhiere = if(adhiere = 'true') then(true) else(false)
+                   Comercio.superficie = dec(superficie)
+                   Comercio.ing_anual = dec(ingresoAnual)
+                   Comercio.categ_mono = categoriaMonotributo
+                   Comercio.granContrib = if(granContribuyente = 'true') then(true) else(false)
+                   correcto = true.    
+        end. 
+    end. 
+    release Comercio.
+    if correcto then {&out} 
+                    chr(123) + 
+                    '"error":"' + ""  + '"}'.
+    else {&out} 
+        chr(123) + 
+        '"error":"' + "Se ha producido un error. Conulte con el administrador del sistema"  + '"}'.
+    return no-apply.
+ </script>

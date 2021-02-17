@@ -1,0 +1,31 @@
+<script language="SpeedScript">
+    {./variables/GeneralVariables.i}
+    {./components/GetCookieUser.i}
+    def var codigoUsuario as ch no-undo. 
+    def var fileJson as ch no-undo. 
+
+    define buffer bf for s-usuarios. 
+    assign codigoUsuario = replace(trim(get-value('codigoUsuario')), chr(9), "").
+
+    /* validacion */ 
+
+    if codigoUsuario = '' then do: 
+        assign fileJson = chr(123) + '"error":"' + "Ocurrio un error al intentar eliminar el registro" + '"}'.
+        {&out} fileJson.
+        return no-apply. 
+    end. 
+    do transaction:  
+        find first bf where bf.id-usuario = codigoUsuario exclusive-lock no-error. 
+        if avail bf then do: 
+            delete bf.
+            assign fileJson = chr(123) + '"error":"' + "" + '"}'.
+             
+        end. 
+        else do: 
+            assign fileJson = chr(123) + '"error":"' + "Ocurrio un error al intentar eliminar el registro" + '"}'.
+        end. 
+    end. 
+    release bf.
+    {&out} fileJson.
+    return no-apply.
+ </script>

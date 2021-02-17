@@ -1,0 +1,23 @@
+<script language="SpeedScript">
+     def var correcto as lo no-undo.
+     def var codigoSector as ch no-undo. 
+     def var nombreSector as ch no-undo. 
+     
+    
+     assign codigoSector = replace(trim(get-value('codigoSector')), chr(9), "")
+            nombreSector = replace(trim(get-value('nombreSector')), chr(9), "").
+
+            
+    do transaction:  
+        find first mge_sector where mge_sector.codigo_sector = int(codigoSector) exclusive-lock no-error. 
+        if avail mge_sector then do: 
+            assign  mge_sector.nombre_sector = nombreSector 
+                    correcto = true.    
+        end. 
+    end. 
+    release t_codpos.
+    if correcto then {&out} "correcto". 
+                 else {&out} "error".
+
+     return no-apply.
+ </script>

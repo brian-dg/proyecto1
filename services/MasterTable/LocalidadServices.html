@@ -1,0 +1,38 @@
+<script language="SpeedScript">
+    def var headerJson as ch no-undo. 
+    def var bodyJson as ch no-undo. 
+    def var footerJson as ch no-undo. 
+    def var enterBody as lo no-undo. 
+    def var k as i no-undo.
+    def var wRequestPost as ch no-undo. 
+    
+    PROCEDURE output-headers:
+        wRequestPost = REQUEST_METHOD.
+    END PROCEDURE.
+
+    assign headerJson = "<localidadstore>".
+  
+        /* Petition for one people */
+        if wRequestPost = "GET" then do: 
+            find first t_codpos where t_codpos.codpos = int(get-value('codpos')) no-lock no-error.
+            if avail t_codpos then do: 
+                assign bodyJson = bodyJson +  
+                                "<localidad ref=" + "'" + string(k)  + "'" + ">" +
+                                "<codpos>" + string(t_codpos.codpos) + "</codpos>" +
+                                "<nombre>" + string(t_codpos.nombre) + "</nombre>" +
+                                "</localidad>".
+               
+            end. 
+            else do: 
+            assign bodyJson = bodyJson +  
+                                "<localidad ref=" + "'" + string(k)  + "'" + ">" +
+                                "<codpos>" + "0" + "</codpos>" +
+                                "<nombre>" + "" + "</nombre>" +
+                                "</localidad>".                      
+            end.
+            assign footerJson = "</localidadstore>".
+            {&out} headerJson + bodyJson + footerJson.
+        end. 
+
+
+</scrpt>

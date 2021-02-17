@@ -1,0 +1,89 @@
+<script language="SpeedScript">
+     {./variables/GeneralVariables.i}
+    {./components/GetCookieUser.i}
+    /* busco sector del individuo */
+    def var v-sector as i no-undo.
+    FIND FIRST MGE_USUAXSECTOR WHERE MGE_USUAXSECTOR.ID-USUARIO = S-USUARIOS.ID-USUARIO NO-LOCK NO-ERROR.
+    IF AVAILABLE MGE_USUAXSECTOR THEN DO:
+        ASSIGN V-SECTOR = MGE_USUAXSECTOR.CODIGO_SECTOR.
+        find first mge_sector where mge_sector.codigo_sector = mge_usuaxSector.codigo_sector no-lock no-error. 
+    end.
+
+    def var individuoXml as ch no-undo. 
+    def var fechaXml as ch no-undo. 
+    def var estadoXml as ch no-undo. 
+    def var numeroExpediente as ch no-undo. 
+    def var anioExpediente as ch no-undo. 
+    def var sectorXml as ch no-undo.
+
+    assign numeroExpediente = replace(trim(get-value('numeroexpediente')), chr(9), "")
+           anioExpediente = replace(trim(get-value('anio')), chr(9), "").
+
+    /* si es un expediente nuevo */
+    if numeroExpediente = '' or int(numeroExpediente) = 0 then do: 
+        find last mge_expediente where mge_expediente.anio = year(today) use-index puk-clave no-lock no-error. 
+        if avail mge_expediente 
+            then assign numeroExpediente = string(mge_expediente.numeroExpediente + 1).
+            else assign numeroExpediente =  "1".
+
+        assign anioExpediente = string(year(today)).
+        {&out}  "<expedientestore>" +
+                "<expediente ref=" + "'" + "1"  + "'" + ">" +
+                "<numeroexpediente>" + numeroExpediente + "</numeroexpediente>" +
+                "<anio>" + anioExpediente + "</anio>" +
+                "<individuo>" + "" + "</individuo>" +
+                "<motivo>" + "" + "</motivo>" +
+                "<canthojas>" + "" + "</canthojas>" + 
+                "<codsector>" + string(v-sector) + "</codsector>" + 
+                "<sector>" + mge_sector.nombre_sector + "</sector>" + 
+                "<codestado>" + "1" + "</codestado>" + 
+                "<estado>" + "Recibido" + "</estado>" + 
+                "<tipdoc>" + "" + "</tipdoc>" + 
+                "<nrodoc>" + "" + "</nrodoc>" + 
+                "<observacion>" + "" + "</observacion>" + 
+                "<interno>" + "false" + "</interno>" + 
+                "</expediente>" + 
+                "</expedientestore>".
+
+    end. 
+   /* edicion de expediente */
+    find first mge_expediente where mge_expediente.numeroExpediente = int(numeroExpediente) 
+                                and mge_expediente.anio = int(anioExpediente) no-lock no-error. 
+    if avail mge_expediente then do: 
+        find first individuos where individuos.tipdoc = mge_expediente.tipdoc 
+                                and individuos.nrodoc = mge_expediente.nrodoc no-lock no-error. 
+        if avail individuos 
+            then assign individuoXml = individuos.nombre. 
+            else assign individuoXml = "". 
+        find first mge_estado where mge_estado.codigo_estado = mge_expediente.codigo_estado no-lock no-error. 
+        if avail mge_estado 
+            then assign estadoXml = mge_estado.nombre_estado. 
+            else assign estadoXml = "".
+        if mge_expediente.fecha_ingreso <> ? 
+            then assign fechaXml = string(mge_expediente.fecha_ingreso). 
+            else assign fechaXml = "".
+        find first mge_sector where mge_sector.codigo_sector = mge_expediente.codigo_sector no-lock no-error. 
+        if avail mge_sector 
+            then assign sectorXml = mge_sector.nombre_sector. 
+            else assign sectorXml = "".
+        
+        {&out}  "<expedientestore>" +
+                "<expediente ref=" + "'" + "1"  + "'" + ">" +
+                "<numeroexpediente>" + string(mge_expediente.numeroExpediente) + "</numeroexpediente>" +
+                "<anio>" + string(mge_expediente.anio) + "</anio>" +
+                "<individuo>" + individuoXml + "</individuo>" +
+                "<motivo>" + mge_expediente.motivo + "</motivo>" +
+                "<canthojas>" + string(mge_expediente.cantidad_Hojas) + "</canthojas>" + 
+                "<codsector>" + string(mge_expediente.codigo_sector) + "</codsector>" + 
+                "<sector>" + sectorXml + "</sector>" + 
+                "<codestado>" + string(mge_expediente.codigo_estado) + "</codestado>" + 
+                "<estado>" + estadoXml + "</estado>" + 
+                "<tipdoc>" + string(mge_expediente.tipdoc) + "</tipdoc>" + 
+                "<nrodoc>" + string(mge_expediente.nrodoc) + "</nrodoc>" + 
+                "<observacion>" + mge_expediente.observacion + "</observacion>" + 
+                "<interno>" + string(mge_expediente.interno) + "</interno>" + 
+                "</expediente>" + 
+                "</expedientestore>".
+    end. 
+    return no-apply.
+</script>

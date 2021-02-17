@@ -1,0 +1,39 @@
+<script language="SpeedScript">
+    def var headerJson as ch no-undo. 
+    def var bodyJson as ch no-undo. 
+    def var footerJson as ch no-undo. 
+    def var enterBody as lo no-undo. 
+    def var k as i no-undo.
+    def var wRequestPost as ch no-undo. 
+    def var xmlFecha as ch no-undo.
+    
+    PROCEDURE output-headers:
+        wRequestPost = REQUEST_METHOD.
+    END PROCEDURE.
+
+    assign headerJson = "<paisesstore>".
+
+        /* Petition for all people */
+        if wRequestPost = "GET" then do: 
+            for each t_pais where t_pais.fechaBaja = ? no-lock by t_pais.nombre:
+            assign enterBody = true
+                        k = k + 1. 
+
+                if t_pais.fechaAlta <> ? 
+                    then assign xmlFecha = string(t_pais.fechaAlta). 
+                    else assign xmlFecha = "".
+                assign bodyJson = bodyJson +  
+                                "<paises ref=" + "'" + string(k)  + "'" + ">" +
+                                "<codpais>" + string(t_pais.codpais) + "</codpais>" +
+                                "<nombre>" + string(t_pais.nombre) + "</nombre>" + 
+                                "<usalta>" + string(t_pais.usAlta) + "</usalta>" +
+                                "<fechaalta>" + xmlFecha + "</fechaalta>" +
+                                "<horaalta>" + string(t_pais.horaAlta) + "</horaalta>" +
+                                "</paises>".
+            end. 
+            assign footerJson = "</paisesstore>".
+            if enterBody then {&out} headerJson + bodyJson + footerJson.
+            return no-apply.
+        end. 
+
+</scrpt>

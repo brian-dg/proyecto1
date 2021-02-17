@@ -1,0 +1,64 @@
+<script language="SpeedScript">
+    {./variables/GeneralVariables.i}
+    {./components/GetCookieUser.i}
+    def var v-sector as i no-undo.
+    find first mge_usuaXSector WHERE MGE_USUAXSECTOR.ID-USUARIO = S-USUARIOS.ID-USUARIO NO-LOCK NO-ERROR.
+    IF AVAILABLE MGE_USUAXSECTOR THEN DO:
+        ASSIGN V-SECTOR = MGE_USUAXSECTOR.CODIGO_SECTOR.
+        find first mge_sector where mge_sector.codigo_sector = mge_usuaxSector.codigo_sector no-lock no-error. 
+    end.
+    
+     def var correcto as lo no-undo.
+     def var a as ch no-undo. 
+     def var numeroExpediente as ch no-undo. 
+     def var anioExpediente as ch no-undo.
+     def var seleccionados as ch no-undo. 
+     def var codigoSector as ch no-undo. 
+     def var k as i no-undo. 
+
+     define temp-table tt-envio like mge_expediente. 
+
+    assign seleccionados = replace(trim(get-value('seleccionados')), chr(9), "")
+           codigoSector = replace(trim(get-value('codigoSector')), chr(9), ""). 
+
+    if int(codigoSector) = 0 or codigoSector = "" then do: 
+        return no-apply.
+    end. 
+
+    assign a = seleccionados.
+	repeat k = 1 to 10:
+	    find first tt-envio where tt-envio.numeroexpediente = int(substring(a,1,5))
+							and tt-envio.anio = int(substring(a,6,4)) exclusive-lock no-error.
+		if not avail tt-envio then do:
+		    create tt-envio.
+			assign tt-envio.numeroexpediente = int(substring(a,1,5))
+			        tt-envio.anio = int(substring(a,6,4)).
+		end.
+		release tt-envio.
+		assign a = substring(a, 11, length(a)).
+    end.
+
+      
+    do transaction:  
+        for each tt-envio where tt-envio.numeroExpediente <> 0 
+                            and tt-envio.anio <> 0 no-lock.
+            create mge_seguimiento.
+            assign mge_seguimiento.codigo_estado = 2
+                    mge_seguimiento.codigo_sector_envio = v-sector
+                    mge_seguimiento.codigo_sector_ingreso = int(codigoSector)
+                    mge_seguimiento.fecha_envio = today
+                    mge_seguimiento.hora_envio = string(time, "hh:mm") 
+                    mge_seguimiento.numeroExpediente = tt-envio.numeroexpediente 
+                    mge_seguimiento.usuario_envio = s-usuarios.id-usuario
+                    mge_seguimiento.anio = tt-envio.anio 
+                    correcto = true.
+        end. 
+    end. 
+    release mge_seguimiento.
+
+    
+    if correcto then {&out} "correcto". 
+                 else {&out} "error".
+
+     return no-apply.
+ </script>

@@ -1,0 +1,175 @@
+<script language="SpeedScript"> 
+    def var fileJson as ch no-undo. 
+    def var fileJson2 as ch no-undo. 
+    def var wRequestPost as ch no-undo. 
+    def var enterBody as log initial false.
+    def var wDeclaro as logical init false no-undo.
+    def var inscripcion as ch no-undo.
+    def var wInteres as dec no-undo.
+    def var wTiempo as i no-undo.
+    def var wTotNominal as dec no-undo.
+    def var wPagos as dec no-undo.
+    def var wRecargo as dec no-undo.
+    def var wActualizado as dec no-undo.
+    def var wTotal as dec no-undo.
+    def var wDeuda as dec no-undo.
+    def var wNominal as dec no-undo.
+    def var wFoprosi as dec no-undo.
+    def var wPunitorio as dec no-undo.
+    def var wActivo as ch no-undo.
+    def var wFecFoprosi as date no-undo.
+    def var wFecPag as ch no-undo. 
+    def var razonSocial as ch no-undo.
+    def var cantidadPeriodos as i no-undo.
+    def var totalRegistros as i no-undo.
+    def var caja as ch no-undo.
+
+    
+    assign inscripcion = replace(trim(get-value('inscripcion')), chr(9), "").
+    
+   
+    /* validaciones */ 
+    find first parametros where parametros.idParam = "IntAct" no-lock no-error. 
+    if avail parametros 
+        then assign wActivo = parametros.valor.
+        else do: 
+            {&out} 
+            '[' + chr(123) + 
+            '"inscripcion":"' + get-value('inscripcion') + 
+            '","file":"' + "" + 
+            '","error":"' + "No existe un interes activo" + '"' +
+            '}]'.
+            return no-apply. 
+        end. 
+find first parametros where parametros.idParam = "FecFop" no-lock no-error. 
+if avail parametros 
+    then assign wFecFoprosi = date(parametros.valor).
+    else do: 
+        {&out} 
+        '[' + chr(123) + 
+        '"inscripcion":"' + get-value('inscripcion') + 
+        '","file":"' + "" + 
+        '","error":"' + "No existe parametro para fecha de inicio FoProSi" + '"' +
+        '}]'.
+        return no-apply. 
+    end. 
+find first parametros where parametros.idParam = "IntMens" no-lock no-error. 
+if avail parametros 
+    then assign wPunitorio = dec(parametros.valor).
+find first parametros where parametros.idParam = "IntDia" no-lock no-error. 
+if avail parametros then assign wPunitorio = dec(parametros.valor).
+
+if wPunitorio = 0 then do: 
+    {&out} 
+    '[' + chr(123) + 
+    '","file":"' + "" + 
+    '","error":"' + "No estámn cargados los Punitorios" + '"' +
+    '}]'.
+    return no-apply. 
+end. 
+/* fin validacion */  
+/* cuento cantidad toal de registros */ 
+for each comercio no-lock where comercio.inscripcion = int(inscripcion) use-index idx-inscripcion, 
+    each liquidacion no-lock where liquidacion.inscripcion = comercio.inscripcion  
+                                and (Liquidacion.pagos > 0 or 
+                                Liquidacion.impRect > 0) use-index idx-ins-ani-per by liquidacion.inscripcion
+                                                                                    by liquidacion.anio
+                                                                                    by liquidacion.periodo:
+    assign totalRegistros = totalRegistros + 1.
+end. 
+/* fin del conteo */ 
+
+find first comercio where comercio.inscripcion = int(inscripcion) no-lock no-error. 
+if avail comercio then assign razonSocial = comercio.razonSocial.
+    
+
+for each comercio no-lock where comercio.inscripcion = int(inscripcion) use-index idx-inscripcion, 
+    each liquidacion no-lock where liquidacion.inscripcion = comercio.inscripcion  
+                            and (Liquidacion.pagos > 0 or 
+                                Liquidacion.impRect > 0) use-index idx-ins-ani-per by liquidacion.anio
+                                                                                    by liquidacion.periodo:
+      
+    assign cantidadPeriodos = cantidadPeriodos + 1.
+
+    assign wDeclaro = false.
+    for each detaLiqui of liquidacion no-lock.
+	    if detaLiqui.importe-jurado > 0 then do:
+            assign wdeclaro = true. 
+		end. 
+	end.
+    
+    find first Caja-Codi where Caja-Codi.codigo = Liquidacion.CodCaja NO-LOCK NO-ERROR.
+    if avail Caja-Codi  
+        then assign caja =  Caja-Codi.Nombre. 
+        else assign caja = ''.
+    /* **** CALCULO INTERESES **** */
+    if wActivo = "intMens" then do:   
+        assign wTiempo = (year(today) - year(Liquidacion.FecVto)) * 12 +
+                        (month(today) - month(Liquidacion.FecVto)).
+        if day(today) - day(Liquidacion.fecVto) > 0 then wTiempo = wTiempo + 1. 
+        if today > Liquidacion.fecVto
+            then assign wInteres = (((wTiempo)  / 100) * wPunitorio) + 1.
+            else assign wInteres = 1.  
+    end.   
+    if wActivo = "intDia" then do:   
+        assign wTiempo = today - Liquidacion.fecVto.
+        if today > Liquidacion.fecVto
+            then assign wInteres = (((wTiempo) * wPunitorio  / 100)) + 1.
+            else assign wInteres = 1.  
+    end.
+    assign wNominal = wNominal + Liquidacion.importe.
+	
+    IF wNominal - (Liquidacion.pago + Liquidacion.ImpRect) > 0
+        then assign wDeuda = wNominal - (Liquidacion.pago + Liquidacion.ImpRect).
+        else assign wDeuda = 0.
+    if Liquidacion.importe - (Liquidacion.pago + Liquidacion.ImpRect) > 0
+        then assign wDeuda = Liquidacion.importe - Liquidacion.pago + Liquidacion.ImpRect.
+        else assign wDeuda = 0.
+    if Liquidacion.fecPag <> ? 
+	    then assign wFecPag = string(Liquidacion.fecPag)  .
+	    else do:
+            if Liquidacion.Fecha_Ant <> ? 
+                then assign wFecPag = string(Liquidacion.Fecha_Ant).
+			    else assign wFecPag = "".
+        end.	
+    
+
+     assign wFoprosi = 0.   
+    for each Foprosi where Foprosi.inscripcion = Liquidacion.inscripcion
+                        and Foprosi.periodo = Liquidacion.periodo
+                        and Foprosi.anio = Liquidacion.anio no-lock use-index puk-clave:
+        assign wFoprosi = wFoprosi + Foprosi.pago. 
+    end. 
+
+    assign enterBody = true.  
+
+    if cantidadPeriodos = 1 then {&out} "[".
+    
+                        {&out}  
+                        chr(123) +    
+                        '"inscripcion":"' + string(liquidacion.inscripcion) + 
+                        '","razonSocial":"' + string(comercio.razonSocial) + 
+                        '","periodo":"' + string(liquidacion.periodo) + 
+                        '","anio":"' + string(liquidacion.anio) + 
+                        '","nominal":"' + string(liquidacion.importe) + 
+                        '","pagos":"' + string(Liquidacion.pago  + Liquidacion.impRect) + 
+                        '","fechapago":"' + string(wFecPag) + 
+                        '","caja":"' + caja + 
+                        '","saldo":"' + string(wDeuda) + 
+                        '","saldoactual":"' + string(round(wDeuda * wInteres, 2)) + 
+                        '","foprosi":"' + string(wFoprosi) + 
+                        '","ddjj":"' + string(wDeclaro) + 
+                        '","convenio":"' + string(liquidacion.nroconv) + 
+                        '","cantidadtotal":"' + string(totalRegistros) . 
+    if cantidadPeriodos < totalRegistros
+        then {&out} '","error":"' + ""  + '"},'.
+        else {&out} '","error":"' + ""  + '"}]'. 
+end. 
+if enterBody = false then   {&out} 
+                            '[' + chr(123) + 
+                            '"inscripcion":"' + string(inscripcion) + 
+                            '","razonSocial":"' + string(razonSocial) + 
+                            '","error":"' + "No posee Pagos" + '"' +
+                            '}]'.
+return no-apply.
+</script>

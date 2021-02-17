@@ -1,0 +1,20 @@
+<script language="SpeedScript">
+    def var headerXml as ch no-undo. 
+    def var bodyXml as ch no-undo. 
+    def var footerXml as ch no-undo. 
+    def var enterBody as lo no-undo. 
+    def var k as i no-undo.
+
+    assign headerXml = "<origenstore>".
+
+    for each dgt-organo_emisor where fechaBaja = ? by descripcion:
+        assign enterBody = true
+                k = k + 1. 
+        assign bodyXml = bodyXml +  "<origen ref=" + "'" + string(k)  + "'" + ">" +
+                                    "<codigo>" + string(codigo) + "</codigo>" +
+                                    "<descripcion>" + descripcion + "</descripcion>" +
+                                    "</origen>".
+    end. 
+    assign footerXml = "</origenstore>".
+   if enterBody then {&out} headerXml + bodyXml + footerXml.
+</script>

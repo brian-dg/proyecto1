@@ -1,0 +1,61 @@
+<script language="SpeedScript">
+    def var headerJson as ch no-undo. 
+    def var bodyJson as ch no-undo. 
+    def var footerJson as ch no-undo. 
+    def var enterBody as lo no-undo. 
+    def var k as i no-undo.
+    def var wRequestPost as ch no-undo. 
+    def var xmlFecha as ch no-undo.
+    def var individuoXml as ch no-undo.
+    def var fechaDesde as ch no-undo. 
+    def var fechaHasta as ch no-undo. 
+    
+    PROCEDURE output-headers:
+        wRequestPost = REQUEST_METHOD.
+    END PROCEDURE.
+
+    assign fechaDesde = replace(trim(get-value('fechaDesde')), chr(9), "")
+            fechaHasta = replace(trim(get-value('fechaHasta')), chr(9), "").
+
+    assign fechaDesde = substring(fechaDesde, 9,2) + "/" + substring(fechaDesde,6, 2) + "/" + substring(fechaDesde, 1,4)
+            fechahasta = substring(fechahasta, 9,2) + "/" + substring(fechahasta,6, 2) + "/" + substring(fechaHasta, 1,4). 
+
+    assign headerJson = "<recibosstore>".
+  
+        /* Petition for all people */
+        if wRequestPost = "POST" then do: 
+            for each deuda_impGral where deuda_impGral.codOpe= 800 
+                                    and  deuda_impGral.fecha >= date(fechaDesde)
+                                    and  deuda_impGral.fecha <= date(fechaHasta) no-lock:  
+                assign enterBody = true
+                        k = k + 1. 
+                find first individuos where individuos.nroDoc = deuda_impGral.nroDoc no-lock no-error.
+                if avail individuos
+                    then assign individuoXml = individuos.nombre. 
+                    else assign individuoXml = "". 
+                
+                assign bodyJson = bodyJson +  
+                                "<recibos ref=" + "'" + string(k)  + "'" + ">" +
+                                "<nrodoc>" + string(deuda_impGral.nrodoc) + "</nrodoc>" +
+                                "<individuo>" + individuoXml + "</individuo>" +
+                                "<adicional>" + deuda_impGral.adicional + "</adicional>". 
+                if deuda_impGral.fecpag <> ? then do: 
+                    assign bodyJson = bodyJson + "<fechapago>" + string(deuda_impGral.fecpag) + "</fechapago>" +
+                                                "<importepago>" + string(deuda_impGral.pagos) + "</importepago>" +
+                                                "<nrorecibo>" + string(deuda_impGral.nro-rec) + "</nrorecibo>" +
+                                                "</recibos>". 
+                end. 
+                else do: 
+                    assign bodyJson = bodyJson + "<fechapago>" + "" + "</fechapago>" +
+                                                "<importepago>" + "Impago" + "</importepago>" +
+                                                "<nrorecibo>" + "" + "</nrorecibo>" + 
+                                                "</recibos>".              
+                end. 
+                                
+            end. 
+            assign footerJson = "</recibosstore>".
+            if enterBody then {&out} headerJson + bodyJson + footerJson.
+            return no-apply.
+        end. 
+ 
+</script>

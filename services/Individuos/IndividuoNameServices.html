@@ -1,0 +1,32 @@
+<script language="SpeedScript">
+    def var headerJson as ch no-undo. 
+    def var bodyJson as ch no-undo. 
+    def var footerJson as ch no-undo. 
+    
+    
+    find first individuos where individuos.tipdoc = int(get-value('tipdoc')) 
+                            and individuos.nrodoc = dec(get-value('nrodoc')) no-lock no-error. 
+    if avail individuos then do: 
+        
+        {&out}  "<individuosstore>" +
+                    "<individuos ref=" + "'" + string(1)  + "'" + ">" +
+                        "<tipdoc>" + string(individuos.tipdoc) + "</tipdoc>" +
+                        "<nrodoc>" + string(individuos.nrodoc) + "</nrodoc>" +
+                        "<nombre>" + trim(individuos.nombre) + "</nombre>" +
+                    "</individuos>"
+                "</individuosstore>".
+
+    end. 
+    /* si no lo encuentra */ 
+    else do: 
+    {&out}  "<individuosstore>" +
+                    "<individuos ref=" + "'" + string(1)  + "'" + ">" +
+                        "<tipdoc>" + "0" + "</tipdoc>" +
+                        "<nrodoc>" + "0" + "</nrodoc>" +
+                        "<nombre>" + "" + "</nombre>" +
+                    "</individuos>"
+                "</individuosstore>".             
+
+    end. 
+    return no-apply.
+</script>

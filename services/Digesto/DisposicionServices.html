@@ -1,0 +1,82 @@
+<script language="SpeedScript">
+    def var wMethod as ch no-undo. 
+    def var wMessage as ch no-undo.
+    def var Inumero as ch no-undo.
+    DEFINE VARIABLE vhSocket   AS HANDLE                             NO-UNDO.
+    /* vhSocket:SET-READ-RESPONSE-PROCEDURE('getResponse'). */
+  
+    assign Inumero = replace(get-value("numeroNormativa"), " ", "0").
+
+    {&out}  Inumero + "aca".
+   
+    
+
+    {&out} int(substring(string(Inumero), 1,5)).
+
+    
+    
+    PROCEDURE output-headers:
+        wMethod = REQUEST_METHOD.
+   END PROCEDURE.
+
+   
+   /* create */
+   if wMethod = 'POST' then do:  
+    do transactio: 
+        find first dgt-documentos where dgt-documentos.codigo_documento = get-value("codigoNormativa")
+                                    and trim(dgt-documentos.numeroNormativa) = trim(get-value("numeroNormativa"))
+                                    and trim(dgt-documentos.anioNormativa) = trim(get-value("anioNormativa")) exclusive-lock no-error.
+        if not avail dgt-documentos then do:  
+                create dgt-documentos.    
+                assign dgt-documentos.codigo_documento = get-value("codigoNormativa")
+                        dgt-documentos.numeroNormativa = trim(get-value("numeroNormativa"))
+                        dgt-documentos.anioNormativa = trim(get-value("anioNormativa")) 
+                        dgt-documentos.fecha_alta = today
+					    dgt-documentos.horaalta = string(time,"hh:mm") /*
+                        DGT-DOCUMENTOS.FECHA_EMISION = DATE(GET-VALUE("fechaEmision"))
+					    DGT-DOCUMENTOS.FECHA_RECEPCION = DATE(GET-VALUE("fechaRecepcion")) */
+					    DGT-DOCUMENTOS.MODIFICA_A = GET-VALUE("modifica") 
+					    dgt-documentos.codigo_origen = get-value("origenNormativa")
+					    DGT-DOCUMENTOS.MODIFICADA_POR = GET-VALUE("modificada")
+                        dgt-documentos.vigente = if(get-value("vigente") = 'true') then(true) else(false) 
+                        dgt-documentos.publico = if(get-value("publico") = 'true') then(true) else(false)  
+                        DGT-DOCUMENTOS.OBSERVACIONES = GET-VALUE("resumen")  
+                        wMessage = "Correcto". 
+                        {&out} "termine de crear". 
+        end.
+        else  wMessage = 'error'.
+            release dgt-documentos.
+    end.
+   /* {&out} wmessage. */
+
+   end.
+
+ /*  if wRequestPost then do: 
+        do transaction:
+            find first dgt-documentos where dgt-documentos.codigo_documento = get-value("codigoNormativa")
+                                        and dgt-documentos.numero_documento = int(get-value("numeroNormativa"))
+                                         and dgt-documentos.anio = int(get-value("anioNormativa")) exclusive-lock no-error.
+            if not avail dgt-documentos then do: 
+                create dgt-documentos. 
+                assign dgt-documentos.codigo_documento = get-value("codigoNormativa"). /*
+                        dgt-documentos.numero_documento = int(get-value("numeroNormativa"))
+                        dgt-documentos.anio = int(get-value("anioNormativa"))
+                        dgt-documentos.fecha_alta = today
+					    dgt-documentos.horaalta = string(time,"hh:mm")
+                        DGT-DOCUMENTOS.FECHA_EMISION = DATE(GET-VALUE("fechaEmision"))
+					    DGT-DOCUMENTOS.FECHA_RECEPCION = DATE(GET-VALUE("fechaRecepcion"))
+					    DGT-DOCUMENTOS.MODIFICA_A = GET-VALUE("modifica")
+					    dgt-documentos.codigo_origen = get-value("origenNormativa")
+					    DGT-DOCUMENTOS.MODIFICADA_POR = GET-VALUE("modificada")
+                        dgt-documentos.vigente = log(get-value("vigente"))
+                        dgt-documentos.publico = log(get-value("publico")) 
+                        DGT-DOCUMENTOS.OBSERVACIONES = GET-VALUE("resumen")  
+                        WOK = TRUE. 
+            end. 
+            release dgt-documentos.
+        end. 
+    end.     
+
+     if wOk then {&out} "Correcto".
+            else {&out} "error". */
+</script>

@@ -1,0 +1,38 @@
+<script language="SpeedScript">
+    def var headerJson as ch no-undo. 
+    def var bodyJson as ch no-undo. 
+    def var footerJson as ch no-undo. 
+    def var enterBody as lo no-undo. 
+    def var k as i no-undo.
+    def var wRequestPost as ch no-undo. 
+    
+    PROCEDURE output-headers:
+        wRequestPost = REQUEST_METHOD.
+    END PROCEDURE.
+
+    assign headerJson = "<callestore>".
+  
+        /* Petition for one people */
+        if wRequestPost = "GET" then do: 
+            find first t_calle where t_calle.codcalle = get-value('codcalle') no-lock no-error.
+            if avail t_calle then do: 
+                assign bodyJson = bodyJson +  
+                                "<calle ref=" + "'" + string(k)  + "'" + ">" +
+                                "<codcalle>" + string(t_calle.codcalle) + "</codcalle>" +
+                                "<nombre>" + string(t_calle.nombre) + "</nombre>" +
+                                "</calle>".
+               
+            end. 
+            else do: 
+            assign bodyJson = bodyJson +  
+                                "<calle ref=" + "'" + string(k)  + "'" + ">" +
+                                "<codcalle>" + "0" + "</codcalle>" +
+                                "<nombre>" + "" + "</nombre>" +
+                                "</calle>".                      
+            end.
+            assign footerJson = "</callestore>".
+            {&out} headerJson + bodyJson + footerJson.
+        end. 
+
+
+</scrpt>

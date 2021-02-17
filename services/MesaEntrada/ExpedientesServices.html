@@ -1,0 +1,174 @@
+<script language="SpeedScript">
+    def var headerJson as ch no-undo. 
+    def var bodyJson as ch no-undo. 
+    def var footerJson as ch no-undo. 
+    def var enterBody as lo no-undo. 
+    def var individuoXml as ch no-undo. 
+    def var k as i no-undo.
+    def var wRequestPost as ch no-undo. 
+    def var fechaXml as ch no-undo. 
+    def var estadoXml as ch no-undo. 
+    def var numeroExpediente as ch no-undo. 
+    def var anioExpediente as ch no-undo. 
+    def var cantidadTotal as int no-undo.
+    
+    PROCEDURE output-headers:
+        wRequestPost = REQUEST_METHOD.
+    END PROCEDURE.
+
+    assign headerJson = "<expedientesstore>".
+
+    /* Petition for all papers */
+    if wRequestPost = "GET" then do: 
+        for each mge_expediente where mge_expediente.fechaBaja = ? no-lock  by mge_expediente.anio  desc
+                                                                            by mge_expediente.numeroExpediente desc:
+            assign enterBody = true
+                    k = k + 1. 
+            if k > 20 then leave. 
+            find first individuos where individuos.tipdoc = mge_expediente.tipdoc 
+                                    and individuos.nrodoc = mge_expediente.nrodoc no-lock no-error. 
+            if avail individuos 
+                then assign individuoXml = individuos.nombre. 
+                else assign individuoXml = "". 
+            find first mge_estado where mge_estado.codigo_estado = mge_expediente.codigo_estado no-lock no-error. 
+            if avail mge_estado 
+                then assign estadoXml = mge_estado.nombre_estado. 
+                else assign estadoXml = "".
+            if mge_expediente.fecha_ingreso <> ? 
+                then assign fechaXml = string(mge_expediente.fecha_ingreso). 
+                else assign fechaXml = "".
+
+            assign bodyJson = bodyJson +  
+                            "<expedientes ref=" + "'" + string(k)  + "'" + ">" +
+                            "<numeroexpediente>" + string(mge_expediente.numeroExpediente) + "</numeroexpediente>" +
+                            "<anio>" + string(mge_expediente.anio) + "</anio>" +
+                            "<fecha>" + fechaXml + "</fecha>" +
+                            "<individuo>" + individuoXml + "</individuo>" +
+                            "<motivo>" + mge_expediente.motivo + "</motivo>" +
+                            "<estado>" + estadoXml + "</estado>" + 
+                            "</expedientes>".
+        end. 
+        assign footerJson = "</expedientesstore>".
+        if enterBody then {&out} headerJson + bodyJson + footerJson.
+        return no-apply.
+    end. 
+
+        /* Petition search people for word */
+        if wRequestPost = "POST" then do:  
+            
+            assign numeroExpediente = replace(trim(get-value('numeroexpediente')), chr(9), "")
+                    anioExpediente = replace(trim(get-value('anio')), chr(9), "").
+
+          
+            /* busqueda por numero y año */
+            if anioExpediente <> '' and numeroExpediente <> '' then do:
+                find first mge_expediente where mge_expediente.anio = int(anioExpediente)
+                                            and mge_expediente.numeroExpediente = int(numeroExpediente) 
+                                            and mge_expediente.fechaBaja = ? no-lock no-error. 
+                if avail mge_expediente then do: 
+                    assign enterBody = true
+                            k = k + 1.  
+                    find first individuos where individuos.tipdoc = mge_expediente.tipdoc 
+                                            and individuos.nrodoc = mge_expediente.nrodoc no-lock no-error. 
+                    if avail individuos 
+                        then assign individuoXml = individuos.nombre. 
+                        else assign individuoXml = "". 
+                    find first mge_estado where mge_estado.codigo_estado = mge_expediente.codigo_estado no-lock no-error. 
+                    if avail mge_estado 
+                        then assign estadoXml = mge_estado.nombre_estado. 
+                        else assign estadoXml = "".
+                    if mge_expediente.fecha_ingreso <> ? 
+                        then assign fechaXml = string(mge_expediente.fecha_ingreso). 
+                        else assign fechaXml = "".
+                    
+                    assign bodyJson = bodyJson +  
+                                    "<expedientes ref=" + "'" + string(k)  + "'" + ">" +
+                                    "<numeroexpediente>" + string(mge_expediente.numeroExpediente) + "</numeroexpediente>" +
+                                    "<anio>" + string(mge_expediente.anio) + "</anio>" +
+                                    "<fecha>" + fechaXml + "</fecha>" +
+                                    "<individuo>" + individuoXml + "</individuo>" +
+                                    "<motivo>" + mge_expediente.motivo + "</motivo>" +
+                                    "<estado>" + estadoXml + "</estado>" + 
+                                    "<total>" + string(cantidadTotal) + "</total>" +
+                                    "<pagina>" + "1" +  "</pagina>" + 
+                                    "</expedientes>".
+                end. 
+            end. 
+            /* busqueda por año */
+            if anioExpediente <> '' and numeroExpediente = '' then do:
+            
+                find last mge_expediente where mge_expediente.anio = int(anioExpediente)
+                                           and mge_expediente.fechabaja = ? use-index puk-clave .
+                assign cantidadTotal = mge_expediente.numeroExpediente.
+            
+                for each mge_expediente where mge_expediente.anio = int(anioExpediente) 
+                                          and mge_expediente.fechaBaja = ? no-lock  use-index puk-clave by mge_expediente.anio  desc
+                                                                                                        by mge_expediente.numeroExpediente desc:
+                    assign enterBody = true
+                            k = k + 1.  
+
+                          
+                    if k > 100 then leave.
+                    find first individuos where individuos.tipdoc = mge_expediente.tipdoc 
+                                            and individuos.nrodoc = mge_expediente.nrodoc no-lock no-error. 
+                    if avail individuos 
+                        then assign individuoXml = individuos.nombre. 
+                        else assign individuoXml = "". 
+                    find first mge_estado where mge_estado.codigo_estado = mge_expediente.codigo_estado no-lock no-error. 
+                    if avail mge_estado 
+                        then assign estadoXml = mge_estado.nombre_estado. 
+                        else assign estadoXml = "".
+                    if mge_expediente.fecha_ingreso <> ? 
+                        then assign fechaXml = string(mge_expediente.fecha_ingreso). 
+                        else assign fechaXml = "".
+                    assign bodyJson = bodyJson +  
+                                    "<expedientes ref=" + "'" + string(k)  + "'" + ">" +
+                                    "<numeroexpediente>" + string(mge_expediente.numeroExpediente) + "</numeroexpediente>" +
+                                    "<anio>" + string(mge_expediente.anio) + "</anio>" +
+                                    "<fecha>" + fechaXml + "</fecha>" +
+                                    "<individuo>" + individuoXml + "</individuo>" +
+                                    "<motivo>" + mge_expediente.motivo + "</motivo>" +
+                                    "<estado>" + estadoXml + "</estado>" + 
+                                    "<total>" + string(cantidadTotal) + "</total>" +
+                                    "<pagina>" + "1" +  "</pagina>" + 
+                                    "</expedientes>".
+                end. 
+            end.
+            /* busqueda por numero */
+            if anioExpediente = '' and numeroExpediente <> '' then do:
+                for each mge_expediente where mge_expediente.numeroExpediente = int(numeroExpediente) no-lock. 
+                    assign enterBody = true
+                            k = k + 1.  
+                    if k > 100 then leave.
+                    find first individuos where individuos.tipdoc = mge_expediente.tipdoc 
+                                            and individuos.nrodoc = mge_expediente.nrodoc no-lock no-error. 
+                    if avail individuos 
+                        then assign individuoXml = individuos.nombre. 
+                        else assign individuoXml = "". 
+                    find first mge_estado where mge_estado.codigo_estado = mge_expediente.codigo_estado no-lock no-error. 
+                    if avail mge_estado 
+                        then assign estadoXml = mge_estado.nombre_estado. 
+                        else assign estadoXml = "".
+                    if mge_expediente.fecha_ingreso <> ? 
+                        then assign fechaXml = string(mge_expediente.fecha_ingreso). 
+                        else assign fechaXml = "".
+                    assign bodyJson = bodyJson +  
+                                    "<expedientes ref=" + "'" + string(k)  + "'" + ">" +
+                                    "<numeroexpediente>" + string(mge_expediente.numeroExpediente) + "</numeroexpediente>" +
+                                    "<anio>" + string(mge_expediente.anio) + "</anio>" +
+                                    "<fecha>" + fechaXml + "</fecha>" +
+                                    "<individuo>" + individuoXml + "</individuo>" +
+                                    "<motivo>" + mge_expediente.motivo + "</motivo>" +
+                                    "<estado>" + estadoXml + "</estado>" + 
+                                    "<total>" + string(cantidadTotal) + "</total>" +
+                                    "<pagina>" + "1" +  "</pagina>" + 
+                                    "</expedientes>".
+                end. 
+            end.
+
+            assign footerJson = "</expedientesstore>".
+            if enterBody then {&out} headerJson + bodyJson + footerJson.
+            return no-apply.
+        end. 
+
+</script> 

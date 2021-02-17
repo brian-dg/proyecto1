@@ -1,0 +1,46 @@
+<script language="SpeedScript">
+    def var wRequestPost as ch no-undo.
+    def var numeroExpediente as ch no-undo. 
+    def var anioExpediente as ch no-undo. 
+    def var individuosXml as ch no-undo.
+
+    PROCEDURE output-headers:
+        wRequestPost = REQUEST_METHOD.
+    END PROCEDURE.
+    
+    assign numeroExpediente = replace(trim(get-value('numeroExpediente')), chr(9), "")
+           anioExpediente = replace(trim(get-value('anio')), chr(9), ""). 
+
+    
+    if wRequestPost = "GET" then do:     
+    find first mge_expediente where mge_expediente.numeroExpediente = int(numeroExpediente)
+                                and mge_expediente.anio = int(anioExpediente) no-lock no-error. 
+    if avail mge_expediente then do: 
+        find first individuos where individuos.tipdoc = mge_expediente.tipdoc 
+                                and individuos.nrodoc = mge_expediente.nrodoc no-lock no-error. 
+        if avail individuos
+            then assign individuosXml = individuos.nombre. 
+            else assign individuosXml = "".
+    {&out}  "<recibosstore>" +
+                    "<recibos ref=" + "'" + string(1)  + "'" + ">" +
+                        "<documento>" + string(mge_expediente.nrodoc) + "</documento>" +
+                        "<individuo>" + individuosXml + "</individuo>" +
+                        "<adicional>" + string(mge_expediente.numeroExpediente) + "/" + string(mge_expediente.anio) + "</adicional>" +
+                        "</recibos>"
+                "</recibostore>".
+
+    end. 
+    /* si no lo encuentra */ 
+    else do: 
+    {&out}  "<recibosstore>" +
+                    "<recibos ref=" + "'" + string(1)  + "'" + ">" +
+                        "<documento>" + "0" + "</documento>" +
+                        "<individuo>" + "" + "</individuo>" +
+                        "<adicional>" + "" + "</adicional>" +
+                        "</recibos>"
+                "</recibostore>".
+    end.             
+end.
+
+    return no-apply.
+</script>

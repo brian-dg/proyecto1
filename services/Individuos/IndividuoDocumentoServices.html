@@ -1,0 +1,47 @@
+<script language="SpeedScript">
+    def var headerJson as ch no-undo. 
+    def var bodyJson as ch no-undo. 
+    def var footerJson as ch no-undo. 
+    def var nroCalleXml as ch no-undo. 
+    def var tipDocXml as ch no-undo. 
+    def var loclaidadXml as ch no-undo.
+    def var tipoDocumento as ch no-undo. 
+    def var numeroDocumento as ch no-undo. 
+    
+    assign tipoDocumento = replace(trim(get-value('tipoDocumento')), chr(9), "")
+            numeroDocumento = replace(trim(get-value('numeroDocumento')), chr(9), "").
+    
+    find first individuos where individuos.tipdoc = int(tipoDocumento) 
+                            and individuos.nrodoc = dec(numeroDocumento) no-lock no-error. 
+    if avail individuos then do: 
+
+            if individuos.numero <> 0 
+                    then assign nroCalleXml = string(individuos.numero). 
+                    else assign nroCalleXml = "".
+
+                find first t_tipdoc where t_tipdoc.tipdoc = individuos.tipdoc no-lock no-error. 
+                if avail t_tipdoc 
+                    then assign tipDocXml = t_tipdoc.dsc-tipdoc. 
+                    else assign tipDocXml = "". 
+
+                find first t_codpos where t_codpos.codpos = individuos.codpos no-lock no-error. 
+                if avail t_codpos 
+                    then assign loclaidadXml = t_codpos.nombre.
+                    else assign loclaidadXml = "".
+        
+        {&out}  "<individuosstore>" +
+            "<individuos ref=" + "'" + "1"  + "'" + ">" +
+                                "<tipdoc>" + string(individuos.tipdoc) + "</tipdoc>" +
+                                "<tipdocdesc>" + tipDocXml + "</tipdocdesc>" +
+                                "<nrodoc>" + string(individuos.nrodoc) + "</nrodoc>" +
+                                "<nombre>" + individuos.nombre + "</nombre>" +
+                                "<domicilio>" + string(individuos.domicilio) + "</domicilio>" +
+                                "<numero>" + nroCalleXml + "</numero>" + 
+                                "<localidad>" + loclaidadXml + "</localidad>" + 
+                                "</individuos>"
+                "</individuosstore>".
+
+    end. 
+    
+    return no-apply.
+</script>

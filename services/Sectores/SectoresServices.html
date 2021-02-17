@@ -1,0 +1,62 @@
+<script language="SpeedScript">
+    def var headerJson as ch no-undo. 
+    def var bodyJson as ch no-undo. 
+    def var footerJson as ch no-undo. 
+    def var enterBody as lo no-undo. 
+    def var k as i no-undo.
+    def var wRequestPost as ch no-undo. 
+    def var sectorXml as ch no-undo. 
+    
+    PROCEDURE output-headers:
+        wRequestPost = REQUEST_METHOD.
+    END PROCEDURE.
+
+    assign headerJson = "<sectoresstore>".
+
+        /* Petition for all people */
+        if wRequestPost = "GET" then do: 
+            for each mge_sector where mge_sector.fechaBaja = ?
+                                  and mge_sector.oficina no-lock by mge_sector.nombre_sector:
+                assign enterBody = true
+                        k = k + 1. 
+
+                if mge_sector.codigo_sector <> 0 
+                    then assign sectorXml = string(mge_sector.codigo_sector). 
+                    else assign sectorXml = "".
+
+                
+                assign bodyJson = bodyJson +  
+                                "<sectores ref=" + "'" + string(k)  + "'" + ">" +
+                                "<codigo>" + sectorXml + "</codigo>" +
+                                "<nombre>" + mge_sector.nombre_sector + "</nombre>" +
+                                "</sectores>".
+                               
+            end. 
+            assign footerJson = "</sectoresstore>".
+            if enterBody then {&out} headerJson + bodyJson + footerJson.
+            return no-apply.
+        end. 
+
+        /* Petition search people for word */
+        if wRequestPost = "POST" then do: 
+            for each mge_sector where mge_sector.nombre_sector begins get-value('palabra')
+                                and mge_sector.fechaBaja = ? 
+                                and mge_sector.oficina no-lock:
+                assign enterBody = true
+                        k = k + 1. 
+                if mge_sector.codigo_sector <> 0 
+                    then assign sectorXml = string(mge_sector.codigo_sector). 
+                    else assign sectorXml = "".
+
+                assign bodyJson = bodyJson +  
+                                "<sectores ref=" + "'" + string(k)  + "'" + ">" +
+                                "<codigo>" + sectorXml + "</codigo>" +
+                                "<nombre>" + mge_sector.nombre_sector + "</nombre>" +
+                                "</sectores>".
+            end. 
+            assign footerJson = "</sectoresstore>".
+            if enterBody then {&out} headerJson + bodyJson + footerJson.
+            return no-apply.
+        end.  
+
+</script>

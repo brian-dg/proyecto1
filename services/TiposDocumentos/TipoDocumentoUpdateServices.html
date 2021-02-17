@@ -1,0 +1,27 @@
+<script language="SpeedScript">
+     def var correcto as lo no-undo.
+     def var tipoDocumento as ch no-undo. 
+     def var descripcion as ch no-undo. 
+     
+     assign tipoDocumento = replace(trim(get-value('tipoDocumento')), chr(9), "")
+            descripcion = replace(trim(get-value('descripcion')), chr(9), "").
+
+    /* validaciones */ 
+    if int(tipoDocumento) = 0 or descripcion = '' then do: 
+        return no-apply. 
+    end. 
+    /* fin validaciones */ 
+    
+    do transaction:  
+        find first t_tipdoc where t_tipdoc.tipdoc = int(tipoDocumento) exclusive-lock no-error. 
+        if avail t_tipdoc then do: 
+            assign t_tipdoc.dsc-tipdoc = descripcion 
+                    correcto = true.    
+        end. 
+    end. 
+    release t_tipdoc.
+    if correcto then {&out} "correcto". 
+                 else {&out} "error".
+
+     return no-apply.
+ </script>

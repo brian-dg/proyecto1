@@ -1,0 +1,56 @@
+<script language="SpeedScript">
+    def var fileJson as ch no-undo. 
+    def var enterBody as lo no-undo. 
+    def var wRequestPost as ch no-undo. 
+    
+    
+    PROCEDURE output-headers:
+        wRequestPost = REQUEST_METHOD.
+    END PROCEDURE.
+
+        /* Petition for all people */
+        if wRequestPost = "GET" then do: 
+            assign fileJson = "[".
+            for each s-grupos no-lock by s-grupos.descripcion:
+                assign enterBody = true.  
+
+                assign fileJson =   fileJson +  
+                                        chr(123) +    
+                                        '"codigo":"' + string(s-grupos.grupo) + 
+                                        '","nombre":"' + s-grupos.descripcion +  
+                                        '","error":"' + ""  + '"},'.
+
+                               
+            end. 
+            assign fileJson = substring(fileJson, 1, length(fileJson) - 1). /* le saco la ultima coma al json */
+            assign fileJson = fileJson + "]".
+            if enterBody then {&out} fileJson.
+                         else {&out} chr(123) + '}'.
+            return no-apply.
+        end. 
+
+        
+       /* if wRequestPost = "POST" then do: 
+            for each s-usuarios where s-usuarios.nombre begins get-value('palabra') no-lock by s-usuarios.grupo
+                                                                                            by s-usuarios.nombre:  
+
+                assign enterBody = true
+                        k = k + 1. 
+                find first s-grupos where s-grupos.grupo = s-usuarios.grupo no-lock no-error. 
+                if avail s-grupos 
+                    then assign grupoXml = string(s-grupos.descripcion). 
+                    else assign grupoXml = "".
+
+                    assign bodyJson = bodyJson +  
+                                "<usuarios ref=" + "'" + string(k)  + "'" + ">" +
+                                "<id>" + string(s-usuarios.id-usuario) + "</id>" +
+                                "<nombre>" + s-usuarios.nombre + "</nombre>" +
+                                "<grupo>" + grupoXml + "</grupo>" +
+                                "</usuarios>".
+            end. 
+            assign footerJson = "</usuariosstore>".
+            if enterBody then {&out} headerJson + bodyJson + footerJson.
+            return no-apply.
+        end.  */
+
+</script>
