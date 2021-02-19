@@ -90,6 +90,41 @@ const getBuildMain = () => {
                                         Carga de Pago
                                     </a>
                                 </li>
+
+                                <li>
+                                    <a href="${ipServer}municipio2.0/views/Comercios/GenerarDeudaAnual.html">
+                                        <i class="metismenu-icon"></i>
+                                        Generacion de Deuda Anual
+                                    </a>
+                                </li>
+
+                                <li>
+                                    <a href="${ipServer}municipio2.0/views/Comercios/GenerarDeudaMensual.html">
+                                        <i class="metismenu-icon"></i>
+                                        Generacion de Deuda Mensual
+                                    </a>
+                                </li>
+
+                                <li>
+                                    <a href="${ipServer}municipio2.0/views/Comercios/EstadoCuenta.html">
+                                        <i class="metismenu-icon"></i>
+                                        Estado de Cuenta
+                                    </a>
+                                </li>
+
+                                <li>
+                                    <a href="${ipServer}municipio2.0/views/Comercios/ImpresionAnual.html">
+                                        <i class="metismenu-icon"></i>
+                                        Impresion habilitacion Anual
+                                    </a>
+                                </li>
+
+                                <li>
+                                <a href="${ipServer}municipio2.0/views/Comercios/ImpresionMensual.html">
+                                    <i class="metismenu-icon"></i>
+                                    Impresion Desinfeccion Mensual
+                                </a>
+                            </li>
                             </ul>
                     </ul>
 
