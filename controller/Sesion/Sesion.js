@@ -57,10 +57,10 @@ const getStart = () => {
 // User Logued
 const getSesionUser = () => {  
     // si esta cerrada la sesion manda al index
-    if(document.cookie == '') {
+    /* if(document.cookie == '') {
         window.location=`${ipServer}municipio2.0/index.html`;
         return false;
-    };  
+    };  */
     let obj = new XMLHttpRequest();
     obj.open('GET', `${baseUrl}/Sesion/userSesionServices`, true);
     obj.setRequestHeader('content-type', 'application/x-www-form-urlencoded');
@@ -69,11 +69,11 @@ const getSesionUser = () => {
             const objCleaned = obj.responseText.slice(84); 
             const jsonObj = JSON.parse(objCleaned); 
             
-            if(jsonObj.error != '') {
+           /* if(jsonObj.error != '') {
                 window.location='index.html';
                 document.getElementById('informe').innerHTML = jsonObj.error;
                 return false; 
-            } 
+            } */
             document.getElementById('nombreUsuario').innerHTML = jsonObj.nombre;
             document.getElementById('nombreSector').innerHTML = jsonObj.sector;
             return jsonObj;

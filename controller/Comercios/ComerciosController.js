@@ -7,7 +7,7 @@ const getComercios = () => {
         params = location.search;
     }
     // Loading 
-    templateLoading = `<div class="loading"><img src="/miciudad/assets/images/loader.gif" alt="loading" /><br/>Un momento, por favor...</div>`;
+    templateLoading = `<div class="loading"><img src="/municipio2.0/assets/images/loader.gif" alt="loading" /><br/>Un momento, por favor...</div>`;
     document.getElementById('loading').innerHTML = templateLoading;
     
     let obj = new XMLHttpRequest();

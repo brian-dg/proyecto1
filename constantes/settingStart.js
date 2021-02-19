@@ -1,7 +1,7 @@
-const baseUrl = 'http://192.168.1.155/cgi-bin/cgiip.exe/WService=wsbroker4/services/';
-const baseUrlComercio = 'http://192.168.1.170/cgi-bin/cgiip.exe/WService=wsbroker3/services/';
+const baseUrl = 'http://localhost/cgi-bin/cgiip.exe/WService=wsbroker4/services/';
+const baseUrlComercio = 'http://localhost/cgi-bin/cgiip.exe/WService=wsbroker3/services/';
 
-const ipServer = 'http://192.168.1.155/';
+const ipServer = 'http://localhost/';
 
 
 
@@ -58,7 +58,40 @@ const getBuildMain = () => {
                                         </a>
                                     </li>
                                 </ul>
+
+                                
                         </ul>
+
+                        <ul>
+                        <li>
+                            <a href="#">
+                                <i class="metismenu-icon pe-7s-diamond"></i>
+                                Remises
+                                <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
+                            </a>
+                            <ul>
+                                <li>
+                                    <a href="${ipServer}municipio2.0/views/Comercios/Remises.html">
+                                        <i class="metismenu-icon"></i>
+                                        Empresa de Remises
+                                    </a>
+                                </li>
+
+                                <li>
+                                    <a href="${ipServer}municipio2.0/views/Comercios/CambioUnidad.html">
+                                        <i class="metismenu-icon"></i>
+                                        Cambio de Unidad
+                                    </a>
+                                </li>
+
+                                <li>
+                                    <a href="${ipServer}municipio2.0/views/Comercios/CargaPago.html">
+                                        <i class="metismenu-icon"></i>
+                                        Carga de Pago
+                                    </a>
+                                </li>
+                            </ul>
+                    </ul>
 
                         <ul>
                             <li>
