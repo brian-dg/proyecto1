@@ -159,85 +159,86 @@
                         <div class="col-md-12">
                             <div class="main-card mb-3 card my-3">
                                 <div class="card-body">
-                                    <h5 class="card-title">Empresa de Remises</h5>
-                                    <form class="" autocomplete="off">
+                                    <h5 class="card-title">Dj AFIP</h5>
+                                    <div class="" autocomplete="off">
                                         <div>
                                             <p class="text-danger" id="informe">
                                                 <!-- NOTIFICACIONES -->
                                             </p>
                                         </div>
-                                        <div class="position-relative form-row mt-4">
+
+                                        <div class="form-row mb-2 mt-4"> 
+                                            <!-- Cuit -->
                                             <div class="col-md-6">
-                                                <label for="exampleSelect" class="">Búsquedas</label>
-                                                <input 
-                                                    type="text" 
-                                                    id="palabra" 
-                                                    class="form-control form-control-sm" 
-                                                    onkeyup="getSearch(event)" 
-                                                    onblur="document.getElementById('palabra').value = ''"
-                                                    autocomplete="off" 
-                                                    placeholder="Ingrese Razón Social" autofocus>
-                                            </div>
-
-                                            <div class="col-md-3 mt-4 ml-5">
-                                                <label class="">
+                                                <div class="input-group mb-2">
                                                     <input 
-                                                        type="checkbox" 
-                                                        class="form-check-input" 
-                                                        id="activos"
-                                                        checked
+                                                        name="cuit" 
+                                                        id="cuit" 
+                                                        placeholder="" 
+                                                        type="text" 
+                                                        class="form-control form-control-sm" 
+                                                        autofocus 
+                                                        required
                                                     >
-                                                    Solo los Activos
-                                                </label>
+                                                    <div class="input-group-append "> 
+                                                        <span class="input-group-text form-control-sm">CUIT*</span> 
+                                                    </div>
+                                                </div>
                                             </div>
-
-                                        </div>
-
-                                        <div class="position-relative form-row mt-2">
+                                            <!-- Periodo -->
+                                            <div class="col-md-2">
+                                                <div class="input-group mb-2">
+                                                    <input 
+                                                        name="periodo" 
+                                                        id="periodo" 
+                                                        placeholder="00" 
+                                                        type="text" 
+                                                        class="form-control form-control-sm" 
+                                                        required
+                                                    >
+                                                    <div class="input-group-append "> 
+                                                        <span class="input-group-text form-control-sm">Periodo*</span> 
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- Año -->
                                             <div class="col-md-3">
-                                                <input 
-                                                    type="text" 
-                                                    id="numeroInscripcion" 
-                                                    class="form-control form-control-sm" 
-                                                    autocomplete="off" 
-                                                    onkeyup="getSearch(event)"
-                                                    placeholder="Empresa" 
-                                                >
-                                                
-                                            </div>
-                                        </div>
-                                            
-
-                                        <div class="position-relative form-row mt-4">
-                                            <div class="col-md-12 text-center" id="loading">
-                                                <!-- Imagen procesando-->
-                                            </div>
-                                        </div>
-                                        <div class="position-relative form-row">
-                                            <div class="col-md-12  text-right">
-                                                <a href="./RemiseCreate.html">
-                                                    <button class="mt-0 btn btn-sm btn-primary" type="button">Nueva Empresa</button>
-                                                </a>
+                                                <div class="input-group mb-2">
+                                                    <input 
+                                                        name="año" 
+                                                        id="año" 
+                                                        type="text" 
+                                                        class="form-control form-control-sm" 
+                                                        autofocus 
+                                                        required
+                                                    >
+                                                    <div class="input-group-append "> 
+                                                        <span class="input-group-text form-control-sm">Año*</span> 
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
 
-                                        <div class="position-relative form-row mt-1">
-                                            <div class="col-md-12 text-left" id="total">
-                                                <!-- Imagen procesando-->
-                                            </div>
-                                        </div>
 
                                         <div class="position-relative form-row mt-2">
                                             <div class="table-responsive">
                                                 <table class="table table-striped table-hover table-bordered col-md-12">
+
                                                     <thead>
                                                         <tr>
-                                                            <th class="text-center bg-mypage2 text-white">Inscripción</th>
-                                                            <th class="text-center bg-mypage2 text-white">Licencia</th>
-                                                            <th class="text-center bg-mypage2 text-white">Dominio</th>
-                                                            <th class="text-center bg-mypage2 text-white">Titular</th>
-                                                            <th class="text-center bg-mypage2 text-white">Estado</th>
-                                                            <th class="text-center bg-mypage2 text-white">Acciones</th>
+                                                            <label for="exampleSelect" class=""><strong>Detalle</strong></label>
+                                                            <th colspan="6" class="text-center bg-mypage2 text-white ">Declaraciones Juradas AFIP</th>
+                                                        </tr>
+
+                                                        <tr>
+                                                            
+                                                            <th class="text-center bg-mypage2 text-white">CUIT</th>
+                                                            <th class="text-center bg-mypage2 text-white">Inscripcion</th>
+                                                            <th class="text-center bg-mypage2 text-white">Constribuyente</th>
+                                                            <th class="text-center bg-mypage2 text-white">M. Imponible</th>
+                                                            <th class="text-center bg-mypage2 text-white">Determinado</th>
+                                                            <th class="text-center bg-mypage2 text-white">Tributado</th>
+                                                            
                                                         </tr>
                                                         
                                                     </thead>
@@ -251,16 +252,8 @@
                                                                 <th class="text-center ">Razón Social</th>
                                                                 <th class="text-center ">Rubros</th>
                                                                 <th class="text-center ">13/08</th>
-                                                                <th class="text-center ">Activo</th>
-                                                                <th class="text-center ">
-
-                                                                    <a href="http://localhost/municipio2.0/views/Comercios/remiseVer.html"><button type="button" class="btn btn-primary ">Ver</button></a>
-                                                                    
-                                                                    <a href="http://localhost/municipio2.0/views/Comercios/RemiseEdithtml"><button type="button" class="btn btn-warning">Editar</button></a>
-
-                                                                
-                                                                    <a href="http://localhost/municipio2.0/views/Comercios/Remises.html"><button type="button" class="btn btn-danger">Eliminar</button></a>
-                                                                </th>
+                                                                <th class="text-center ">Determinado</th>
+                                                                <th class="text-center ">Tributado</th>
                                                             </tr>
 
                                                             <tr>
@@ -268,16 +261,9 @@
                                                                 <th class="text-center ">Razón Social</th>
                                                                 <th class="text-center ">Rubros</th>
                                                                 <th class="text-center ">18/04</th>
-                                                                <th class="text-center ">Activo</th>
-                                                                <th class="text-center ">
-
-                                                                    <a href="http://localhost/municipio2.0/views/Comercios/remiseVer.html"><button type="button" class="btn btn-primary">Ver</button></a>
-                                                                    
-                                                                    <a href="http://localhost/municipio2.0/views/Comercios/RemiseEdithtml"><button type="button" class="btn btn-warning">Editar</button></a>
-
+                                                                <th class="text-center ">Determinado</th>
+                                                                <th class="text-center ">Tributado</th>
                                                                 
-                                                                    <a href="http://localhost/municipio2.0/views/Comercios/Remises.html"><button type="button" class="btn btn-danger">Eliminar</button></a>
-                                                                </th>
                                                             </tr>
 
                                                             <tr>
@@ -285,17 +271,9 @@
                                                                 <th class="text-center ">Razón Social</th>
                                                                 <th class="text-center ">Rubros</th>
                                                                 <th class="text-center ">11/05</th>
-                                                                <th class="text-center ">Activo</th>
-                                                                <th class="text-center">
-
-                                                                    <a href="http://localhost/municipio2.0/views/Comercios/remiseVer.html"><button type="button" class="btn btn-primary">Ver</button></a>
-                                                                    
-                                                                    <a href="http://localhost/municipio2.0/views/Comercios/remiseEdithtml"><button type="button" class="btn btn-warning">Editar</button></a>
-
-                                                                
-                                                                    <a href="http://localhost/municipio2.0/views/Comercios/Remises.html"><button type="button" class="btn btn-danger">Eliminar</button></a>
-                                                                </th>
-
+                                                                <th class="text-center ">Determinado</th>
+                                                                <th class="text-center ">Tributado</th>
+                                                            
                                                             </tr>
 
                                                             <tr>
@@ -303,16 +281,9 @@
                                                                 <th class="text-center ">Razón Social</th>
                                                                 <th class="text-center ">Rubros</th>
                                                                 <th class="text-center ">09/07</th>
-                                                                <th class="text-center ">Activo</th>
-                                                                <th class="text-center ">
-
-                                                                    <a href="http://localhost/municipio2.0/views/Comercios/remiseVer.html"><button type="button" class="btn btn-primary">Ver</button></a>
-                                                                    
-                                                                    <a href="http://localhost/municipio2.0/views/Comercios/remiseEdithtml"><button type="button" class="btn btn-warning">Editar</button></a>
-
+                                                                <th class="text-center ">Determinado</th>
+                                                                <th class="text-center ">Tributado</th>
                                                                 
-                                                                    <a href="http://localhost/municipio2.0/views/Comercios/Remises.html"><button type="button" class="btn btn-danger">Eliminar</button></a>
-                                                                </th>
 
                                                             </tr>
                                                             
@@ -322,6 +293,10 @@
                                                     </tbody>
 
                                                 </table>
+                                                <div>
+                                                    <button class="mt-3 btn btn-warning" id="update">Imprimir</button>
+                                        <button class="mt-3 btn btn-danger float-right" type="button" onclick="location.href='./Comercios/ImportarDj.html'" target="_blank">Cancelar</button>
+                                                </div>
                                             </div>
                                         </div>
                                     </form>

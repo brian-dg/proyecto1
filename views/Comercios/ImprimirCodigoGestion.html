@@ -159,76 +159,94 @@
                         <div class="col-md-12">
                             <div class="main-card mb-3 card my-3">
                                 <div class="card-body">
-                                    <h5 class="card-title">Impresion de Habilitacion Anual</h5>
+                                    <h5 class="card-title">Impresion de Codigo de Gestión</h5>
                                     <hr class="" id="datos" autocomplete="off">
                                     
-                                        <div class="form-row mb-2 mt-4"> 
-                                            <!-- Año a imprimir  -->
-                                            <div class="col-md-12">
+                                    <div class="form-row mb-2 mt-4"> 
+                                            <!-- Tributo  -->
+                                            <div class="col-md-6">
                                                 <div class="input-group mb-2">
                                                         <input
-                                                            name="añoImprimir" 
-                                                            id="añoImprimir" 
+                                                            name="tributo" 
+                                                            id="tributo" 
                                                             placeholder="" 
                                                             type="number" 
                                                             class="form-control form-control-sm" 
-                                                            required > 
+                                                            required
+                                                            
+                                                            > 
                                                         </input>  
                                                     <div class="input-group-append "> 
-                                                        <span class="input-group-text form-control-sm">Año a Imprimir*</span> 
+                                                        <span class="input-group-text form-control-sm">Tributo*</span> 
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div class="form-row mb-2 mt-4"> 
-                                            <!-- Habilitacion Desde -->
+                                            <div class="col-md-6">
+                                                <div class="input-group mb-2">
+                                                        <input
+                                                            name="tributo" 
+                                                            id="tributo" 
+                                                            placeholder="Derecho Registro e Inspeccion" 
+                                                            type="text" 
+                                                            class="form-control form-control-sm" 
+                                                            required
+                                                            disabled> 
+                                                        </input>  
+                                                </div>        
+                                            </div>
+                                    </div>
+
+                                    <div class="form-row mb-2 mt-4"> 
+                                            <!-- Cuenta -->
                                             <div class="col-md-6">
                                                 <div class="input-group mb-2">
                                                     <input
-                                                        name="habilitacionDesde" 
-                                                        id="habilitacionDesde" 
+                                                        name="cuenta" 
+                                                        id="cuenta" 
                                                         type="text" 
                                                         class="form-control form-control-sm" 
                                                         placeholder="00"
                                                         required>
 
                                                     <div class="input-group-append "> 
-                                                        <span class="input-group-text form-control-sm">Habilitacion Desde*</span> 
+                                                        <span class="input-group-text form-control-sm">Cuenta*</span> 
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
                                                 <div class="input-group mb-2">
-                                                    <input
-                                                        name="habilitacionHasta" 
-                                                        id="habilitacionHasta" 
-                                                        type="text" 
-                                                        class="form-control form-control-sm" 
-                                                        placeholder="00"
-                                                        required>
-
-                                                    <div class="input-group-append "> 
-                                                        <span class="input-group-text form-control-sm">Habilitacion Hasta*</span> 
-                                                    </div>
-                                                </div>
+                                                        <input
+                                                            name="tributo" 
+                                                            id="tributo" 
+                                                            placeholder="" 
+                                                            type="text" 
+                                                            class="form-control form-control-sm" 
+                                                            required
+                                                            disabled> 
+                                                        </input>  
+                                                </div>        
                                             </div>
-                                        </div>
+                                        </div>   
 
-                                        
-
-                                        <div class="position-relative form-row mt-2">
+                                        <div class="form-row mb-2 mt-4">
                                             <div class="col-md-12">
-                                                
-                                                    <textarea 
-                                                        name="observaciones" 
-                                                        id="observaciones" 
+                                                <div class="input-group mb-2">
+                                                    <input
+                                                        name="codigoGestion" 
+                                                        id="codigoGestion" 
                                                         type="text" 
-                                                        class="form-control form-control-sm"
-                                                        placeholder="Observaciones"
-                                                    >
-                                                    </textarea>
+                                                        class="form-control form-control-sm" 
+                                                        placeholder="00"
+                                                        required>
+
+                                                    <div class="input-group-append "> 
+                                                        <span class="input-group-text form-control-sm">Codigo Gestión*</span> 
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
+
+
                                         <div>
                                             <p class="text-primary small">
                                                 Los campos marcados con * son obligatorios
@@ -281,7 +299,7 @@
         window.addEventListener("load", function() {
             getSesionUser();
             getBuildMain();
-            getImpresionDeudas();
+            get();
 
         });
     </script>

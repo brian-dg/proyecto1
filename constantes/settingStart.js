@@ -7,7 +7,7 @@ const ipServer = 'http://localhost/';
 
 if(document.getElementById('btnSalida')){
     let template = ''; 
-     template = `<button 
+    template = `<button 
                     type="button" 
                     tabindex="0" 
                     class="dropdown-item text-primary" 
@@ -63,13 +63,14 @@ const getBuildMain = () => {
                         </ul>
 
                         <ul>
-                        <li>
-                            <a href="#">
-                                <i class="metismenu-icon pe-7s-diamond"></i>
-                                Remises
+                            <li>
+                                <a href="#">
+                                    <i class="metismenu-icon pe-7s-diamond"></i>
+                                    Remises
                                 <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
-                            </a>
+                                </a>
                             <ul>
+
                                 <li>
                                     <a href="${ipServer}municipio2.0/views/Comercios/Remises.html">
                                         <i class="metismenu-icon"></i>
@@ -120,11 +121,19 @@ const getBuildMain = () => {
                                 </li>
 
                                 <li>
-                                <a href="${ipServer}municipio2.0/views/Comercios/ImpresionMensual.html">
-                                    <i class="metismenu-icon"></i>
-                                    Impresion Desinfeccion Mensual
-                                </a>
-                            </li>
+                                    <a href="${ipServer}municipio2.0/views/Comercios/ImpresionMensual.html">
+                                        <i class="metismenu-icon"></i>
+                                        Impresion Desinfeccion Mensual
+                                    </a>
+                                </li>
+
+                                <li>
+                                    <a href="${ipServer}municipio2.0/views/Comercios/DesinfeccionDeudores.html">
+                                        <i class="metismenu-icon"></i>
+                                        Desinfeccion Deudores x Periodo
+                                    </a>
+                                </li>
+
                             </ul>
                     </ul>
 
@@ -163,10 +172,92 @@ const getBuildMain = () => {
                                     </li>
                                 </ul>
 
+                    
+                    </ul>
+
                             
-
                         </ul>
+                        <ul>
+                        <li>
+                        <a href="#">
+                            <i class="metismenu-icon pe-7s-diamond"></i>
+                            Modulo AFIP
+                            <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
+                        </a>
+                        <ul>
+                            <li>
+                                <a href="${ipServer}municipio2.0/views/Comercios/ImportarDj.html">
+                                    <i class="metismenu-icon"></i>
+                                    Importar Dj
+                                </a>
+                            </li>
+                            <li>
+                                <a href="${ipServer}municipio2.0/views/Comercios/ConsultarDj.html">
+                                    <i class="metismenu-icon"></i>
+                                    Consultar DJ por Periodo
+                                </a>
+                            </li>
+                        </ul>
+                    </ul>
 
+                    <ul>
+                    <li>
+                    <a href="#">
+                        <i class="metismenu-icon pe-7s-diamond"></i>
+                        Informes y Listados
+                        <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
+                    </a>
+                    <ul>
+                        <li>
+                            <a href="${ipServer}municipio2.0/views/Comercios/ImprimirCodigoGestion.html">
+                                <i class="metismenu-icon"></i>
+                                Imprimir Codigo de Gestion
+                            </a>
+                        </li>
+                        
+                        <li>
+                            <a href="${ipServer}municipio2.0/views/Comercios/DeudoresImporte.html">
+                                <i class="metismenu-icon"></i>
+                                Deudores por Importe
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="${ipServer}municipio2.0/views/Comercios/DeudaCantidadPeriodo.html">
+                                <i class="metismenu-icon"></i>
+                                Deuda por Periodos
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="${ipServer}municipio2.0/views/Comercios/DeudoresDrei.html">
+                                <i class="metismenu-icon"></i>
+                                Deudores DRei
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="${ipServer}municipio2.0/views/Comercios/ConsultaComercio.html">
+                                <i class="metismenu-icon"></i>
+                                Consulta de Comercio 
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="${ipServer}municipio2.0/views/Comercios/ListadoComercio.html">
+                                <i class="metismenu-icon"></i>
+                                Listado de Comercio 
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="${ipServer}municipio2.0/views/Comercios/ListadoComercio.html">
+                                <i class="metismenu-icon"></i>
+                                Listado Alfabetico Comercio 
+                            </a>
+                        </li>
+                    </ul>
+                </ul>
 
 
                         <li class="app-sidebar__heading">Tasa General de Inmuebles</li>
