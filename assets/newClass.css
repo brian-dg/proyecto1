@@ -27,7 +27,7 @@ body {
     color: #ffffff;
   }
   
-   .err2 {
+  .err2 {
       color: #ffffff;
       font-family: 'Nunito Sans', sans-serif;
       font-size: 11rem;
@@ -54,3 +54,5 @@ body {
   a:hover {
     text-decoration: underline;
   }
+
+  

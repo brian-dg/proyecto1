@@ -10624,7 +10624,7 @@ button,
 }
 
 .app-sidebar .app-sidebar__inner {
-    padding: 2px 1.5rem 1.5rem
+    padding: 2px 1rem 1.5rem
 }
 
 .app-sidebar .scrollbar-sidebar {
@@ -24694,3 +24694,15 @@ a.fc-more:hover {
     margin-bottom: 30px;
     background-size: 100%
 }
+
+
+
+
+
+
+/*SCROLL MENU*/
+.scrollbar-sidebar {
+    overflow-y: scroll;
+    
+}
+

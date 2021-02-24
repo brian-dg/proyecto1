@@ -256,6 +256,20 @@ const getBuildMain = () => {
                                 Listado Alfabetico Comercio 
                             </a>
                         </li>
+
+                        <li>
+                            <a href="${ipServer}municipio2.0/views/Comercios/ListadoRubro.html">
+                                <i class="metismenu-icon"></i>
+                                Listado por Rubro 
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="${ipServer}municipio2.0/views/Comercios/ConsultaDDJJ.html">
+                                <i class="metismenu-icon"></i>
+                                Consulta DDJJ
+                            </a>
+                        </li>
                     </ul>
                 </ul>
 

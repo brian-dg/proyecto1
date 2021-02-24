@@ -11,8 +11,8 @@ document.getElementById('modeloAño').value = "2012";
 
 {let
     empresa = ''; 
-    let valor1 = "2";
-    let valor2 = "3";
+    let valor1 = "empresa1";
+    let valor2 = "empresa2";
     
     empresa =  `<option value="1">${valor1}</option>
                 <option value="2">${valor2}</option>`;

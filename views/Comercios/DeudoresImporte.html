@@ -173,8 +173,8 @@
                                                 
                                             <div class="input-group mb-4">
                                                 <input 
-                                                    name="Desde" 
-                                                    id="Desde" 
+                                                    name="desde" 
+                                                    id="desde" 
                                                     type="text"
                                                     placeholder="0,0"
                                                     class="form-control form-control-sm"
@@ -189,8 +189,8 @@
                                                 
                                                 <div class="input-group mb-2 ">
                                                     <input 
-                                                        name="Hasta" 
-                                                        id="Hasta" 
+                                                        name="hasta" 
+                                                        id="hasta" 
                                                         type="text"
                                                         placeholder="0,0"
                                                         class="form-control form-control-sm "
@@ -278,13 +278,13 @@
     <!-- FIN PIE DE PAGINA -->
     <script src="/municipio2.0/assets/scripts/main.js"></script>
     <script src="/municipio2.0/constantes/settingStart.js"></script>
-    <script src="/municipio2.0/controller/Comercios/ComerciosController.js"></script>
+    <script src="/municipio2.0/controller/Comercios/InformesController.js"></script>
     <script src="/municipio2.0/controller/Sesion/Sesion.js"></script>
     <script>
         window.addEventListener("load", function() {
             getSesionUser();
             getBuildMain();
-            get();
+            getDeudoresImporte();
         });
     </script> 
 </body>
