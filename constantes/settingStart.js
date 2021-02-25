@@ -251,7 +251,7 @@ const getBuildMain = () => {
                         </li>
 
                         <li>
-                            <a href="${ipServer}municipio2.0/views/Comercios/ListadoComercio.html">
+                            <a href="${ipServer}municipio2.0/views/Comercios/ListadoAlfaComercio.html">
                                 <i class="metismenu-icon"></i>
                                 Listado Alfabetico Comercio 
                             </a>
