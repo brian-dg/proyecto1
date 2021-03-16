@@ -367,7 +367,7 @@ const getRubrosAsociado = () => {
     if (location.search.length > 0) {
         params = location.search;
     } console.log(params)
-   
+
     
     let obj = new XMLHttpRequest();
     obj.open('GET', `${baseUrl}Comercios/RubrosAsociadoServices${params}`, true);

@@ -159,130 +159,81 @@
                         <div class="col-md-12">
                             <div class="main-card mb-3 card my-3">
                                 <div class="card-body">
-                                    <h5 class="card-title">Consulta de comercio por documento</h5>
-                                    <form class="" autocomplete="off">
+                                    <h5 class="card-title">A/B/M de Origenes </h5>
+                                    <hr class="" id="datos" autocomplete="off">
+                                    
+                                        <div class="form-row mb-2 mt-4"> 
+                                            <!-- Origen -->
+                                            <div class="col-md-6">
+                                                <div class="input-group mb-2">
+                                                    <input 
+                                                        name="origen" 
+                                                        id="origen" 
+                                                        placeholder="" 
+                                                        type="text" 
+                                                        class="form-control form-control-sm" 
+                                                        required
+                                                    >
+                                                    <div class="input-group-append "> 
+                                                        <span class="input-group-text form-control-sm">Origen*</span> 
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        
+                                            <!-- Nombre -->
+                                            <div class="col-md-6">
+                                                <div class="input-group mb-2">
+                                                    <input 
+                                                        name="nombre" 
+                                                        id="nombre" 
+                                                        type="text" 
+                                                        class="form-control form-control-sm" 
+                                                        required
+                                                    >
+                                                    <div class="input-group-append "> 
+                                                        <span class="input-group-text form-control-sm">Nombre*</span> 
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+
+                                        <div class="position-relative form-row mt-2">
+                                            <div class="col-md-12">
+                                                
+                                                    <textarea 
+                                                        name="observaciones" 
+                                                        id="observaciones" 
+                                                        type="text" 
+                                                        class="form-control form-control-sm"
+                                                        placeholder="Observaciones"
+                                                    >
+                                                    </textarea>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <p class="text-primary small">
+                                                Los campos marcados con * son obligatorios
+                                            </p>
+                                        </div>
+
                                         <div>
                                             <p class="text-danger" id="informe">
                                                 <!-- NOTIFICACIONES -->
                                             </p>
                                         </div>
-                                        <span><strong>Ingrese Documento</strong></span>
-                                        <div class="position-relative form-row mt-4">
-                                            
-                                            <div class="col-md-3">
-                                                <div class="input-group mb-2">
-                                                    <select 
-                                                        name="tipoDocumento" 
-                                                        id="tipoDocumento" 
-                                                        class="form-control form-control-sm" 
-                                                        data-live-search="true" 
-                                                        required
-                                                    >
-                                                    </select>
-                                                    <div class="input-group-append "> 
-                                                        <span class="input-group-text form-control-sm">Tipo*</span> 
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <div class="input-group mb-2">
-                                                    <input
-                                                        name="numero" 
-                                                        id="numero" 
-                                                        class="form-control form-control-sm" 
-                                                        data-live-search="true" 
-                                                        required
-                                                        placeholder="00"
-                                                    >
-                                                    
-                                                    <div class="input-group-append "> 
-                                                        <span class="input-group-text form-control-sm">Numero*</span> 
-                                                    </div>
-                                                </div>
-                                            </div>
-                                                <div class="col-md-6">
-                                                    <a href="#"> <button class="ml-4 btn btn-primary" id="update">Explorar</button> </a>
-                                                </div> 
-                                        </div>
 
-                                        <div class="position-relative form-row mt-1">
-                                            <div class="col-md-12 text-left" id="total">
-                                                <!-- Imagen procesando-->
-                                            </div>
-                                        </div>
-
-                                        <div class="position-relative form-row mt-2">
-                                            <div class="table-responsive">
-                                                <table class="table table-striped table-hover table-bordered col-md-12">
-
-                                                    <thead>
-                                                        <tr>
-                                                            <label for="exampleSelect" class=""><strong>Detalle</strong></label>
-                                                            <th colspan="3" class="text-center bg-mypage2 text-white">Comercios</th>
-                                                        </tr>
-
-                                                        <tr>
-                                                            
-                                                            <th class="text-center bg-mypage2 text-white">Documento</th>
-                                                            <th class="text-center bg-mypage2 text-white">Contribuyente</th>
-                                                            <th class="text-center bg-mypage2 text-white">Comercio</th>
-                                                            
-                                                            
-                                                        </tr>
-                                                        
-                                                    </thead>
-                                                    <tbody id="table-result">
-
-                                                        <!--tabla de vista ...-->
-                                                    
-                                                
-                                                            <tr>
-                                                                <th class="text-center ">39.780.362</th>
-                                                                <th class="text-center ">Razón Social</th>
-                                                                <th class="text-center ">Rubros</th>
-                                                                
-                                                            </tr>
-
-                                                            <tr>
-                                                                <th class="text-center ">29.780.362</th>
-                                                                <th class="text-center ">Razón Social</th>
-                                                                <th class="text-center ">Rubros</th>
-                                                            </tr>
-
-                                                            <tr>
-                                                                <th class="text-center ">39.780.362</th>
-                                                                <th class="text-center ">Razón Social</th>
-                                                                <th class="text-center ">Rubros</th>
-                                                            </tr>
-
-                                                            <tr>
-                                                                <th class="text-center ">37.325.231</th>
-                                                                <th class="text-center ">Razón Social</th>
-                                                                <th class="text-center ">Rubros</th>
-
-                                                            </tr>
-                                                            
-
-                                                            </tbody>
-                                                        </table>
-                                                    </tbody>
-
-                                                </table>
-
-
-                                                <div>
-                                                    
-                                        <button class="mt-3 btn btn-danger float-right" type="button" onclick="location.href='./ConsultaComercio.html'" target="_blank">Cancelar</button>
-                                                </div>
-                                            </div>
-                                        </div>
+                                        <button class="mt-3 btn btn-primary" id="create">Agregar</button>
+                                        <button class="mt-3 btn btn-warning" id="create">Modificar</button>
+                                        <button class="mt-3 btn btn-danger" id="create">Eliminar</button>
+                                        <button class="mt-3 btn btn-success float-right" type="button" onclick="location.href='./CambioUnidad.html'" target="_blank">Salir</button>
                                     </form>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            
                 <!-- FIN SECCION MODIFICACBLE -->
 
                 <!-- FIJO!!! - PIE DE PAGINA -->
@@ -306,15 +257,18 @@
     <!-- FIN PIE DE PAGINA -->
     <script src="/municipio2.0/assets/scripts/main.js"></script>
     <script src="/municipio2.0/constantes/settingStart.js"></script>
-    <script src="/municipio2.0/controller/Comercios/InformesController.js"></script>
+    <script src="/municipio2.0/assets/scripts/validaciones.js"></script>
+    <script src="/municipio2.0/controller/Comercios/.js"></script>
     <script src="/municipio2.0/controller/Sesion/Sesion.js"></script>
+
     <script>
         window.addEventListener("load", function() {
             getSesionUser();
             getBuildMain();
-            getConsultaDni();
+            get();
+
         });
-    </script> 
+    </script>
 </body>
 
 </html>

@@ -79,15 +79,15 @@ const getRubrosAsociado = () => {
         let value = decodeURIComponent(chunks[1] || '');
         let valueLower = value.trim().toLowerCase();
         if (valueLower === 'true' || value === 'false') {
-          value = Boolean(value); 
+        value = Boolean(value); 
         } else if (!isNaN(Number(value))) {
-          value = Number(value); 
+        value = Number(value); 
         } 
         return (qs[key] = value, qs);
-      }, {});  
+    }, {});  
 
-      params =  `?inscripcion=${queryParams.inscripcion}`; 
-      console.log(params)
+    params =  `?inscripcion=${queryParams.inscripcion}`; 
+    console.log(params)
 
     let obj = new XMLHttpRequest();
     obj.open('GET', `${baseUrl}Comercios/RubrosAsociadoServices${params}`, true);

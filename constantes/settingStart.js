@@ -273,9 +273,78 @@ const getBuildMain = () => {
                     </ul>
                 </ul>
 
+                    
+
 
                         <li class="app-sidebar__heading">Tasa General de Inmuebles</li>
 
+                        <li>
+                        <a href="#">
+                            <i class="metismenu-icon pe-7s-diamond"></i>
+                            Tasa Inmuebles
+                            <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
+                        </a>
+                        <ul>
+                            <li>
+                                <a href="#">
+                                    <i class="metismenu-icon pe-7s-diamond"></i>
+                                    Principal
+                                    <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
+                                </a>
+                                <ul>
+                                    <li>
+                                        <a href="${ipServer}municipio2.0/views/Inmuebles/bancos.html">
+                                            <i class="metismenu-icon"></i>
+                                            A/B/M Bancos
+                                        </a>
+                                    </li>
+
+                                    <li>
+                                        <a href="${ipServer}municipio2.0/views/Inmuebles/PeriodoTasa.html">
+                                            <i class="metismenu-icon"></i>
+                                            Periodos Tasa
+                                        </a>
+                                    </li>
+
+                                    <li>
+                                        <a href="${ipServer}municipio2.0/views/Inmuebles/Conceptos.html">
+                                            <i class="metismenu-icon"></i>
+                                            A/B/M de Conceptos
+                                        </a>
+                                    </li>
+
+                                    <li>
+                                        <a href="${ipServer}municipio2.0/views/Inmuebles/Origenes.html">
+                                            <i class="metismenu-icon"></i>
+                                            A/B/M Origenes
+                                        </a>
+                                    </li>
+
+                                    <li>
+                                        <a href="${ipServer}municipio2.0/views/Inmuebles/CodigoCalculos.html">
+                                            <i class="metismenu-icon"></i>
+                                            Cod. Calculos
+                                        </a>
+                                    </li>
+
+                                    <li>
+                                        <a href="${ipServer}municipio2.0/views/Inmuebles/BonificacionServicios.html">
+                                            <i class="metismenu-icon"></i>
+                                            Bonificacion de Servicios
+                                        </a>
+                                    </li>
+
+                                    <li>
+                                        <a href="${ipServer}municipio2.0/views/Inmuebles/ListadoTarifas.html">
+                                            <i class="metismenu-icon"></i>
+                                            Listado de tarifas
+                                        </a>
+                                    </li>
+
+                                </ul>
+
+                                
+                        </ul>
 
 
                     </li>
