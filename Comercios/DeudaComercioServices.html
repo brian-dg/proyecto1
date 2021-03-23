@@ -1,0 +1,197 @@
+<script language="SpeedScript"> 
+    def var fileJson as ch no-undo. 
+    def var fileJson2 as ch no-undo. 
+    def var wRequestPost as ch no-undo. 
+    def var enterBody as log initial false.
+    def var inscripcion as ch no-undo.
+    def var wInteres as dec no-undo.
+    def var wTiempo as i no-undo.
+    def var wTotNominal as dec no-undo.
+    def var wPagos as dec no-undo.
+    def var wRecargo as dec no-undo.
+    def var wActualizado as dec no-undo.
+    def var wTotal as dec no-undo.
+    def var wDeuda as dec no-undo.
+    def var wNominal as dec no-undo.
+    def var wMinimos as dec no-undo.
+    def var wPunitorio as dec no-undo.
+    def var wActivo as ch no-undo.
+    def var wFecFoprosi as date no-undo.
+    def var wfoprosi as dec no-undo.
+    def var wTotFoprosi as dec no-undo.
+    def var wPublicidad as dec no-undo.
+    def var wTotPublicidad as dec no-undo.
+    def var wDebeFoprosi as log init false no-undo.
+    def var wdeclaro as logical init false no-undo.
+    def var wcalcfoprosi as dec no-undo.
+    def var razonSocial as ch no-undo.
+    def var cantidadPeriodos as i no-undo.
+    def var totalRegistros as i no-undo.
+
+    
+    assign inscripcion = replace(trim(get-value('inscripcion')), chr(9), "").
+    
+   
+    /* validaciones */ 
+    find first parametros where parametros.idParam = "IntAct" no-lock no-error. 
+    if avail parametros 
+        then assign wActivo = parametros.valor.
+        else do: 
+            {&out} 
+            '[' + chr(123) + 
+            '"inscripcion":"' + get-value('inscripcion') + 
+            '","file":"' + "" + 
+            '","error":"' + "No existe un interes activo" + '"' +
+            '}]'.
+            return no-apply. 
+        end. 
+find first parametros where parametros.idParam = "FecFop" no-lock no-error. 
+if avail parametros 
+    then assign wFecFoprosi = date(parametros.valor).
+    else do: 
+        {&out} 
+        '[' + chr(123) + 
+        '"inscripcion":"' + get-value('inscripcion') + 
+        '","file":"' + "" + 
+        '","error":"' + "No existe parametro para fecha de inicio FoProSi" + '"' +
+        '}]'.
+        return no-apply. 
+    end. 
+find first parametros where parametros.idParam = "IntMens" no-lock no-error. 
+if avail parametros 
+    then assign wPunitorio = dec(parametros.valor).
+find first parametros where parametros.idParam = "IntDia" no-lock no-error. 
+if avail parametros then assign wPunitorio = dec(parametros.valor).
+
+if wPunitorio = 0 then do: 
+    {&out} 
+    '[' + chr(123) + 
+    '","file":"' + "" + 
+    '","error":"' + "No estámn cargados los Punitorios" + '"' +
+    '}]'.
+    return no-apply. 
+end. 
+/* fin validacion */  
+/* cuento cantidad toal de registros */ 
+for each comercio no-lock where comercio.inscripcion = int(inscripcion) use-index idx-inscripcion, 
+    each liquidacion no-lock where liquidacion.inscripcion = comercio.inscripcion  
+                                and liquidacion.fecPag = ? use-index idx-ins-ani-per by liquidacion.inscripcion
+                                                                                    by liquidacion.anio
+                                                                                    by liquidacion.periodo:
+    if Comercio.fecBaja <> ? then do:
+        if Liquidacion.fecVto > Comercio.fecBaja then next.
+    end.    
+    if Liquidacion.fecVto >= today then next. 
+    assign totalRegistros = totalRegistros + 1.
+end. 
+/* fin del conteo */ 
+
+find first comercio where comercio.inscripcion = int(inscripcion) no-lock no-error. 
+if avail comercio then assign razonSocial = comercio.razonSocial.
+    
+
+for each comercio no-lock where comercio.inscripcion = int(inscripcion) use-index idx-inscripcion, 
+    each liquidacion no-lock where liquidacion.inscripcion = comercio.inscripcion  
+                                and liquidacion.fecPag = ? use-index idx-ins-ani-per by liquidacion.anio
+                                                                                    by liquidacion.periodo:
+    find first detaLiqui where detaLiqui.nroLiquidacion = liquidacion.nroLiquidacion exclusive-lock no-error.
+    if not avail detaLiqui then do: 
+        for each rubxcom of comercio no-lock.
+            find rubros  of rubxcom no-lock no-error.
+            if not avail rubros then next.
+            create Detaliqui. 
+            assign DetaLiqui.Alicuota = rubros.alicuota
+                DetaLiqui.IdRubro = rubxcom.idrubro
+                DetaLiqui.NroLiquidacion = liquidacion.nroliquidacion.
+        end.
+    end.
+    release detaLiqui.  
+    if Comercio.fecBaja <> ? then do:
+        if Liquidacion.fecVto > Comercio.fecBaja then next.
+    end.    
+    if Liquidacion.fecVto >= today then next. 
+    assign cantidadPeriodos = cantidadPeriodos + 1.
+    
+    /* **** CALCULO INTERESES **** */
+    if wActivo = "intMens" then do:   
+        assign wTiempo = (year(today) - year(Liquidacion.FecVto)) * 12 +
+                        (month(today) - month(Liquidacion.FecVto)).
+        if day(today) - day(Liquidacion.fecVto) > 0 then wTiempo = wTiempo + 1. 
+        if today > Liquidacion.fecVto
+            then assign wInteres = (((wTiempo)  / 100) * wPunitorio) + 1.
+            else assign wInteres = 1.  
+    end.   
+    if wActivo = "intDia" then do:   
+        assign wTiempo = today - Liquidacion.fecVto.
+        if today > Liquidacion.fecVto
+            then assign wInteres = (((wTiempo) * wPunitorio  / 100)) + 1.
+            else assign wInteres = 1.  
+    end.
+    assign wNominal = 0
+	    wMinimos = 0.
+	assign wdeclaro = false.
+    for each detaLiqui of liquidacion no-lock.
+	    if detaLiqui.importe-jurado > 0 then do:
+            assign wNominal = wNominal + detaLiqui.importe-jurado
+			    wdeclaro = true. 
+		end. 
+	end.
+    if wnominal < liquidacion.importe then assign wnominal = liquidacion.importe.
+    if wNominal - liquidacion.pago > 0
+        then assign wDeuda = round(wNominal - liquidacion.pago, 2).
+        else assign wDeuda = 0.
+    if liquidacion.fecha_ant <> ? and liquidacion.pago >= liquidacion.importe then do:
+	    if liquidacion.fecvto > wFecFoprosi then do:
+	        find first foprosi where foprosi.inscripcion = liquidacion.inscripcion 
+                                and foprosi.periodo = liquidacion.periodo 
+                                and foprosi.anio = liquidacion.anio no-lock no-error. 
+			if not avail foprosi then assign wDebeFoprosi = true.
+		end.	
+	    next. 
+    end.
+    if wDeclaro
+	    then assign wPublicidad = ROUND(wnominal * wInteres * comercio.reparto / 100, 2).
+        else assign wPublicidad = 0.
+    assign wFoprosi = 0.
+	for each Foprosi where Foprosi.inscripcion = Liquidacion.inscripcion
+                        and Foprosi.periodo = Liquidacion.periodo
+                        and Foprosi.anio = Liquidacion.anio no-lock use-index puk-clave:
+        assign wFoprosi = wFoprosi + Foprosi.pago. 
+    end. 
+	if Liquidacion.fecVto > wFecFoprosi and liquidacion.nroconv = 0 then do:
+        if round((((wDeuda  * wInteres) * 3 / 100) - wfoprosi) , 2) > 0 
+            then assign  wCalcfoprosi = round((((wDeuda  * wInteres) * 3 / 100) - wfoprosi) * -1, 2). 
+		    else assign wcalcfoprosi = 0.
+    end.
+     
+    assign enterBody = true.  
+
+    if cantidadPeriodos = 1 then {&out} "[".
+    
+                        {&out}  
+                        chr(123) +    
+                        '"inscripcion":"' + string(liquidacion.inscripcion) + 
+                        '","razonSocial":"' + string(comercio.razonSocial) + 
+                        '","periodo":"' + string(liquidacion.periodo) + 
+                        '","anio":"' + string(liquidacion.anio) + 
+                        '","nominal":"' + string(wNominal, ">>>,>>>,>>9.99") + 
+                        '","pagos":"' + string(liquidacion.pagos, ">>>,>>>,>>9.99") + 
+                        '","deuda":"' + string(wDeuda, ">>>,>>>,>>9.99") + 
+                        '","actual":"' + string(ROUND((wDeuda  * wInteres), 2 ), ">>>,>>>,>>9.99") + 
+                        '","foprosi":"' + string((WCalcFoprosi * -1), ">>>,>>>,>>9.99") + 
+                        '","publicidad":"' + string(Wpublicidad, ">>>,>>>,>>9.99") + 
+                        '","ddjj":"' + string(wDeclaro) + 
+                        '","convenio":"' + string(liquidacion.nroconv) + 
+                        '","cantidadtotal":"' + string(totalRegistros) . 
+    if cantidadPeriodos < totalRegistros
+        then {&out} '","error":"' + ""  + '"},'.
+        else {&out} '","error":"' + ""  + '"}]'. 
+end. 
+if enterBody = false then   {&out} 
+                            '[' + chr(123) + 
+                            '"inscripcion":"' + string(inscripcion) + 
+                            '","razonSocial":"' + string(razonSocial) + 
+                            '","error":"' + "No posee deuda" + '"' +
+                            '}]'.
+return no-apply.
+</script>

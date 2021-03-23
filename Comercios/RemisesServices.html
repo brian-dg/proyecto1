@@ -1,0 +1,106 @@
+<script language="SpeedScript">
+    
+    def var contador as int  no-undo.
+    def var fechaBaja as ch no-undo. 
+    def var wRequestPost as ch no-undo. 
+    def var numeroinscripcion as ch no-undo. 
+    def var palabra as ch no-undo. 
+    def var jsonObj as ch no-undo. 
+    def var bandera as log initial false.
+
+
+    
+    PROCEDURE output-headers:
+        wRequestPost = REQUEST_METHOD.
+    END PROCEDURE.
+
+
+    assign  palabra = replace(trim(get-value('palabra')), chr(9), "")
+            numeroinscripcion = replace(trim(get-value('numeroInscripcion')), chr(9), "").
+
+            
+
+    if wRequestPost = "get" then do:  
+        for each remis where remis.inscripcion <> ? by remis.inscripcion desc: 
+            assign contador = contador + 1 . 
+            if contador > 20 then leave. 
+            if contador = 1 then {&out}  "[".
+    
+            if remis.fecha_baja <> ? 
+                then assign fechaBaja = string(remis.fecha_baja).
+                else assign fechaBaja = "". 
+
+            {&out}
+            chr(123) +    
+            '"inscripcion":"' + string(Remis.inscripcion) + 
+            '","licencia":"' + string(Remis.licencia) + 
+            '","dominio":"' + string(Remis.dominio) + 
+            '","titular":"' + Remis.titular + 
+            '","baja":"' + fechaBaja. 
+
+            
+            
+            if contador < 20  
+                then {&out} '","error":"' + ""  + '"},'. 
+                else {&out} '","error":"' + ""  + '"}'.
+        end.
+        {&out} "]".
+
+    end. 
+  
+    if wRequestPost = "post" then do:   
+        if numeroinscripcion <> '' then do: 
+            assign jsonObj = '['
+                    bandera = false. 
+
+            for each remis where remis.licencia = int(numeroinscripcion) no-lock. 
+                assign bandera = true.    
+               
+                assign jsonObj = jsonObj + 
+                chr(123) +    
+                '"inscripcion":"' + string(Remis.inscripcion) + 
+                '","licencia":"' + string(Remis.licencia) + 
+                '","dominio":"' + replace(remis.dominio, '"', "") + 
+                '","titular":"' + Remis.titular + 
+                '","baja":"' + fechaBaja +
+                '","error":"' + ""  + '"},'. 
+            
+            end.
+            assign jsonObj = substring(jsonObj, 1, length(jsonObj) - 1). /* le saco la ultima coma al json */
+            assign jsonObj = jsonObj + "]".
+        
+            if bandera 
+                then {&out} jsonObj.
+               
+        end.
+        /* Termina la busqueda por numero de inscripcion*/
+        if palabra <> '' then do:
+            assign jsonObj = '['
+                   bandera = false. 
+            for each remis where remis.titular begins palabra no-lock.
+                assign bandera = true. 
+                assign jsonObj = jsonObj + 
+                chr(123) +    
+                '"inscripcion":"' + string(Remis.inscripcion) + 
+                '","licencia":"' + string(Remis.licencia) + 
+                '","dominio":"' + string(Remis.dominio) + 
+                '","titular":"' + Remis.titular + 
+                '","baja":"' + fechaBaja +
+                '","error":"' + ""  + '"},'. 
+            end.
+            assign jsonObj = substring(jsonObj, 1, length(jsonObj) - 1). /* le saco la ultima coma al json */
+            assign jsonObj = jsonObj + "]".
+        
+            if bandera then {&out} jsonObj. 
+        end.
+
+
+
+
+
+
+    end. 
+
+return no-apply. 
+
+</script>

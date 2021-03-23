@@ -1,0 +1,88 @@
+<script language="SpeedScript">
+def var Barcode AS COM-HANDLE.
+def var numeroRubro as ch no-undo. 
+def var nombreArchivoPdf as ch no-undo. 
+def var renglon as i no-undo.
+
+ {pdf_inc.i "NOT SUPER"}
+
+assign NombreArchivopdf = "Rubros" + encode(string(today)) + ".pdf".
+RUN pdf_new IN h_PDFinc ("cons",".\Documents\Drei\" + NombreArchivopdf).
+
+
+
+RUN pdf_new_Page IN h_PDFinc("Cons").
+
+RUN pdf_set_font IN h_PDFinc("Cons","Helvetica-Bold",14.0).
+RUN pdf_text_at  IN h_PDFinc("Cons","Municipalidad de Perez ",6).
+RUN pdf_skip 	IN h_PDFinc("Cons").
+RUN pdf_set_font IN h_PDFinc("Cons","Helvetica",12.0).
+RUN pdf_text_at  IN h_PDFinc("Cons","Sarmiento 1198 - Perez",10).
+RUN pdf_skip 	IN h_PDFinc("Cons").
+RUN pdf_skip 	IN h_PDFinc("Cons").
+RUN pdf_set_font IN h_PDFinc("Cons","Helvetica-bold",12.0).
+RUN pdf_text_at  IN h_PDFinc("Cons","Listado Rubros",70).
+
+RUN pdf_skip 	IN h_PDFinc("Cons").
+RUN pdf_skip 	IN h_PDFinc("Cons").
+    
+RUN pdf_text_at  IN h_PDFinc("Cons","Listado actualizado al " + string(today, "99/99/9999"),190).
+
+RUN pdf_skip 	IN h_PDFinc("Cons").
+RUN pdf_set_font IN h_PDFinc("Cons","Helvetica",10.0). 
+RUN pdf_text_at  IN h_PDFinc("Cons",FILL("-",160),10). 
+RUN pdf_skip 	IN h_PDFinc("Cons").
+RUN pdf_text_at  IN h_PDFinc("Cons","Codigo",10).
+RUN pdf_text_at  IN h_PDFinc("Cons","Rubro",32).
+RUN pdf_text_at  IN h_PDFinc("Cons","Alicuota",140).
+RUN pdf_text_at  IN h_PDFinc("Cons","Monto Minimo",170).
+RUN pdf_skip 	IN h_PDFinc("Cons").
+	   
+RUN pdf_text_at  IN h_PDFinc("Cons",FILL("-",160),10). 
+RUN pdf_skip 	IN h_PDFinc("Cons").
+RUN pdf_skip 	IN h_PDFinc("Cons").
+RUN pdf_skip 	IN h_PDFinc("Cons").
+
+
+    /* **** deudas **** */
+    for each rubros use-index idx-idrubro by rubros.rubro. 
+                
+         
+         /* Cuento renglones */
+        assign renglon = renglon + 1.
+
+	    RUN pdf_text_at  IN h_PDFinc("Cons",STRING(Rubros.idRubro),10).
+        RUN pdf_text_at  IN h_PDFinc("Cons",STRING(Rubros.rubro),28).
+	   RUN pdf_text_at  IN h_PDFinc("Cons",STRING(Rubros.alicuota, ">>9.99"),140).
+       RUN pdf_text_at  IN h_PDFinc("Cons",STRING(Rubros.montoMinimo, "->>>,>>9.99"),170).
+       RUN pdf_skip 	IN h_PDFinc("Cons").
+          
+        if (renglon) > 49 then do: 
+            RUN pdf_new_Page IN h_PDFinc("Cons").
+            RUN pdf_skip 	IN h_PDFinc("Cons").
+            RUN pdf_set_font IN h_PDFinc("Cons","Helvetica",10.0). 
+            RUN pdf_text_at  IN h_PDFinc("Cons",FILL("-",160),10). 
+            RUN pdf_skip 	IN h_PDFinc("Cons").
+            RUN pdf_text_at  IN h_PDFinc("Cons","Codigo",10).
+            RUN pdf_text_at  IN h_PDFinc("Cons","Rubro",32).
+            RUN pdf_text_at  IN h_PDFinc("Cons","Alicuota",140).
+            RUN pdf_text_at  IN h_PDFinc("Cons","Monto Minimo",170).
+            RUN pdf_skip 	IN h_PDFinc("Cons").
+
+            RUN pdf_text_at  IN h_PDFinc("Cons",FILL("-",160),10). 
+            RUN pdf_skip 	IN h_PDFinc("Cons").
+            RUN pdf_skip 	IN h_PDFinc("Cons").
+            RUN pdf_skip 	IN h_PDFinc("Cons").
+            assign renglon = 0.  	  
+        end.
+   END. 
+       
+
+RUN pdf_Close IN h_PDFinc("Cons"). 
+
+{&out} '[' + chr(123) + 
+        '"nombreRubro":"' + '' + 
+        '","file":"' + NombreArchivopdf + 
+        '","error":"' + "" + '"' +
+        '}]'.
+</script>

@@ -1,0 +1,55 @@
+<script language="SpeedScript">
+    
+    def var numeroRubro as ch no-undo.
+    
+    assign numeroRubro = replace(trim(get-value('numeroRubro')), chr(9), ""). 
+
+    if numeroRubro = '' or int(numeroRubro) = 0 then do: 
+        find last Rubros use-index idx-idrubro no-lock no-error. 
+        if avail Rubros 
+            then assign numeroRubro = string(Rubros.idRubro + 1).
+            else assign numeroRubro =  "1".
+
+            {&out} 
+            chr(123) + 
+            '"Rubro":'.
+                {&out}
+                chr(123) +    
+                '"codigo":"' + numeroRubro + 
+                '","nombrerubro":"' + '' + 
+                '","alicuota":"' + '' + 
+                '","montominimo":"' + '' + 
+                '","error":"' + ""  + '"}}'.
+            return no-apply.
+
+    end. 
+
+    
+      
+        find first Rubros where Rubros.idRubro = int(numeroRubro) no-lock no-error. 
+        if avail Rubros then do: 
+            {&out} 
+            chr(123) + 
+            '"Rubro":'.
+
+            
+                {&out}
+                chr(123) +    
+                '"codigo":"' + string(Rubros.idRubro) + 
+                '","nombrerubro":"' + replace(Rubros.rubro, '"', "") + 
+                '","alicuota":"' + string(Rubros.alicuota) + 
+                '","montominimo":"' + string(Rubros.montoMinimo) + 
+                '","error":"' + ""  + '"}}'.
+        end. 
+        /* si no lo encuentra */ 
+        else do: 
+            {&out}
+            chr(123) +    
+            '"codigo":"' + '' + 
+            '","nombrerubro":"' + '' + 
+            '","alicuota":"' + '' + 
+            '","montominimo":"' + '' + 
+            '","error":"' + ""  + '"}}'.
+        end.             
+    return no-apply.
+</script>

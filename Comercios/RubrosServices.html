@@ -1,0 +1,93 @@
+<script language="SpeedScript">
+    def var fileJson as ch no-undo. 
+    def var wRequestPost as ch no-undo. 
+    def var inscripcionJson as ch no-undo. 
+    def var k as i no-undo.
+    def var fechaBaja as ch no-undo. 
+    def var fechaAlta as ch no-undo. 
+    def var enterBody as log initial false.
+    def var l as i.
+    def var cantidadTotal as i no-undo. 
+    def var palabra as ch no-undo.
+    def var rubroJson as ch no-undo.
+    def var numeroRubro as ch no-undo. 
+
+
+    PROCEDURE output-headers:
+        wRequestPost = REQUEST_METHOD.
+    END PROCEDURE.
+
+    assign  palabra = replace(trim(get-value('palabra')), chr(9), "")
+            numeroRubro = replace(trim(get-value('numeroRubro')), chr(9), "").
+
+    /* cuenta la cantidad total de comercios activos */
+    for each Rubros no-lock. 
+        assign cantidadTotal = cantidadTotal + 1. 
+    end. 
+        
+    /* devuelve los primeros 25 comercios activos */
+    if wRequestPost = "GET" then do: 
+        for each Rubros no-lock use-index idx-idrubro by Rubros.rubro: 
+            assign k = k + 1.  
+            /*if k > 2 then leave. */
+            if k = 1 then {&out}  "[".
+            {&out}
+            chr(123) +    
+            '"codigo":"' + string(Rubros.idRubro) + 
+            '","nombrerubro":"' + replace(Rubros.rubro, '"', "") + 
+            '","alicuota":"' + string(Rubros.alicuota, ">>9.99") + 
+            '","montominimo":"' + string(Rubros.montoMinimo, ">>>,>>>,>>9.99") + 
+            '","cantidadtotal":"' + string(cantidadTotal) .
+            
+            
+            if k < cantidadTotal 
+                then {&out} '","error":"' + ""  + '"},'. 
+                else {&out} '","error":"' + ""  + '"}'.
+        end. 
+        {&out} "]".
+        return no-apply.
+    end. 
+
+    /* METODO POST */    
+    if wRequestPost = "POST" then do:  
+        /* devuelve un unico registro consultado */
+        if numeroRubro <> '' then do:  
+            assign fileJson = "".
+            find first Rubros where Rubros.idRubro = int(numeroRubro) no-lock no-error. 
+            if avail Rubros then do:
+                
+                {&out}  
+                "[" + 
+                chr(123) +    
+                '"codigo":"' + string(Rubros.idRubro) + 
+                '","nombrerubro":"' + replace(Rubros.rubro, '"', '') + 
+                '","alicuota":"' + string(Rubros.alicuota, ">>9.99") + 
+                '","montominimo":"' + string(Rubros.montoMinimo, ">>>,>>>,>>9.99") + 
+                '","error":"' + ""  + '"}]'.
+                /* rubros asociados */
+               
+            end. 
+        end.
+
+        if palabra <> '' then do: 
+            assign fileJson = "[". 
+            for each Rubros where Rubros.rubro begins palabra  no-lock use-index idx-idrubro by Rubros.rubro: 
+                assign k = k + 1 . 
+                if k > 50 then leave.
+                assign enterBody = true. 
+                assign fileJson =   fileJson +  
+                                    chr(123) +    
+                                    '"codigo":"' + string(Rubros.idRubro) + 
+                                    '","nombrerubro":"' + replace(Rubros.rubro, '"', '') + 
+                                    '","alicuota":"' + string(Rubros.alicuota, ">>9.99") + 
+                                    '","montominimo":"' + string(Rubros.montoMinimo, ">>>,>>>,>>9.99") + 
+                                    '","error":"' + ""  + '"},'.
+            end.   
+        end.
+        assign fileJson = substring(fileJson, 1, length(fileJson) - 1). /* le saco la ultima coma al json */
+        assign fileJson = fileJson + "]".
+        if enterBody then {&out} fileJson.
+        return no-apply.
+    end.  
+
+</script>

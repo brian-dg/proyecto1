@@ -1,0 +1,66 @@
+<script language="SpeedScript">
+     def var correcto as lo no-undo.
+     def var numeroRubro as ch no-undo. 
+     def var nombreRubro as ch no-undo. 
+     def var alicuota as ch no-undo. 
+     def var montoMinimo as ch no-undo.
+     
+     assign numeroRubro = replace(trim(get-value('numeroRubro')), chr(9), "")
+            nombreRubro = replace(trim(get-value('nombreRubro')), chr(9), "")
+            alicuota = replace(trim(get-value('alicuota')), chr(9), "")
+            montoMinimo = replace(trim(get-value('montoMinimo')), chr(9), "").
+
+    
+
+    
+            
+    /* validaciones */ 
+    find first Rubros where Rubros.idRubro = int(numeroRubro) no-lock no-error. 
+    if avail Rubros then do: 
+            {&out} 
+            chr(123) + 
+            '"error":"' + "El número de rubro ingresado ya existe"  + '"}'.
+            return no-apply.
+
+    end. 
+    if numeroRubro = "" or int(numeroRubro) = 0 then do: 
+        {&out} 
+        chr(123) + 
+        '"error":"' + "Número de rubro obligatorio"  + '"}'.
+        return no-apply. 
+    end. 
+    if nombreRubro = "" then do: 
+        {&out} 
+        chr(123) + 
+        '"error":"' + "Nombre de rubro obligatorio"  + '"}'.
+        return no-apply. 
+    end. 
+    if alicuota = "" or int(alicuota) = 0 then do: 
+        {&out} 
+        chr(123) + 
+        '"error":"' + "Alícuota obligatoria"  + '"}'.
+        return no-apply. 
+    end.  
+    
+    /* fin validaciones */ 
+    
+    do transaction:  
+        find first Rubros where Rubros.idRubro = int(numeroRubro) exclusive-lock no-error. 
+        if not avail Rubros then do:  
+            create Rubros. 
+            assign Rubros.idRubro = int(numeroRubro)
+                   Rubros.rubro = nombreRubro 
+                   Rubros.alicuota = dec(alicuota)
+                   Rubros.montoMinimo = dec(montoMinimo)
+                   correcto = true.    
+        end. 
+    end. 
+    release Rubros.
+    if correcto then {&out} 
+                    chr(123) + 
+                    '"error":"' + ""  + '"}'.
+    else {&out} 
+        chr(123) + 
+        '"error":"' + "Se ha producido un error. Conulte con el administrador del sistema"  + '"}'.
+    return no-apply.
+ </script>

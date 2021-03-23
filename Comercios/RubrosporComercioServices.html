@@ -1,0 +1,54 @@
+<script language="SpeedScript">
+    def var fileJson as ch no-undo. 
+    def var wRequestPost as ch no-undo. 
+    def var inscripcionJson as ch no-undo. 
+    def var k as i no-undo.
+    def var fechaBaja as ch no-undo. 
+    def var fechaAlta as ch no-undo. 
+    def var enterBody as log initial false.
+    def var l as i.
+    def var cantidadTotal as i no-undo. 
+    def var inscripcion as ch no-undo. 
+
+
+    PROCEDURE output-headers:
+        wRequestPost = REQUEST_METHOD.
+    END PROCEDURE.
+
+    assign  inscripcion = replace(trim(get-value('inscripcion')), chr(9), "").
+
+        /* cuenta la cantidad total de comercios activos */
+        for each Rubros no-lock, 
+            first RubxComercio where RubxComercio.inscripcion <> int(inscripcion) 
+                                and RubxComercio.idRubro = Rubros.idRubro no-lock.
+        assign cantidadTotal = cantidadTotal + 1. 
+    end. 
+         
+    /* devuelve los primeros 25 comercios activos */
+    if wRequestPost = "GET" then do:
+        for each Rubros no-lock, 
+            first RubxComercio where RubxComercio.inscripcion <> int(inscripcion) 
+                                and RubxComercio.idRubro = Rubros.idRubro no-lock by rubros.rubro.
+            
+            assign k = k + 1.  
+           /* if k > 255 then leave.  */
+            if k = 1 then {&out}  "[".
+            {&out}
+            chr(123) +    
+            '"codigo":"' + string(Rubros.idRubro) + 
+            '","nombrerubro":"' + replace(Rubros.rubro, '"', "") + 
+            '","alicuota":"' + string(Rubros.alicuota, ">>9.99") + 
+            '","montominimo":"' + string(Rubros.montoMinimo, ">>>,>>>,>>9.99") + 
+            '","cantidadtotal":"' + string(cantidadTotal) .
+            
+            
+            if k < cantidadTotal  
+                then {&out} '","error":"' + ""  + '"},'. 
+                else {&out} '","error":"' + ""  + '"}'.
+        end. 
+        {&out} "]".
+        return no-apply.
+    end. 
+
+   
+</script>

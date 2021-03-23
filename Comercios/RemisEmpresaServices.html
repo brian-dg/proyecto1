@@ -1,0 +1,84 @@
+<script language="SpeedScript">
+    
+    def var inscripcion as ch no-undo.
+    def var codigoDocumento as int no-undo. 
+    def var nombreDocumento as ch no-undo. 
+    def var totalDocumento as int no-undo. 
+    def var k as int no-undo. 
+
+    for each t_tipdoc: 
+        assign totalDocumento = totalDocumento + 1 .
+    end.
+
+    
+    assign inscripcion = replace(trim(get-value('inscripcion')), chr(9), ""). 
+          /*Busca primero la tabla con find*/
+        find first Remis where Remis.inscripcion = int(inscripcion) no-lock no-error. 
+        if avail Remis then do: 
+            find first t_tipdoc where t_tipdoc.tipdoc = remis.tipodoc no-lock no-error. 
+            if avail t_tipdoc then do: 
+                assign codigoDocumento = t_tipdoc.tipdoc 
+                       nombreDocumento = t_tipdoc.dsc-tipdoc.                       
+            end. 
+            
+            {&out} 
+            chr(123) + 
+    /*etiqueta remis que se usa en el controller jsonObj.remis*/
+            '"Remis":'.
+
+            
+                {&out}
+                chr(123) +    
+                '"inscripcion":"' + string(Remis.inscripcion) + 
+                '","licencia":"' + string(Remis.licencia) + 
+                '","fechadabilitacion":"' + string(Remis.fecha_hab) + 
+                '","tipodocumento":"' + string(Remis.tipoDoc) + 
+                '","numerodocumento":"' + string(Remis.nrodoc) + 
+                '","titular":"' + replace(Remis.titular,'"',"") + 
+                '","domicilio":"' + replace(Remis.domicilio,'"',"") + 
+                '","dominio":"' + Remis.dominio +
+                '","vehiculo":"' + Remis.vehiculo +
+                '","modeloanio":"' + string(Remis.mod_anio) +
+                '","empresa":"' + string(Remis.empresa) +
+                '","monotributo":"' + string(Remis.monotributo) + 
+                '","chofer":"' + string(Remis.chofer) + 
+                '","cabin9":"' + string(Remis.es_cabin) + 
+                '","codigodocumento":"' + string(codigoDocumento) +
+                '","nombredocumento":"' + string(nombreDocumento) +  
+                '","error":"' + ""  + '"},'. 
+
+                {&out} 
+            '"TipoDoc":['.
+                for each t_tipdoc: 
+                    assign k = k + 1.
+                    {&out}
+                    chr(123) +
+                    '"codigodocumento":"' + string(t_tipdoc.tipdoc). 
+                if k < totalDocumento 
+                    then {&out} '","nombredocumento":"' + t_tipdoc.dsc-tipdoc + '"},'. 
+                    else {&out} '","nombredocumento":"' + t_tipdoc.dsc-tipdoc + '"}]}'. 
+                end. 
+
+        end. 
+        /* si no lo encuentra */ 
+        else do: 
+            {&out}
+            chr(123) +    
+            '"inscripcion":"' + '' + 
+            '","licencia":"' + '' + 
+            '","fechaHabilitacion":"' + '' + 
+            '","numeroDocumento":"' + '' +
+            '","tipoDocumento":"' + '' + 
+            '","titular":"' + '' + 
+            '","domicilio":"' + '' + 
+            '","dominio":"' + '' + 
+            '","vehiculo":"' + '' + 
+            '","modeloAnio":"' + '' + 
+            '","empresa":"' + '' + 
+            '","monotributo":"' + '' + 
+            '","chofer":"' + '' +  
+            '","cabin9":"' + '' + 
+            '","error":"' + ""  + '"}}'.
+        end.             
+    return no-apply.
+</script>

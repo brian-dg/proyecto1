@@ -1,0 +1,36 @@
+<script language="SpeedScript">
+    def var wRequestPost as ch no-undo. 
+    def var k as i no-undo. 
+    def var cantidadTotal as i no-undo. 
+
+    PROCEDURE output-headers:
+        wRequestPost = REQUEST_METHOD.
+    END PROCEDURE.
+
+    for each Remis_Empresa.
+        assign cantidadTotal = cantidadTotal + 1. 
+    end. 
+
+        /* Petition for all people */
+        /*Reccorre y trae la tabla completa*/
+        if wRequestPost = "GET" then do: 
+            for each Remis_Empresa  no-lock by Remis_Empresa.RazonSocial:
+                assign  k = k + 1. 
+
+                if k = 1 then {&out}  "[".
+
+                    {&out}
+                    chr(123) +    
+                    '"empresa":"' + string(remis_empresa.empresa) + 
+                    '","descripcion":"' + replace(remis_empresa.razonSocial, '"', "") + 
+                    '","cantidadtotal":"' + string(cantidadTotal) . 
+                    
+                if k <  cantidadTotal 
+                    then {&out} '","error":"' + ""  + '"},'.
+                    else {&out} '","error":"' + ""  + '"}'. 
+            end. 
+            {&out} "]".
+            return no-apply.
+        end. 
+ 
+</script>

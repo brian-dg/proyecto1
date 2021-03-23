@@ -1,0 +1,176 @@
+<script language="SpeedScript">
+def var inscripcion as ch no-undo. 
+def var licencia as ch no-undo. 
+def var fechaHabilitacion as ch no-undo. 
+def var tipoDocumento as ch no-undo.
+def var numeroDocumento as ch no-undo. 
+def var titular as ch no-undo. 
+def var domicilio as ch no-undo. 
+def var dominio as ch no-undo. 
+def var vehiculo as ch no-undo. 
+def var modeloAnio as ch no-undo. 
+def var empresa as ch no-undo. 
+def var monotributo as ch no-undo.
+def var chofer as ch no-undo. 
+def var cabin9 as ch no-undo.
+def var correcto as log initial false. 
+
+assign inscripcion = replace(trim(get-value('inscripcion')), chr(9), "")
+        licencia = replace(trim(get-value('licencia')), chr(9), "")
+        fechaHabilitacion = replace(trim(get-value('fechaHabilitacion')), chr(9), "")
+        tipoDocumento = replace(trim(get-value('tipoDocumento')), chr(9), "")
+        numeroDocumento = replace(trim(get-value('numeroDocumento')), chr(9), "")
+        titular = replace(trim(get-value('titular')), chr(9), "")
+        domicilio = replace(trim(get-value('domicilio')), chr(9), "")
+        dominio = replace(trim(get-value('dominio')), chr(9) , "")
+        vehiculo = replace(trim(get-value('vehiculo')), chr(9), "")
+        modeloAnio = replace(trim(get-value('modeloAnio')), chr(9), "")
+        empresa = replace(trim(get-value('empresa')), chr(9), "")
+        monotributo = replace(trim(get-value('monotributo')), chr(9), "")
+        chofer = replace(trim(get-value('chofer')), chr(9), "")
+        cabin9 = replace(trim(get-value('cabin9')), chr(9), "").
+        
+
+        /*Empiezan validaciones*/
+        find first remis where remis.inscripcion = int(inscripcion) no-lock no-error.
+        if avail remis then do: 
+            {&out} 
+            chr(123) + 
+            '"error":"' + "El número de inscripcion ingresado ya existe"  + '"}'.
+            return no-apply.
+        end.
+
+        /* buscar primero en la tabla remis licencia y que la chapa no este dada de baja  */
+        find first remis where remis.licencia = int(licencia)
+                         and remis.fecha_baja = ? no-lock no-error.
+        if avail remis then do:
+            {&out}
+            chr(123) + 
+            '"error":"' + "El numero de licencia ingresado no se encuentra disponible" + '"}'. 
+            return no-apply. 
+        end.
+
+        /* validacion si el  campo esta vacio, o tiene 0, */
+        /* and tiene que cumplirse las 2 validaciones y or con que cumpla una de las dos se ejecuta el mensaje*/
+        if inscripcion = '' or int(inscripcion) = 0 then do: 
+            {&out}
+            chr(123) + 
+            '"error":"' + "El campo inscripcion es obligatorio" + '"}'. 
+            return no-apply. 
+        end.
+
+        if licencia = '' or int(licencia) = 0 then do:
+            {&out}
+            chr(123) + 
+            '"error":"' + "El campo licencia es obligatorio" + '"}'. 
+            return no-apply.
+        end.
+
+        if fechaHabilitacion = '' then do: 
+            {&out}
+            chr(123) + 
+            '"error":"' + "El campo fecha habilitacion es obligatorio" + '"}'. 
+            return no-apply.
+        end. 
+
+        if tipoDocumento = '' or int(tipoDocumento) = 0 then do: 
+            {&out}
+            chr(123) + 
+            '"error":"' + "El campo tipo documento es obligatorio" + '"}'. 
+            return no-apply.
+        end.
+
+        if numeroDocumento = '' or int(numeroDocumento) = 0 then do: 
+            {&out}
+            chr(123) + 
+            '"error":"' + "El campo numero documento es obligatorio" + '"}'. 
+            return no-apply.
+        end. 
+
+        if titular = '' then do: 
+            {&out}
+            chr(123) + 
+            '"error":"' + "El campo titular es obligatorio" + '"}'. 
+            return no-apply. 
+        end.
+
+        if dominio = '' then do: 
+            {&out}
+            chr(123) + 
+            '"error":"' + "El campo dominio es obligatorio" + '"}'. 
+            return no-apply.
+        end.
+
+        if vehiculo = '' then do: 
+            {&out}
+            chr(123) +
+            '"error":"' + "El campo vehiculo es obligatorio" + '"}'. 
+            return no-apply. 
+        end.
+
+        if modeloAnio = '' or int(modeloAnio) = 0 then do: 
+            {&out}
+            chr(123) + 
+            '"error":"' + "El campo Modelo de año es obligatorio" + '"}'. 
+            return no-apply. 
+        end.
+
+        if empresa = '' or int(empresa) = 0 then do: 
+            {&out}
+            chr(123) +
+            '"error":"' + "El campo empresa es obligatorio" + '"}'. 
+            return no-apply. 
+        end.
+
+        /*final validaciones*/
+
+        do transaction: 
+            find first Remis where Remis.inscripcion = int(inscripcion) exclusive-lock no-error. 
+            if not avail Remis then do: 
+                create remis.
+                assign remis.inscripcion = int(inscripcion)
+                       remis.licencia = int(licencia)
+                       remis.Fecha_Hab = date(fechaHabilitacion)
+                     remis.TipoDoc = int(tipoDocumento)
+                       remis.nrodoc = dec(numeroDocumento)
+                       remis.Titular = titular
+                       remis.Domicilio = domicilio
+                       remis.Dominio = dominio
+                       remis.Vehiculo = vehiculo
+                       remis.Mod_anio = int(modeloAnio)
+                       remis.Empresa = int(empresa)
+                       remis.Monotributo = if(monotributo = 'true') then(true) else(false)
+                       remis.Chofer = if(chofer = 'true') then(true) else(false)
+                       remis.Es_Cabin = if(cabin9 = 'true') then(true) else(false)
+                       correcto = true. 
+
+
+            end.
+        end. 
+        release Comercio.
+         if correcto then {&out} 
+                chr(123) + 
+                '"error":"' + ""  + '"}'.
+         else {&out} 
+                chr(123) + 
+                '"error":"' + "Se ha producido un error. Conulte con el administrador del sistema"  + '"}'.
+        return no-apply.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</script>

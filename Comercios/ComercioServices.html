@@ -1,0 +1,111 @@
+<script language="SpeedScript">
+    
+    def var inscripcion as ch no-undo.
+    def var fechaInscripcionString as ch no-undo. 
+    def var fechaCeseString as ch no-undo. 
+    def var fechaInicioString as ch no-undo. 
+    def var tipoDocString as ch no-undo. 
+    def var descripcionTipoDocString as ch no-undo. 
+    def var totalTipDoc as i no-undo. 
+    def var k as i no-undo.
+    def var nombreIndividuo as ch no-undo.
+    def var codigoGestion as ch no-undo.
+    
+    for each t_tipdoc: 
+        assign totalTipDoc = totalTipDoc + 1.
+    end. 
+    
+    assign inscripcion = replace(trim(get-value('inscripcion')), chr(9), ""). 
+    
+      
+        find first Comercio where Comercio.inscripcion = int(inscripcion) no-lock no-error. 
+        if avail Comercio then do: 
+            {&out} 
+            chr(123) + 
+            '"comercio":'.
+
+            if Comercio.fechaInsc <> ? 
+                then assign fechaInscripcionString = string(Comercio.fechaInsc, "99/99/9999"). 
+                else assign fechaInscripcionString = "". 
+            if Comercio.fecInicAct <> ? 
+                then assign fechaInicioString = string(Comercio.fecInicAct, "99/99/9999"). 
+                else assign fechaInicioString = "". 
+            if Comercio.fecBaja <> ? 
+                then assign fechaCeseString = string(Comercio.fecBaja, "99/99/9999"). 
+                else assign fechaCeseString = "". 
+
+            find first t_tipDoc where t_tipDoc.tipdoc = Comercio.tipoDoc no-lock no-error. 
+            if avail T_tipDoc 
+                then assign tipoDocString = string(t_tipDoc.tipDoc)
+                            descripcionTipoDocString = t_tipdoc.dsc-tipdoc. 
+                else  assign tipoDocString = ""
+                            descripcionTipoDocString = "". 
+            find first Individuos where Individuos.tipdoc = Comercio.tipodoc 
+                                    and Individuos.nrodoc = Comercio.nrodoc no-lock no-error. 
+            if avail Individuos 
+                then assign nombreIndividuo = replace(Individuos.nombre, '"', ''). 
+                else assign nombreIndividuo = "". 
+
+            find first usuariosweb where usuariosWeb.inscripcion = 2
+                                    and usuariosWeb.usuario = string(comercio.inscripcion) no-lock no-error. 
+            if avail usuariosweb
+                then assign codigoGestion = usuariosWeb.password.
+                else assign codigoGestion = ''.
+            
+                {&out}
+                chr(123) +
+                '"inscripcion":"' + string(Comercio.Inscripcion) + 
+                '","razonsocial":"' + replace(Comercio.razonSocial, '"', '') + 
+                '","link":"' + string(comercio.inscripcion, "9999999999") + 
+                '","codigogestion":"' + string(codigoGestion) + 
+                '","idtipodoc":"' + tipoDocString + 
+                '","tipodoc":"' + descripcionTipoDocString +
+                '","nombreindividuo":"' + nombreIndividuo +
+                '","cuit":"' + Comercio.cuit +
+                '","fechainscripcion":"' + fechaInscripcionString +
+                '","fechainicio":"' + fechaInicioString +
+                '","fechacese":"' + fechaCeseString +
+                '","domiciliocomercial":"' + Comercio.domComer +
+                '","domicilioentrega":"' + Comercio.domEntrega +
+                '","codigopostal":"' + string(Comercio.codposEnt) +
+                '","personal":"' + string(Comercio.Personal) +
+                '","publicidad":"' + string(Comercio.reparto) +
+                '","activo":"' + string(Comercio.activo) +
+                '","numerodocumento":"' + string(Comercio.nroDoc) +
+                '","cabin9":"' + string(Comercio.es_cabin) +
+                '","observaciones":"' + Comercio.observaciones +
+                '","mail":"' + Comercio.mail +
+                '","adhiere":"' + string(Comercio.adhiere) +
+                '","superficie":"' + string(Comercio.superficie) +
+                '","ingresoanual":"' + string(Comercio.Ing_Anual) +
+                '","categoriamonotributo":"' + Comercio.categ_mono +
+                '","grancontribuyente":"' + string(Comercio.granContrib) +
+                '","error":"' + ""  + '"},'.
+               
+            {&out} 
+            '"TipoDoc":['.
+                for each t_tipdoc: 
+                    assign k = k + 1.
+                    {&out}
+                    chr(123) +
+                    '"tipdoc":"' + string(t_tipdoc.tipdoc). 
+                if k < totalTipDoc 
+                    then {&out} '","descripcion":"' + t_tipdoc.dsc-tipdoc + '"},'. 
+                    else {&out} '","descripcion":"' + t_tipdoc.dsc-tipdoc + '"}]}'. 
+                end. 
+            
+        end. 
+        /* si no lo encuentra */ 
+        else do: 
+            {&out} 
+            "[" +
+            chr(123) +    
+            '"id":"' + "" + 
+            '","nombre":"' + "" + 
+            '","pass":"' + "" + 
+            '","idgrupo":"' + "" +
+            '","grupo":"' + "" +
+            '","error":"' + ""  + '"}'.
+        end.             
+    return no-apply.
+</script>

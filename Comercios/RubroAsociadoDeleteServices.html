@@ -1,0 +1,43 @@
+<script language="SpeedScript">
+     def var correcto as lo no-undo.
+     def var numeroRubro as ch no-undo. 
+     def var numeroInscripcion as ch no-undo. 
+
+     assign numeroRubro = replace(trim(get-value('numeroRubro')), chr(9), "")
+            numeroInscripcion = replace(trim(get-value('numeroInscripcion')), chr(9), "").
+
+    /* validaciones */ 
+    if numeroRubro = "" or int(numeroRubro) = 0 then do: 
+        {&out} 
+        chr(123) + 
+        '"error":"' + "Número de rubro obligatorio"  + '"}'.
+        return no-apply. 
+    end. 
+
+    if numeroInscripcion = "" or int(numeroInscripcion) = 0 then do: 
+        {&out} 
+        chr(123) + 
+        '"error":"' + "Número de Inscricpion obligatorio"  + '"}'.
+        return no-apply. 
+    end. 
+   
+   
+    /* fin validaciones */ 
+    
+    do transaction:  
+        find first RubxComercio where RubxComercio.idRubro = int(numeroRubro)
+                                and RubxComercio.inscripcion = int(numeroInscripcion) exclusive-lock no-error. 
+        if avail RubxComercio then do:  
+           delete RubxComercio.
+                   correcto = true.     
+        end. 
+    end. 
+    release RubxComercio.
+    if correcto then {&out} 
+                    chr(123) + 
+                    '"error":"' + ""  + '"}'.
+    else {&out} 
+        chr(123) + 
+        '"error":"' + "Se ha producido un error. Conulte con el administrador del sistema"  + '"}'.
+    return no-apply.
+ </script>
