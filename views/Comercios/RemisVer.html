@@ -159,102 +159,34 @@
                         <div class="col-md-12">
                             <div class="main-card mb-3 card my-3">
                                 <div class="card-body">
-                                    <h5 class="card-title">Rubro - Nuevo</h5>
+                                    <h4 class="card-title">Detalle de Remises</h4>
                                     <form class="" id="datos" autocomplete="off">
-                                    
-                                        <div class="form-row mb-2 mt-4"> 
-                                            <!-- Inscripción -->
-                                            <div class="col-md-3">
-                                                <div class="input-group mb-2">
-                                                    <input 
-                                                        name="numeroRubro" 
-                                                        id="numeroRubro" 
-                                                        placeholder="" 
-                                                        type="number" 
-                                                        class="form-control form-control-sm" 
-                                                        autofocus
-                                                        required
-                                                    >
-                                                    <div class="input-group-append "> 
-                                                        <span class="input-group-text form-control-sm">Código*</span> 
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="form-row mb-2 mt-4">
-                                            <div class="col-md-6">
-                                                <div class="input-group mb-2">
-                                                    <input 
-                                                        name="nombreRubro" 
-                                                        id="nombreRubro" 
-                                                        placeholder="Rubro" 
-                                                        type="text" 
-                                                        class="form-control form-control-sm" 
-                                                        required
-                                                    >
-                                                    <div class="input-group-append "> 
-                                                        <span class="input-group-text form-control-sm">Rubro*</span> 
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <!-- Cuit -->
-                                            <div class="col-md-3">
-                                                <div class="input-group mb-2">
-                                                    <input 
-                                                        name="alicuota" 
-                                                        id="alicuota" 
-                                                        type="text" 
-                                                        class="form-control form-control-sm" 
-                                                        onkeypress="return numeroDecimal(event)" 
-                                                        required
-                                                    >
-                                                    <div class="input-group-append "> 
-                                                        <span class="input-group-text form-control-sm">Alícuota*</span> 
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        
-                                            <div class="col-md-3">
-                                                <div class="input-group mb-2">
-                                                    <input 
-                                                        name="montoMinimo" 
-                                                        id="montoMinimo" 
-                                                        placeholder="" 
-                                                        type="text" 
-                                                        class="form-control form-control-sm" 
-                                                        onkeypress="return numeroDecimal(event)" 
-                                                    >
-                                                    <div class="input-group-append "> 
-                                                        <span class="input-group-text form-control-sm">Monto Mínimo</span> 
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                 
-                                      <hr>
-                                        
-                                       <div>
-                                            <p class="text-primary small">
-                                                Los campos marcados con * son obligatorios
-                                            </p>
-                                        </div>
-
                                         <div>
                                             <p class="text-danger" id="informe">
                                                 <!-- NOTIFICACIONES -->
                                             </p>
                                         </div>
 
-                                      
+                                        <div class="position-relative form-row mt-5">
+                                            <div class="col-md-12">
+                                                <div id="detalle">
+                                                    
+                                                </div>
 
-                                        <button class="mt-3 btn btn-primary" id="create">Grabar</button>
-                                        <button class="mt-3 btn btn-danger" type="button" onclick="location.href='./rubros.html'" target="_blank">Cancelar</button>
+                                            </div>
+                                        
+                                            <div class="position-relative form-row">
+                                                <div class="col-md-12  text-right">
+                                                    <button class="btn btn-primary text-right" type="button" onclick="location.href='./remises.html'" target="_blank">Salir</button>
+                                                </div>
+                                            </div>
                                     </form>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+            </div>
                 <!-- FIN SECCION MODIFICACBLE -->
 
                 <!-- FIJO!!! - PIE DE PAGINA -->
@@ -279,15 +211,14 @@
     <script src="/municipio2.0/assets/scripts/main.js"></script>
     <script src="/municipio2.0/constantes/settingStart.js"></script>
     <script src="/municipio2.0/assets/scripts/validaciones.js"></script>
-    <script src="/municipio2.0/controller/Comercios/RubrosController.js"></script>
+    <script src="/municipio2.0/controller/Comercios/ComerciosController.js"></script>
     <script src="/municipio2.0/controller/Sesion/Sesion.js"></script>
 
     <script>
         window.addEventListener("load", function() {
             getSesionUser();
             getBuildMain();
-            getRubro();
-            
+            getComercioDetails();
 
         });
     </script>

@@ -159,81 +159,228 @@
                         <div class="col-md-12">
                             <div class="main-card mb-3 card my-3">
                                 <div class="card-body">
-                                    <h5 class="card-title">Rubro - Nuevo</h5>
-                                    <form class="" id="datos" autocomplete="off">
+                                    <h5 class="card-title">Remis - Nuevo</h5>
+                                    <hr class="" id="datos" autocomplete="off">
                                     
                                         <div class="form-row mb-2 mt-4"> 
                                             <!-- Inscripción -->
                                             <div class="col-md-3">
                                                 <div class="input-group mb-2">
                                                     <input 
-                                                        name="numeroRubro" 
-                                                        id="numeroRubro" 
+                                                        name="inscripcion" 
+                                                        id="inscripcion" 
                                                         placeholder="" 
                                                         type="number" 
                                                         class="form-control form-control-sm" 
-                                                        autofocus
+                                                        autofocus 
                                                         required
                                                     >
                                                     <div class="input-group-append "> 
-                                                        <span class="input-group-text form-control-sm">Código*</span> 
+                                                        <span class="input-group-text form-control-sm">Inscripción*</span> 
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div class="form-row mb-2 mt-4">
-                                            <div class="col-md-6">
-                                                <div class="input-group mb-2">
-                                                    <input 
-                                                        name="nombreRubro" 
-                                                        id="nombreRubro" 
-                                                        placeholder="Rubro" 
-                                                        type="text" 
-                                                        class="form-control form-control-sm" 
-                                                        required
-                                                    >
-                                                    <div class="input-group-append "> 
-                                                        <span class="input-group-text form-control-sm">Rubro*</span> 
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <!-- Cuit -->
+                                            <!-- Licencia -->
                                             <div class="col-md-3">
                                                 <div class="input-group mb-2">
                                                     <input 
-                                                        name="alicuota" 
-                                                        id="alicuota" 
-                                                        type="text" 
-                                                        class="form-control form-control-sm" 
-                                                        onkeypress="return numeroDecimal(event)" 
-                                                        required
-                                                    >
-                                                    <div class="input-group-append "> 
-                                                        <span class="input-group-text form-control-sm">Alícuota*</span> 
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        
-                                            <div class="col-md-3">
-                                                <div class="input-group mb-2">
-                                                    <input 
-                                                        name="montoMinimo" 
-                                                        id="montoMinimo" 
+                                                        name="licencia" 
+                                                        id="licencia" 
                                                         placeholder="" 
                                                         type="text" 
                                                         class="form-control form-control-sm" 
-                                                        onkeypress="return numeroDecimal(event)" 
+                                                        required
                                                     >
                                                     <div class="input-group-append "> 
-                                                        <span class="input-group-text form-control-sm">Monto Mínimo</span> 
+                                                        <span class="input-group-text form-control-sm">Licencia*</span> 
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- Fecha de Habilitacion -->
+                                            <div class="col-md-6">
+                                                <div class="input-group mb-2">
+                                                    <input 
+                                                        name="fechaHabilitacion" 
+                                                        id="fechaHabilitacion" 
+                                                        type="date" 
+                                                        class="form-control form-control-sm" 
+                                                        autofocus 
+                                                        required
+                                                    >
+                                                    <div class="input-group-append "> 
+                                                        <span class="input-group-text form-control-sm">Fecha Habilitacion*</span> 
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                 
-                                      <hr>
-                                        
-                                       <div>
+
+                                        <div class="form-row mt-2">
+                                            <!--Tipo de Documento-->
+                                            <div class="col-md-6">
+                                                <div class="input-group mb-2">
+                                                    <select 
+                                                        name="tipoDocumento" 
+                                                        id="tipoDocumento" 
+                                                        class="form-control form-control-sm" 
+                                                        data-live-search="true" 
+                                                        required
+                                                    >
+                                                    </select>
+                                                    <div class="input-group-append "> 
+                                                        <span class="input-group-text form-control-sm">Tipo Documento*</span> 
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="input-group mb-2">
+                                                    <input 
+                                                        name="numeroDocumento" 
+                                                        id="numeroDocumento" 
+                                                        placeholder="" 
+                                                        type="number" 
+                                                        class="form-control form-control-sm" 
+                                                        required
+                                                    >
+                                                    <div class="input-group-append "> 
+                                                        <span class="input-group-text form-control-sm">Número*</span> 
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-row mt-2">
+                                            <!-- Titular -->
+                                            <div class="col-md-6">
+                                                <div class="input-group mb-2">
+                                                    <input 
+                                                        name="titular" 
+                                                        id="titular" 
+                                                        type="text" 
+                                                        class="form-control form-control-sm" 
+                                                        
+                                                    >
+                                                    <div class="input-group-append "> 
+                                                        <span class="input-group-text form-control-sm">Titular*</span> 
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- domicilio -->
+                                            <div class="col-md-6">
+                                                <div class="input-group mb-2">
+                                                    <input 
+                                                        name="domicilio" 
+                                                        id="domicilio" 
+                                                        type="text" 
+                                                        class="form-control form-control-sm" 
+                                                    >
+                                                    <div class="input-group-append">
+                                                        <span class="input-group-text form-control-sm">Domicilio</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+                                        <!--DATOS DEL VEHICULO-->
+
+                                        <div class="position-relative form-row mt-4 ml-1">
+                                            <h5 class="card-title">Datos del Vehiculo</h5>
+                                        </div>
+                                        <hr class="m-0"></hr>
+
+                                        <div class="form-row mt-2">
+                                        <div class="col-md-4">
+                                            <div class="input-group mb-2">
+                                                <input 
+                                                    name="dominio" 
+                                                    id="dominio" 
+                                                    type="text" 
+                                                    class="form-control form-control-sm"
+                                                >
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text form-control-sm">Dominio*</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-5">
+                                            <div class="input-group mb-2">
+                                                <input 
+                                                    name="vehiculo" 
+                                                    id="vehiculo" 
+                                                    type="text" 
+                                                    class="form-control form-control-sm">
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text form-control-sm">Vehiculo*</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-3">
+                                            <div class="input-group mb-2">
+                                                <input 
+                                                    name="modeloAño" 
+                                                    id="modeloAño" 
+                                                    type="number" 
+                                                    class="form-control form-control-sm">
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text form-control-sm">Mod. Año*</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        </div>
+
+                                    <div class="form-row mt-2">
+
+                                        <div class="col-md-6">
+                                            <div class="input-group mb-2">
+                                                <select 
+                                                    name="empresa" 
+                                                    id="empresa" 
+                                                    placeholder="" 
+                                                    type="number" 
+                                                    class="form-control form-control-sm" 
+                                                    required>
+                                                </select>
+                                                <div class="input-group-append "> 
+                                                    <span class="input-group-text form-control-sm">Empresa*</span> 
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                            <div class="col-md-1 mt-2 ml-5">
+                                                <label class="">
+                                                    <input 
+                                                        type="checkbox" 
+                                                        class="form-check-input" 
+                                                        id="monotributo">
+                                                    Monotributo
+                                                </label>
+                                            </div>
+
+                                            <div class="col-md-1 mt-2 ml-5">
+                                                <label class="">
+                                                    <input 
+                                                        type="checkbox" 
+                                                        class="form-check-input" 
+                                                        id="chofer">
+                                                    Chofer
+                                                </label>
+                                            </div>
+
+                                            <div class="col-md-1 mt-2 ml-3">
+                                                <label class="">
+                                                    <input 
+                                                        type="checkbox" 
+                                                        class="form-check-input" 
+                                                        id="cabin9">
+                                                    Cabin 9
+                                                </label>
+                                            </div>
+                                        </div>
+
+                                        <div>
                                             <p class="text-primary small">
                                                 Los campos marcados con * son obligatorios
                                             </p>
@@ -245,10 +392,8 @@
                                             </p>
                                         </div>
 
-                                      
-
                                         <button class="mt-3 btn btn-primary" id="create">Grabar</button>
-                                        <button class="mt-3 btn btn-danger" type="button" onclick="location.href='./rubros.html'" target="_blank">Cancelar</button>
+                                        <button class="mt-3 btn btn-danger" type="button" onclick="location.href='./Remises.html'" target="_blank">Cancelar</button>
                                     </form>
                                 </div>
                             </div>
@@ -279,16 +424,16 @@
     <script src="/municipio2.0/assets/scripts/main.js"></script>
     <script src="/municipio2.0/constantes/settingStart.js"></script>
     <script src="/municipio2.0/assets/scripts/validaciones.js"></script>
-    <script src="/municipio2.0/controller/Comercios/RubrosController.js"></script>
+    <script src="/municipio2.0/controller/Comercios/RemisesController.js"></script>
     <script src="/municipio2.0/controller/Sesion/Sesion.js"></script>
 
     <script>
         window.addEventListener("load", function() {
             getSesionUser();
             getBuildMain();
-            getRubro();
+            getTiposDocumentos();
+            getRemisEmpresas();
             
-
         });
     </script>
 </body>

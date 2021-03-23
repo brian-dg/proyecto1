@@ -159,7 +159,7 @@
                         <div class="col-md-12">
                             <div class="main-card mb-3 card my-3">
                                 <div class="card-body">
-                                    <h5 class="card-title">Empresa de Remises</h5>
+                                    <h5 class="card-title">Remises</h5>
                                     <form class="" autocomplete="off">
                                         <div>
                                             <p class="text-danger" id="informe">
@@ -173,23 +173,13 @@
                                                     type="text" 
                                                     id="palabra" 
                                                     class="form-control form-control-sm" 
-                                                    onkeyup="getSearch(event)" 
+                                                    onkeyup="getSearch(event)"
                                                     onblur="document.getElementById('palabra').value = ''"
                                                     autocomplete="off" 
-                                                    placeholder="Ingrese Razón Social" autofocus>
+                                                    placeholder="Titular" autofocus>
                                             </div>
 
-                                            <div class="col-md-3 mt-4 ml-5">
-                                                <label class="">
-                                                    <input 
-                                                        type="checkbox" 
-                                                        class="form-check-input" 
-                                                        id="activos"
-                                                        checked
-                                                    >
-                                                    Solo los Activos
-                                                </label>
-                                            </div>
+                                            
 
                                         </div>
 
@@ -201,7 +191,8 @@
                                                     class="form-control form-control-sm" 
                                                     autocomplete="off" 
                                                     onkeyup="getSearch(event)"
-                                                    placeholder="Empresa" 
+
+                                                    placeholder="Licencia" 
                                                 >
                                                 
                                             </div>
@@ -215,8 +206,8 @@
                                         </div>
                                         <div class="position-relative form-row">
                                             <div class="col-md-12  text-right">
-                                                <a href="./RemiseCreate.html">
-                                                    <button class="mt-0 btn btn-sm btn-primary" type="button">Nueva Empresa</button>
+                                                <a href="./RemisCreate.html">
+                                                    <button class="mt-0 btn btn-sm btn-primary" type="button">Nuevo Remis</button>
                                                 </a>
                                             </div>
                                         </div>
@@ -352,13 +343,13 @@
     <!-- FIN PIE DE PAGINA -->
     <script src="/municipio2.0/assets/scripts/main.js"></script>
     <script src="/municipio2.0/constantes/settingStart.js"></script>
-    <script src="/municipio2.0/controller/Comercios/ComerciosController.js"></script>
+    <script src="/municipio2.0/controller/Comercios/RemisesController.js"></script>
     <script src="/municipio2.0/controller/Sesion/Sesion.js"></script>
     <script>
         window.addEventListener("load", function() {
             getSesionUser();
             getBuildMain();
-            getComercios();
+            getRemises();
         });
     </script> 
 </body>
